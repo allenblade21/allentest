@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>记账 App · 界面线框图</title>
+</head>
+<body>
+<style>
+  :root {
+    --ground: #f4f5f2;
+    --panel: #ffffff;
+    --ink: #22282c;
+    --ink-2: #5c666d;
+    --line: #c6ccc9;
+    --line-soft: #dde1de;
+    --fill: #eceeeb;
+    --fill-2: #e0e3df;
+    --accent: #2f7a68;
+    --accent-ink: #ffffff;
+    --shadow: 0 1px 3px rgba(30, 40, 38, .08), 0 6px 18px rgba(30, 40, 38, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #191d1c;
+      --panel: #222725;
+      --ink: #e8ebe8;
+      --ink-2: #9aa4a0;
+      --line: #4a534f;
+      --line-soft: #363d3a;
+      --fill: #2b312e;
+      --fill-2: #333a36;
+      --accent: #57ab97;
+      --accent-ink: #10201b;
+      --shadow: 0 1px 3px rgba(0, 0, 0, .4), 0 6px 18px rgba(0, 0, 0, .3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #191d1c;
+    --panel: #222725;
+    --ink: #e8ebe8;
+    --ink-2: #9aa4a0;
+    --line: #4a534f;
+    --line-soft: #363d3a;
+    --fill: #2b312e;
+    --fill-2: #333a36;
+    --accent: #57ab97;
+    --accent-ink: #10201b;
+    --shadow: 0 1px 3px rgba(0, 0, 0, .4), 0 6px 18px rgba(0, 0, 0, .3);
+  }
+  :root[data-theme="light"] {
+    --ground: #f4f5f2;
+    --panel: #ffffff;
+    --ink: #22282c;
+    --ink-2: #5c666d;
+    --line: #c6ccc9;
+    --line-soft: #dde1de;
+    --fill: #eceeeb;
+    --fill-2: #e0e3df;
+    --accent: #2f7a68;
+    --accent-ink: #ffffff;
+    --shadow: 0 1px 3px rgba(30, 40, 38, .08), 0 6px 18px rgba(30, 40, 38, .06);
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.6;
+    padding: 40px 24px 72px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  header.intro { max-width: 720px; margin-bottom: 40px; }
+  .eyebrow {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 12px; letter-spacing: .14em; color: var(--accent);
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  h1 { font-size: 28px; font-weight: 700; text-wrap: balance; margin-bottom: 10px; }
+  .intro p { color: var(--ink-2); font-size: 14.5px; }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 14px;
+    font-size: 12.5px; color: var(--ink-2);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot {
+    display: inline-block; width: 15px; height: 15px; border-radius: 50%;
+    background: var(--accent); color: var(--accent-ink);
+    font-size: 10px; font-weight: 700; line-height: 15px; text-align: center;
+    flex: none;
+  }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 40px 28px;
+  }
+  .card { display: flex; flex-direction: column; gap: 14px; }
+  .card h2 { font-size: 16px; font-weight: 700; }
+  .card h2 small {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-weight: 400; font-size: 11px; color: var(--ink-2); margin-left: 8px;
+  }
+  .notes { font-size: 13px; color: var(--ink-2); display: grid; gap: 5px; padding: 0; margin: 0; list-style: none; }
+  .notes li { display: flex; gap: 8px; align-items: baseline; }
+
+  /* ---------- phone frame ---------- */
+  .phone {
+    background: var(--panel); border: 2px solid var(--line);
+    border-radius: 26px; padding: 14px 12px 10px;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 560px; font-size: 12px;
+  }
+  .statusbar {
+    height: 6px; margin: 0 auto; width: 40%;
+    border-radius: 3px; background: var(--fill-2);
+  }
+  .screen { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .bar .title { font-weight: 700; font-size: 13px; }
+
+  .box, .row, .chip, .input, .btn {
+    border: 1.5px solid var(--line); border-radius: 8px; background: var(--panel);
+  }
+  .box { padding: 10px; }
+  .box.filled { background: var(--fill); }
+  .muted { color: var(--ink-2); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .chip {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 11px; color: var(--ink-2); background: var(--fill);
+  }
+  .chip.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center;
+    padding: 8px 10px; font-weight: 600; color: var(--ink-2);
+    background: var(--fill); text-align: center;
+  }
+  .btn.primary { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+  .btn.sm { padding: 4px 8px; font-size: 11px; font-weight: 500; }
+
+  .row {
+    display: flex; align-items: center; gap: 8px; padding: 8px 9px;
+    border-radius: 8px;
+  }
+  .row .icon {
+    width: 26px; height: 26px; border-radius: 8px; background: var(--fill-2);
+    border: 1.5px solid var(--line-soft); flex: none;
+  }
+  .row .grow { flex: 1; min-width: 0; }
+  .row .l1 { font-weight: 600; }
+  .row .l2 { color: var(--ink-2); font-size: 10.5px; }
+  .row .amt { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .group-h {
+    display: flex; justify-content: space-between; color: var(--ink-2);
+    font-size: 10.5px; padding: 2px 2px 0;
+  }
+
+  .search {
+    border: 1.5px dashed var(--line); border-radius: 999px;
+    padding: 5px 12px; color: var(--ink-2); font-size: 11px;
+  }
+
+  .tabs { display: flex; gap: 6px; }
+  .tabs .chip { flex: 1; text-align: center; }
+
+  .amount {
+    font-size: 30px; font-weight: 700; text-align: right;
+    padding: 10px 12px; border-bottom: 2px solid var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .catgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .cat {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 7px 2px; border: 1.5px solid var(--line-soft); border-radius: 8px;
+    font-size: 10.5px; color: var(--ink-2);
+  }
+  .cat .icon { width: 22px; height: 22px; border-radius: 50%; background: var(--fill-2); }
+  .cat.on { border-color: var(--ink); color: var(--ink); font-weight: 600; }
+  .cat.on .icon { background: var(--ink); }
+
+  .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: auto; }
+  .key {
+    padding: 9px 0; text-align: center; font-weight: 600;
+    background: var(--fill); border: 1.5px solid var(--line-soft); border-radius: 7px;
+  }
+  .key.go { grid-row: span 2; background: var(--ink); color: var(--panel); border-color: var(--ink);
+    display: flex; align-items: center; justify-content: center; }
+
+  .fieldrow {
+    display: flex; justify-content: space-between; gap: 8px;
+    padding: 7px 2px; border-bottom: 1.5px solid var(--line-soft);
+    color: var(--ink-2); font-size: 11.5px;
+  }
+  .fieldrow b { color: var(--ink); font-weight: 600; }
+
+  .upload {
+    border: 2px dashed var(--line); border-radius: 10px;
+    min-height: 64px; display: flex; align-items: center; justify-content: center;
+    color: var(--ink-2); gap: 8px;
+  }
+  .thumbs { display: flex; gap: 6px; }
+  .thumb { width: 34px; height: 34px; border-radius: 6px; background: var(--fill-2); border: 1.5px solid var(--line-soft); }
+
+  .check { width: 15px; height: 15px; border: 1.5px solid var(--line); border-radius: 4px; flex: none; }
+  .check.on { background: var(--ink); border-color: var(--ink); position: relative; }
+  .check.on::after { content: "✓"; color: var(--panel); font-size: 10px; position: absolute; inset: 0; text-align: center; line-height: 15px; }
+  .tag {
+    font-size: 9.5px; padding: 1px 6px; border-radius: 4px;
+    border: 1px solid var(--line); color: var(--ink-2); white-space: nowrap;
+  }
+  .row.warn { border-style: dashed; background: var(--fill); }
+
+  .bignum { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .statrow { display: flex; gap: 8px; }
+  .statrow .box { flex: 1; padding: 8px; }
+  .statrow .k { font-size: 10px; color: var(--ink-2); }
+  .statrow .v { font-weight: 700; font-variant-numeric: tabular-nums; font-size: 12.5px; }
+
+  table.wf { width: 100%; border-collapse: collapse; font-size: 10.5px; font-variant-numeric: tabular-nums; }
+  table.wf th, table.wf td { border: 1px solid var(--line-soft); padding: 4px 5px; text-align: right; }
+  table.wf th { background: var(--fill); color: var(--ink-2); font-weight: 600; }
+  table.wf td:first-child, table.wf th:first-child { text-align: left; }
+
+  .chart { border: 1.5px solid var(--line-soft); border-radius: 8px; background: var(--fill); padding: 6px; }
+  .chart svg { display: block; width: 100%; height: 74px; }
+  .chart polyline { fill: none; stroke: var(--ink-2); stroke-width: 2; }
+  .chart .grid-l { stroke: var(--line-soft); stroke-width: 1; }
+
+  .navbar {
+    margin-top: auto; display: flex; border-top: 1.5px solid var(--line-soft);
+    padding-top: 8px; position: relative;
+  }
+  .navbar .nav {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    color: var(--ink-2); font-size: 10px;
+  }
+  .navbar .nav .ni { width: 18px; height: 18px; border-radius: 5px; background: var(--fill-2); border: 1.5px solid var(--line-soft); }
+  .navbar .nav.on { color: var(--ink); font-weight: 700; }
+  .navbar .nav.on .ni { background: var(--ink); border-color: var(--ink); }
+  .navbar .nav.fab-slot .ni {
+    width: 34px; height: 34px; border-radius: 50%; background: var(--ink); border-color: var(--ink);
+    margin-top: -22px; color: var(--panel); display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700;
+  }
+
+  .flow { margin-top: 56px; }
+  .flow h2 { font-size: 18px; margin-bottom: 6px; }
+  .flow > p { color: var(--ink-2); font-size: 13.5px; max-width: 680px; margin-bottom: 18px; }
+  .flow-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12.5px; }
+  .flow-strip .step { border: 1.5px solid var(--line); background: var(--panel); border-radius: 8px; padding: 7px 12px; }
+  .flow-strip .arr { color: var(--ink-2); }
+  footer { margin-top: 56px; font-size: 12px; color: var(--ink-2); }
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <div class="eyebrow">Wireframe · v0.1 · 2026-07-12</div>
+    <h1>记账 App 界面线框图</h1>
+    <p>手机优先 Web 应用,共 6 屏,对应《需求文档》第 7 节页面结构。灰阶盒线为低保真示意,不代表最终视觉;数字仅为占位示例。</p>
+    <div class="legend">
+      <span><span class="dot">n</span> 编号对应每屏下方的说明</span>
+      <span>底部导航:流水 · 记一笔(+) · 基金 · 我的</span>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- ================ 1 首页/流水 ================ -->
+    <section class="card">
+      <h2>① 首页 / 流水<small>P0 · 2.2 / 2.3 / 2.6</small></h2>
+      <div class="phone">
+        <div class="statusbar"></div>
+        <div class="screen">
+          <div class="bar">
+            <span class="title">‹ 2026年7月 ›</span>
+            <span class="btn sm">⤓ 导入</span>
+          </div>
+          <div class="box filled">
+            <div class="group-h"><span>本月结余</span><span>7月1日–12日</span></div>
+            <div class="bignum num">+¥7,720.00</div>
+            <div class="statrow" style="margin-top:6px">
+              <div class="box"><div class="k">支出</div><div class="v num">¥4,280.00</div></div>
+              <div class="box"><div class="k">收入</div><div class="v num">¥12,000.00</div></div>
+            </div>
+          </div>
+          <div class="search">🔍 搜索备注 / 商户 · 筛选:分类 账户 时间</div>
+          <div class="group-h"><span>今天 · 7月12日</span><span class="num">支出 ¥38.00</span></div>
+          <div class="row">
+            <span class="icon"></span>
+            <span class="grow"><div class="l1">午饭 · 麦当劳</div><div class="l2">餐饮 · 微信支付</div></span>
+            <span class="amt num">-32.00</span>
+          </div>
+          <div class="row">
+            <span class="icon"></span>
+            <span class="grow"><div class="l1">地铁</div><div class="l2">交通 · 支付宝</div></span>
+            <span class="amt num">-6.00</span>
+          </div>
+          <div class="group-h"><span>昨天 · 7月11日</span><span class="num">支出 ¥215.00</span></div>
+          <div class="row">
+            <span class="icon"></span>
+            <span class="grow"><div class="l1">超市购物</div><div class="l2">购物 · 银行卡 · 📎</div></span>
+            <span class="amt num">-128.00</span>
+          </div>
+          <div class="row">
+            <span class="icon"></span>
+            <span class="grow"><div class="l1">电影票 ×2</div><div class="l2">娱乐 · 支付宝</div></span>
+            <span class="amt num">-87.00</span>
+          </div>
+          <div class="navbar">
+            <span class="nav on"><span class="ni"></span>流水</span>
+            <span class="nav fab-slot"><span class="ni">+</span>记一笔</span>
+            <span class="nav"><span class="ni"></span>基金</span>
+            <span class="nav"><span class="ni"></span>我的</span>
+          </div>
+        </div>
+      </div>
+      <ul class="notes">
+        <li><span class="dot">1</span>月度汇总卡:支出 / 收入 / 结余,点年月可切换月份。</li>
+        <li><span class="dot">2</span>长按任意条目进入多选模式 → 底部出现「改分类 / 改账户 / 改日期 / 删除」批量操作栏。</li>
+        <li><span class="dot">3</span>📎 表示该条目来自 OCR,点开可比对原始截图。</li>
+      </ul>
+    </section>
+
+    <!-- ================ 2 记一笔 ================ -->
+    <section class="card">
+      <h2>② 记一笔<small>P0 · 2.1 / 2.4</small></h2>
+      <div class="phone">
+        <div class="statusbar"></div>
+        <div class="screen">
+          <div class="bar">
+            <span class="title">✕ 记一笔</span>
+            <span class="btn sm">📷 拍照/相册 OCR</span>
+          </div>
+          <div class="tabs">
+            <span class="chip on">支出</span><span class="chip">收入</span><span class="chip">转账</span>
+          </div>
+          <div class="amount num">¥ 32.00</div>
+          <div class="catgrid">
+            <span class="cat on"><span class="icon"></span>餐饮</span>
+            <span class="cat"><span class="icon"></span>交通</span>
+            <span class="cat"><span class="icon"></span>购物</span>
+            <span class="cat"><span class="icon"></span>居住</span>
+            <span class="cat"><span class="icon"></span>娱乐</span>
+            <span class="cat"><span class="icon"></span>医疗</span>
+            <span class="cat"><span class="icon"></span>人情</span>
+            <span class="cat"><span class="icon"></span>更多…</span>
+          </div>
+          <div>
+            <div class="fieldrow"><span>账户</span><b>微信支付 ▾</b></div>
+            <div class="fieldrow"><span>日期</span><b>今天 7月12日 ▾</b></div>
+            <div class="fieldrow"><span>备注</span><span>麦当劳</span></div>
+          </div>
+          <div class="keypad">
+            <span class="key">1</span><span class="key">2</span><span class="key">3</span><span class="key go">保存</span>
+            <span class="key">4</span><span class="key">5</span><span class="key">6</span>
+            <span class="key">7</span><span class="key">8</span><span class="key">9</span><span class="key">再记一笔</span>
+            <span class="key">.</span><span class="key">0</span><span class="key">⌫</span>
+          </div>
+        </div>
+      </div>
+      <ul class="notes">
+        <li><span class="dot">1</span>进入页面直接聚焦金额键盘;常用分类靠前,越用越顺手。</li>
+        <li><span class="dot">2</span>「再记一笔」保存后不退出,连续录入。</li>
+        <li><span class="dot">3</span>右上 OCR:拍小票 / 选 1 张截图 → 生成一条待确认记录回填本页。</li>
+      </ul>
+    </section>
+
+    <!-- ================ 3 OCR 批量导入 ================ -->
+    <section class="card">
+      <h2>③ OCR 批量导入 · 待确认清单<small>P0 · 2.5</small></h2>
+      <div class="phone">
+        <div class="statusbar"></div>
+        <div class="screen">
+          <div class="bar">
+            <span class="title">‹ 导入账单</span>
+            <span class="chip">识别完成 8/8</span>
+          </div>
+          <div class="thumbs">
+            <span class="thumb"></span><span class="thumb"></span><span class="thumb"></span>
+            <span class="upload" style="flex:1;min-height:34px;border-radius:6px">+ 添加截图</span>
+          </div>
+          <div class="group-h"><span>待确认 8 笔 · 支付宝账单截图</span></div>
+          <div class="row">
+            <span class="check on"></span>
+            <span class="grow"><div class="l1">瑞幸咖啡</div><div class="l2">餐饮? · 7月10日 09:12</div></span>
+            <span class="amt num">-19.90</span>
+          </div>
+          <div class="row">
+            <span class="check on"></span>
+            <span class="grow"><div class="l1">滴滴出行</div><div class="l2">交通 · 7月10日 18:40</div></span>
+            <span class="amt num">-23.50</span>
+          </div>
+          <div class="row warn">
+            <span class="check"></span>
+            <span class="grow"><div class="l1">超市购物</div><div class="l2">7月11日 · 与已有记录相同</div></span>
+            <span class="tag">疑似重复</span>
+            <span class="amt num">-128.00</span>
+          </div>
+          <div class="row warn">
+            <span class="check"></span>
+            <span class="grow"><div class="l1">金额未识别</div><div class="l2">点击人工补全 ✎</div></span>
+            <span class="tag">存疑</span>
+            <span class="amt num">--</span>
+          </div>
+          <div class="row">
+            <span class="check on"></span>
+            <span class="grow"><div class="l1">美团外卖</div><div class="l2">餐饮 · 7月11日 12:03</div></span>
+            <span class="amt num">-45.00</span>
+          </div>
+          <div class="navbar" style="border-top:none;padding-top:0">
+            <div style="display:flex;gap:8px;width:100%">
+              <span class="btn" style="flex:1">已选 6 / 8</span>
+              <span class="btn primary" style="flex:2">全选入账</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ul class="notes">
+        <li><span class="dot">1</span>一次可传多张截图(支付宝 / 微信 / 银行明细),逐张识别后汇总为一份清单。</li>
+        <li><span class="dot">2</span>「疑似重复」= 金额+时间+商户 与已有账目匹配,默认不勾选;「存疑」置顶待人工补全。</li>
+        <li><span class="dot">3</span>每笔可点开修正字段;分类带「?」表示自动推测,修正后会记住映射。</li>
+      </ul>
+    </section>
+
+    <!-- ================ 4 基金总览 ================ -->
+    <section class="card">
+      <h2>④ 基金 · 投资总览<small>P1 · 3.1 / 3.3</small></h2>
+      <div class="phone">
+        <div class="statusbar"></div>
+        <div class="screen">
+          <div class="bar">
+            <span class="title">基金</span>
+            <span class="btn sm">⤓ 导入持仓截图</span>
+          </div>
+          <div class="box filled">
+            <div class="group-h"><span>总市值</span><span>最新快照 7月12日</span></div>
+            <div class="bignum num">¥52,340.00</div>
+            <div class="statrow" style="margin-top:6px">
+              <div class="box"><div class="k">持有收益</div><div class="v num">+¥3,120.00</div></div>
+              <div class="box"><div class="k">今日收益</div><div class="v num">+¥86.00</div></div>
+            </div>
+          </div>
+          <div class="group-h"><span>持有基金 · 4 只</span><span>按市值 ▾</span></div>
+          <div class="row">
+            <span class="icon"></span>
+            <span class="grow"><div class="l1">华夏沪深300ETF联接A</div><div class="l2">000051 · ¥20,150</div></span>
+            <span class="amt num">+5.2%</span>
+          </div>
+          <div class="row">
+            <span class="icon"></span>
+            <span class="grow"><div class="l1">易方达蓝筹精选混合</div><div class="l2">005827 · ¥15,400</div></span>
+            <span class="amt num">-2.1%</span>
+          </div>
+          <div class="row">
+            <span class="icon"></span>
+            <span class="grow"><div class="l1">天弘余额宝货币</div><div class="l2">000198 · ¥10,230</div></span>
+            <span class="amt num">+1.8%</span>
+          </div>
+          <div class="row">
+            <span class="icon"></span>
+            <span class="grow"><div class="l1">招商中证白酒指数A</div><div class="l2">161725 · ¥6,560</div></span>
+            <span class="amt num">-4.5%</span>
+          </div>
+          <div class="btn" style="border-style:dashed">+ 手动记一笔基金快照</div>
+          <div class="navbar">
+            <span class="nav"><span class="ni"></span>流水</span>
+            <span class="nav fab-slot"><span class="ni">+</span>记一笔</span>
+            <span class="nav on"><span class="ni"></span>基金</span>
+            <span class="nav"><span class="ni"></span>我的</span>
+          </div>
+        </div>
+      </div>
+      <ul class="notes">
+        <li><span class="dot">1</span>总览由各基金「最新快照」汇总;导入截图走与 ③ 相同的待确认流程。</li>
+        <li><span class="dot">2</span>列表显示最新市值与持有收益率,点击进入 ⑤ 基金详情。</li>
+        <li><span class="dot">3</span>OCR 只识别到名称、没有代码时,提示绑定基金代码后归档。</li>
+      </ul>
+    </section>
+
+    <!-- ================ 5 基金详情 ================ -->
+    <section class="card">
+      <h2>⑤ 基金详情 · 跨期汇总<small>P1 · 3.2</small></h2>
+      <div class="phone">
+        <div class="statusbar"></div>
+        <div class="screen">
+          <div class="bar">
+            <span class="title">‹ 华夏沪深300ETF联接A</span>
+            <span class="chip">000051</span>
+          </div>
+          <div class="statrow">
+            <div class="box"><div class="k">最新市值</div><div class="v num">¥20,150</div></div>
+            <div class="box"><div class="k">累计收益</div><div class="v num">+¥1,150</div></div>
+            <div class="box"><div class="k">区间涨跌</div><div class="v num">+5.2%</div></div>
+          </div>
+          <div class="chart">
+            <div class="group-h"><span>市值走势</span><span>近 5 期快照</span></div>
+            <svg viewBox="0 0 260 74" role="img" aria-label="市值走势折线示意">
+              <line class="grid-l" x1="0" y1="18" x2="260" y2="18"></line>
+              <line class="grid-l" x1="0" y1="37" x2="260" y2="37"></line>
+              <line class="grid-l" x1="0" y1="56" x2="260" y2="56"></line>
+              <polyline points="8,56 68,44 128,50 188,26 252,14"></polyline>
+            </svg>
+          </div>
+          <div class="group-h"><span>历史快照 · 5 条</span><span>+ 补录</span></div>
+          <div style="overflow-x:auto">
+            <table class="wf">
+              <tr><th>日期</th><th>市值</th><th>当日</th><th>较上期</th><th>持有收益</th></tr>
+              <tr><td>07-12</td><td>20,150</td><td>+0.4%</td><td>+2.9%</td><td>+1,150</td></tr>
+              <tr><td>06-30</td><td>19,580</td><td>-0.2%</td><td>+4.1%</td><td>+580</td></tr>
+              <tr><td>06-15</td><td>18,810</td><td>+1.1%</td><td>-1.3%</td><td>-190</td></tr>
+              <tr><td>05-31</td><td>19,060</td><td>+0.6%</td><td>+2.2%</td><td>+60</td></tr>
+              <tr><td>05-15</td><td>18,650</td><td>-0.8%</td><td>—</td><td>-350</td></tr>
+            </table>
+          </div>
+          <div class="box filled" style="font-size:11px" >
+            汇总:持有期间 <b class="num">+8.0%</b> · 最高 07-12 · 最低 05-15
+          </div>
+          <div class="navbar" style="border-top:none;padding-top:0">
+            <div style="display:flex;gap:8px;width:100%">
+              <span class="btn" style="flex:1">编辑快照</span>
+              <span class="btn" style="flex:1">删除</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ul class="notes">
+        <li><span class="dot">1</span>同一基金按<b>代码归一</b>,每次导入生成一条带日期的快照,排成时间序列。</li>
+        <li><span class="dot">2</span>「较上期」= 相邻两期快照之间的区间涨跌幅;底部给出持有期汇总。</li>
+        <li><span class="dot">3</span>同日重复导入同一基金 → 提示覆盖或跳过,不产生重复快照。</li>
+      </ul>
+    </section>
+
+    <!-- ================ 6 我的/设置 ================ -->
+    <section class="card">
+      <h2>⑥ 我的 / 设置<small>P0/P2 · 2.7 / 4</small></h2>
+      <div class="phone">
+        <div class="statusbar"></div>
+        <div class="screen">
+          <div class="bar"><span class="title">我的</span></div>
+          <div class="statrow">
+            <div class="box"><div class="k">记账天数</div><div class="v num">128</div></div>
+            <div class="box"><div class="k">总笔数</div><div class="v num">1,024</div></div>
+            <div class="box"><div class="k">账户数</div><div class="v num">4</div></div>
+          </div>
+          <div class="group-h"><span>数据管理</span></div>
+          <div class="row"><span class="icon"></span><span class="grow l1">分类管理</span><span class="muted">›</span></div>
+          <div class="row"><span class="icon"></span><span class="grow l1">账户管理</span><span class="muted">›</span></div>
+          <div class="row"><span class="icon"></span><span class="grow l1">导出 CSV(流水 / 基金)</span><span class="muted">›</span></div>
+          <div class="row"><span class="icon"></span><span class="grow l1">OCR 原图保留期限</span><span class="muted">90天 ›</span></div>
+          <div class="group-h"><span>推荐功能(后续版本)</span></div>
+          <div class="row warn"><span class="icon"></span><span class="grow"><div class="l1">消费分析 / 预算建议</div><div class="l2">P2 · 敬请期待</div></span></div>
+          <div class="row warn"><span class="icon"></span><span class="grow"><div class="l1">异常支出 / 订阅提醒</div><div class="l2">P2 · 敬请期待</div></span></div>
+          <div class="navbar">
+            <span class="nav"><span class="ni"></span>流水</span>
+            <span class="nav fab-slot"><span class="ni">+</span>记一笔</span>
+            <span class="nav"><span class="ni"></span>基金</span>
+            <span class="nav on"><span class="ni"></span>我的</span>
+          </div>
+        </div>
+      </div>
+      <ul class="notes">
+        <li><span class="dot">1</span>分类 / 账户支持增删改与排序;导出分「流水」「基金快照」两个 CSV。</li>
+        <li><span class="dot">2</span>推荐功能以占位卡呈现,点击仅展示需求说明,不做功能。</li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- ================ 核心流程 ================ -->
+  <div class="flow">
+    <h2>核心流程:OCR 批量记账</h2>
+    <p>产品的主路径。所有 OCR 结果先进入待确认清单,经人工校对才正式入账 —— 识别错误不会污染账本。</p>
+    <div class="flow-strip">
+      <span class="step">① 首页点「导入」</span><span class="arr">→</span>
+      <span class="step">选多张截图</span><span class="arr">→</span>
+      <span class="step">逐张 OCR 识别</span><span class="arr">→</span>
+      <span class="step">③ 待确认清单(去重/存疑标记)</span><span class="arr">→</span>
+      <span class="step">校对 · 勾选</span><span class="arr">→</span>
+      <span class="step">全选入账 ✓</span>
+    </div>
+  </div>
+
+  <footer>
+    记账 App · 需求阶段 v0.1 · 配套文档:docs/需求文档.md · 线框为低保真示意,数据均为占位样例
+  </footer>
+</div>
+</body>
+</html>
