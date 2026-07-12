@@ -24,6 +24,9 @@
 - `npm run db:migrate` — 执行迁移(生成/更新 `data/app.db`)
 - `npm run db:seed` — 写入默认分类与账户
 - `npm run lint` — ESLint
+- `npm test` — 构建 + 全量端到端测试;`npm run test:quick` 复用已有构建
+- `npm run test:list` — 列出全部用例;`npm run test:report` — 打开 HTML 报告
+- 测试用例登记表在 `docs/测试用例.md`,新增功能须同步补用例(TC-编号与 spec 标题对应)
 
 ## 目录结构
 

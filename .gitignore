@@ -42,3 +42,7 @@ next-env.d.ts
 
 # 本地数据:SQLite 数据库与 OCR 上传原图
 /data/
+
+# Playwright 测试产物
+/playwright-report/
+/test-results/
