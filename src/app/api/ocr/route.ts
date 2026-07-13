@@ -4,7 +4,7 @@ import path from "node:path";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { categories, merchantRules, transactions } from "@/db/schema";
-import { recognizeImage, toMediaType, type OcrRecord } from "@/lib/ocr";
+import { ocrConfigError, recognizeImage, toMediaType, type OcrRecord } from "@/lib/ocr";
 import { today } from "@/lib/date";
 
 export const maxDuration = 120; // 多图识别可能较慢
@@ -18,11 +18,9 @@ export type PendingItem = OcrRecord & {
 
 // OCR 批量识别:上传多张截图 → 返回待确认清单(不写库)
 export async function POST(req: NextRequest) {
-  if (process.env.OCR_MOCK !== "1" && !process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json(
-      { error: "未配置 ANTHROPIC_API_KEY,无法识别。请在 .env.local 中设置后重启。" },
-      { status: 400 },
-    );
+  const configErr = ocrConfigError();
+  if (configErr) {
+    return NextResponse.json({ error: configErr }, { status: 400 });
   }
 
   const form = await req.formData().catch(() => null);

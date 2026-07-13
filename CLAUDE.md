@@ -9,7 +9,10 @@
 - **技术栈(方案 A,详见 docs/技术选型.md)**:
   - Next.js(App Router)+ TypeScript + Tailwind CSS
   - SQLite + Drizzle ORM(better-sqlite3),数据库文件在 `data/app.db`(不入库)
-  - OCR/识别:视觉大模型 API(默认 Claude API),截图直接转结构化 JSON;不用传统 OCR
+  - OCR/识别:视觉大模型 API,截图直接转结构化 JSON,不用传统 OCR。多 provider 适配(`src/lib/ocr.ts`),`OCR_PROVIDER=claude|byteplus` 切换:
+    - `claude`(默认):Anthropic Messages API,`ANTHROPIC_API_KEY`,`output_config.format` 强约束 JSON
+    - `byteplus`:火山引擎海外版 ModelArk(OpenAI 兼容 REST,原生 fetch),`ARK_API_KEY` + `ARK_MODEL_ID`(skylark-vision 接入点),`json_object` 模式
+    - `OCR_MOCK=1`:返回样例数据,不调任何 API
   - 包管理:**npm**
   - 部署:待定,先按本地开发环境;API Key 只放服务端环境变量
 - **需求基线**:`docs/需求文档.md`(P0 记账 / P1 基金 / P2 推荐功能占位);界面以 `docs/wireframes.html` 六屏线框为准
