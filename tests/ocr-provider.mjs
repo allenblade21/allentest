@@ -13,19 +13,28 @@ delete process.env.OCR_PROVIDER;
 assert.equal(ocrProvider(), "claude");
 ok("默认 provider = claude");
 
-// 2. byteplus 缺 key/model 时给出正确配置错误
+// 2. byteplus 只需 ARK_API_KEY;model 不填用默认 lite
 process.env.OCR_PROVIDER = "byteplus";
 delete process.env.ARK_API_KEY;
 delete process.env.ARK_MODEL_ID;
 delete process.env.OCR_MOCK;
 assert.match(ocrConfigError(), /ARK_API_KEY/);
 process.env.ARK_API_KEY = "test-key";
-assert.match(ocrConfigError(), /ARK_MODEL_ID/);
-process.env.ARK_MODEL_ID = "ep-test";
-assert.equal(ocrConfigError(), null);
-ok("byteplus 配置检查(缺 key/model 报错,齐全通过)");
+assert.equal(ocrConfigError(), null, "有 key 即可,model 可缺省");
+ok("byteplus 配置检查(只需 ARK_API_KEY)");
 
-// 3. byteplus 分支:mock fetch,验证请求构造 + 响应解析
+// 2b. 未设 ARK_MODEL_ID 时默认用 lite 模型
+let defaultModel;
+globalThis.fetch = async (_url, init) => {
+  defaultModel = JSON.parse(init.body).model;
+  return { ok: true, json: async () => ({ choices: [{ message: { content: '{"records":[]}' } }] }) };
+};
+await recognizeImage("X", "image/png", [], "2026-07-12");
+assert.equal(defaultModel, "seed-2-0-lite-260228", "默认 model = lite");
+ok("未设 ARK_MODEL_ID 时默认 seed-2-0-lite-260228");
+
+// 3. byteplus 分支:显式设 model,mock fetch 验证请求构造 + 响应解析
+process.env.ARK_MODEL_ID = "ep-test";
 let capturedUrl, capturedBody, capturedAuth;
 globalThis.fetch = async (url, init) => {
   capturedUrl = url;
@@ -81,4 +90,4 @@ const mock = await recognizeImage("X", "image/png", [], "2026-07-12");
 assert.ok(mock.length >= 3, "mock 模式返回样例");
 ok("OCR_MOCK 优先,不调 fetch");
 
-console.log(`\n${passed}/6 通过`);
+console.log(`\n${passed}/7 通过`);

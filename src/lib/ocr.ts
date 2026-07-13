@@ -43,7 +43,7 @@ export function ocrConfigError(): string | null {
   if (process.env.OCR_MOCK === "1") return null;
   if (ocrProvider() === "byteplus") {
     if (!process.env.ARK_API_KEY) return "未配置 ARK_API_KEY(BytePlus ModelArk),无法识别。请在 .env.local 中设置后重启。";
-    if (!process.env.ARK_MODEL_ID) return "未配置 ARK_MODEL_ID(BytePlus 的模型/接入点 ID),无法识别。请在 .env.local 中设置后重启。";
+    // ARK_MODEL_ID 不填则用默认 lite 模型,故不强制
     return null;
   }
   if (!process.env.ANTHROPIC_API_KEY) return "未配置 ANTHROPIC_API_KEY,无法识别。请在 .env.local 中设置后重启。";
@@ -154,8 +154,9 @@ async function recognizeWithByteplus(
   today: string,
 ): Promise<RawRecord[]> {
   const baseUrl = process.env.ARK_BASE_URL ?? "https://ark.ap-southeast.bytepluses.com/api/v3";
-  const model = process.env.ARK_MODEL_ID; // 控制台创建的接入点 id(ep-...)或模型名
-  if (!model) throw new Error("未配置 ARK_MODEL_ID");
+  // 默认 Doubao-Seed-2.0-lite(全模态含视觉,轻量便宜);可用 ARK_MODEL_ID 覆盖为
+  // 更强的 vision 模型或控制台接入点 id(ep-...)
+  const model = process.env.ARK_MODEL_ID ?? "seed-2-0-lite-260228";
 
   const res = await fetch(`${baseUrl.replace(/\/$/, "")}/chat/completions`, {
     method: "POST",
