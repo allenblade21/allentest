@@ -26,7 +26,7 @@ src/
 │   └── api/           # transactions(含 batch/restore/[id])/ ocr(含 confirm)/ funds
 ├── components/        # BottomNav / RecordForm / ImportFlow / TransactionList
 ├── db/                # schema.ts(7 表)、index.ts(连接)、seed.ts
-└── lib/               # ocr(多 provider)、money、date、tx-validate
+└── lib/               # ocr(多 provider,交易+基金)、fund(计算)、fund-db(upsert)、money、date、tx-validate
 data/                  # SQLite 数据库与 OCR 原图(git 忽略)
 tests/                 # Playwright E2E + OCR provider 单测
 docs/                  # 规范 + adr/ + memory/ + journal/ + STATUS

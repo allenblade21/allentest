@@ -24,9 +24,18 @@
 - 环境预装 Chromium 在 `/opt/pw-browsers/chromium`,配置里显式指 `executablePath`,**勿 `playwright install`**(会尝试联网下载)。
 - better-sqlite3 开了 WAL,测试可在服务端之外并发读写测试库(helpers 里直接开库清数据)。
 
+## API / 字段一致性
+
+- **前端字段名要和校验/写入层对齐。** 基金手动 POST 前端发 `code`,而 `validateFundRecord`/`upsertFundRecord` 期望 `fundCode`,未映射导致校验永远报错;而 OCR confirm 恰好发 `fundCode` 先通过,掩盖了问题。约定:API handler 入口显式把外部字段映射到内部结构,别指望同名。
+
+## 构建 / 测试
+
+- **改了 `src/` 代码,跑 Playwright 前必须 rebuild。** `playwright.config` 的 webServer 用 `npm run start`(跑 `.next`),不会重新编译。只改测试用 `test:quick` 即可;改了产品代码要 `npm test`(含 build)或先手动 `npm run build`,否则测的是旧代码,白排查。
+
 ## OCR
 
-- 视觉模型返回可能被 ```json``` 代码块围栏包裹,`parseRecords` 统一剥离围栏再 `JSON.parse`。
+- 视觉模型返回可能被 ```json``` 代码块围栏包裹,`parseJson` 统一剥离围栏再 `JSON.parse`。
+- 交易与基金识别共用 `callVision`(provider 分发),各自只提供 prompt + schema + 解析,避免两套 provider 逻辑。
 - byteplus(ModelArk)走 OpenAI 兼容 REST,`response_format: json_object` 不强制 schema,需在 prompt 里明确 JSON 结构;Claude 侧用 `output_config.format` 强约束。
 - 模型 id 会随版本变,别硬编码猜测的带日期后缀;给默认值 + 环境变量可覆盖,精确 id 让用户从控制台/`GET /models` 取。
 
