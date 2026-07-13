@@ -1,7 +1,6 @@
 // 验证 OCR 多 provider 分发逻辑(不需真实 API)。
 // 用 tsx 运行:npx tsx tests/ocr-provider.mjs
 import assert from "node:assert";
-import { execSync } from "node:child_process";
 
 // 用 tsx 动态编译加载 TS 模块
 const { recognizeImage, ocrConfigError, ocrProvider } = await import("../src/lib/ocr.ts");
