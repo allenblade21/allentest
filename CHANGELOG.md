@@ -5,6 +5,8 @@
 ## [未发布]
 
 ### 新增
+- P2 消费分析:环比(本月 vs 上月)、近 6 月支出趋势柱状、当月支出分类结构条形;入口「我的 → 消费分析」;新增 TC-A 测试组 4 例。
+- 页面流程图(docs/页面流程图.svg,可导入 Figma 编辑)。
 - P1 基金模块:持仓截图 OCR 批量录入、同名基金按代码归一(同日覆盖)、投资总览、基金详情(跨期涨跌幅表 + 市值走势图 + 持有期汇总)、手动记/补录/删除快照;新增 TC-F 测试组 7 例。
 - 文档/记忆体系标准化:AGENTS.md 共享入口、docs/adr 决策记录、docs/STATUS 看板、docs/memory 经验库、docs/journal 复盘、CHANGELOG。
 - OCR 接入 BytePlus Skylark-vision(火山引擎海外版 ModelArk),多 provider 适配,默认模型 Seed-2.0-lite。
