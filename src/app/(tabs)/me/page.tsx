@@ -4,8 +4,11 @@ import Link from "next/link";
 type Item = { label: string; hint?: string; href?: string };
 const groups: { title: string; items: Item[] }[] = [
   {
-    title: "分析",
-    items: [{ label: "消费分析", hint: "环比 · 趋势 · 分类结构", href: "/analysis" }],
+    title: "分析与预算",
+    items: [
+      { label: "消费分析", hint: "环比 · 趋势 · 分类结构", href: "/analysis" },
+      { label: "预算设置", hint: "分类月度限额 · 超支提醒", href: "/budget" },
+    ],
   },
   {
     title: "数据管理",
@@ -19,8 +22,8 @@ const groups: { title: string; items: Item[] }[] = [
   {
     title: "推荐功能(后续版本)",
     items: [
-      { label: "预算建议 / 超支提醒", hint: "敬请期待" },
-      { label: "异常支出 / 订阅提醒", hint: "敬请期待" },
+      { label: "周期支出 / 订阅提醒", hint: "敬请期待" },
+      { label: "异常支出提醒", hint: "敬请期待" },
     ],
   },
 ];

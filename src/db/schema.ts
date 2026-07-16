@@ -82,6 +82,16 @@ export const ocrImportBatches = sqliteTable("ocr_import_batches", {
   createdAt: text("created_at").notNull().default(sql`(datetime('now'))`),
 });
 
+// 分类月度预算:常设额度,每月生效(设一次,月月适用)
+export const budgets = sqliteTable("budgets", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  categoryId: integer("category_id")
+    .notNull()
+    .unique()
+    .references(() => categories.id),
+  limitCents: integer("limit_cents").notNull(), // 月度限额,整数分
+});
+
 // 商户 → 分类 映射:用户修正一次后记住,越用越准
 export const merchantRules = sqliteTable("merchant_rules", {
   id: integer("id").primaryKey({ autoIncrement: true }),

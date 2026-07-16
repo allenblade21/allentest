@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { desc, like } from "drizzle-orm";
 import { db } from "@/db";
-import { accounts, categories, transactions } from "@/db/schema";
+import { accounts, budgets, categories, transactions } from "@/db/schema";
+import { budgetProgress, overBudget } from "@/lib/budget";
+import type { Cat, Tx } from "@/lib/analytics";
 import { formatCents } from "@/lib/money";
 import { monthOf, today } from "@/lib/date";
 import TransactionList from "@/components/TransactionList";
@@ -23,7 +25,7 @@ export default async function HomePage({
   const sp = await searchParams;
   const month = /^\d{4}-\d{2}$/.test(sp.month ?? "") ? sp.month! : monthOf(today());
 
-  const [rows, cats, accts] = await Promise.all([
+  const [rows, cats, accts, budgetRows] = await Promise.all([
     db
       .select()
       .from(transactions)
@@ -31,7 +33,10 @@ export default async function HomePage({
       .orderBy(desc(transactions.date), desc(transactions.id)),
     db.select().from(categories),
     db.select().from(accounts),
+    db.select().from(budgets),
   ]);
+  // 超支提醒:当月流水已按月过滤,直接用于预算执行计算
+  const overs = overBudget(budgetProgress(budgetRows, rows as Tx[], cats as Cat[], month));
 
   let expense = 0;
   let income = 0;
@@ -75,6 +80,21 @@ export default async function HomePage({
           </div>
         </div>
       </section>
+
+      {/* 预算超支提醒 */}
+      {overs.length > 0 && (
+        <Link
+          href={`/analysis?month=${month}`}
+          className="flex flex-col gap-1 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm dark:border-red-900 dark:bg-red-950"
+        >
+          {overs.slice(0, 3).map((b) => (
+            <span key={b.categoryId} className="flex items-center gap-2 text-red-700 dark:text-red-300">
+              ⚠️ {b.name} 已超预算 <b className="tabular-nums">{formatCents(b.spentCents - b.limitCents)}</b>
+            </span>
+          ))}
+          <span className="text-xs text-red-400">点击查看消费分析 ›</span>
+        </Link>
+      )}
 
       <TransactionList rows={rows} categories={cats} accounts={accts} />
     </div>

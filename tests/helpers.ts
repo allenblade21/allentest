@@ -3,7 +3,7 @@ import Database from "better-sqlite3";
 // 直接操作测试库,用于用例间清理数据(服务端开了 WAL,可并发访问)
 export function resetData() {
   const db = new Database("data/test.db");
-  db.exec("delete from transactions; delete from merchant_rules;");
+  db.exec("delete from transactions; delete from merchant_rules; delete from budgets;");
   db.close();
 }
 

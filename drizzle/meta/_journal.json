@@ -8,6 +8,13 @@
       "when": 1783853783106,
       "tag": "0000_lyrical_invaders",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1784187797548,
+      "tag": "0001_curly_khan",
+      "breakpoints": true
     }
   ]
 }

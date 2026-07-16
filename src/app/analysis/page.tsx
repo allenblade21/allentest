@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { db } from "@/db";
-import { categories, transactions } from "@/db/schema";
+import { budgets, categories, transactions } from "@/db/schema";
 import { categoryBreakdown, momCompare, monthlyTrend, shiftMonth, type Cat, type Tx } from "@/lib/analytics";
+import { budgetProgress } from "@/lib/budget";
 import { formatCents } from "@/lib/money";
 import { monthOf, today } from "@/lib/date";
 
@@ -16,13 +17,15 @@ export default async function AnalysisPage({
   const sp = await searchParams;
   const month = /^\d{4}-\d{2}$/.test(sp.month ?? "") ? sp.month! : monthOf(today());
 
-  const [txs, cats] = await Promise.all([
+  const [txs, cats, budgetRows] = await Promise.all([
     db.select().from(transactions),
     db.select().from(categories),
+    db.select().from(budgets),
   ]);
   const trend = monthlyTrend(txs as Tx[], month, 6);
   const breakdown = categoryBreakdown(txs as Tx[], cats as Cat[], month, "expense");
   const mom = momCompare(txs as Tx[], month);
+  const budgetList = budgetProgress(budgetRows, txs as Tx[], cats as Cat[], month);
   const [year, mon] = month.split("-");
 
   const maxTrend = Math.max(...trend.map((t) => t.expenseCents), 1);
@@ -71,6 +74,44 @@ export default async function AnalysisPage({
             );
           })}
         </svg>
+      </section>
+
+      {/* 分类预算执行 */}
+      <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-900">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-xs text-neutral-500">分类预算</p>
+          <Link href="/budget" className="text-xs text-emerald-700 dark:text-emerald-400">设置 ›</Link>
+        </div>
+        {budgetList.length === 0 ? (
+          <p className="text-sm text-neutral-500">
+            还没有设置预算。<Link href="/budget" className="text-emerald-700 dark:text-emerald-400">去设置预算</Link>,超支会在这里和首页提醒。
+          </p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {budgetList.map((b) => (
+              <div key={b.categoryId} className="flex flex-col gap-1">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-2">
+                    <span>{b.icon}</span>{b.name}
+                    {b.over && (
+                      <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700 dark:bg-red-950 dark:text-red-300">超支</span>
+                    )}
+                  </span>
+                  <span className="tabular-nums text-xs text-neutral-500">
+                    <b className={`text-sm ${b.over ? "text-red-600" : "text-neutral-900 dark:text-neutral-100"}`}>{formatCents(b.spentCents)}</b>
+                    {" / "}{formatCents(b.limitCents)}
+                  </span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+                  <div
+                    className={`h-full rounded-full ${b.over ? "bg-red-500" : b.pct >= 80 ? "bg-amber-500" : "bg-emerald-600 dark:bg-emerald-500"}`}
+                    style={{ width: `${Math.min(b.pct, 100)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 分类结构 */}
