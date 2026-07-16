@@ -15,6 +15,13 @@
       "when": 1784187797548,
       "tag": "0001_curly_khan",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784194717337,
+      "tag": "0002_wakeful_doctor_strange",
+      "breakpoints": true
     }
   ]
 }

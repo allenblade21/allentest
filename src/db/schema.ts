@@ -92,6 +92,16 @@ export const budgets = sqliteTable("budgets", {
   limitCents: integer("limit_cents").notNull(), // 月度限额,整数分
 });
 
+// 周期支出:订阅/房租等固定支出,到期提醒 +「记一笔并顺延」
+export const recurring = sqliteTable("recurring", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  amountCents: integer("amount_cents").notNull(),
+  categoryId: integer("category_id").references(() => categories.id),
+  cycle: text("cycle", { enum: ["monthly", "yearly"] }).notNull().default("monthly"),
+  nextDate: text("next_date").notNull(), // 下次支付日 YYYY-MM-DD
+});
+
 // 商户 → 分类 映射:用户修正一次后记住,越用越准
 export const merchantRules = sqliteTable("merchant_rules", {
   id: integer("id").primaryKey({ autoIncrement: true }),

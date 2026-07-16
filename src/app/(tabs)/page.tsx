@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { desc, like } from "drizzle-orm";
 import { db } from "@/db";
-import { accounts, budgets, categories, transactions } from "@/db/schema";
+import { accounts, budgets, categories, recurring, transactions } from "@/db/schema";
 import { budgetProgress, overBudget } from "@/lib/budget";
+import { dueSoon, dueStatus, type RecurringRow } from "@/lib/recurring";
 import type { Cat, Tx } from "@/lib/analytics";
 import { formatCents } from "@/lib/money";
 import { monthOf, today } from "@/lib/date";
@@ -25,7 +26,7 @@ export default async function HomePage({
   const sp = await searchParams;
   const month = /^\d{4}-\d{2}$/.test(sp.month ?? "") ? sp.month! : monthOf(today());
 
-  const [rows, cats, accts, budgetRows] = await Promise.all([
+  const [rows, cats, accts, budgetRows, recurringRows] = await Promise.all([
     db
       .select()
       .from(transactions)
@@ -34,9 +35,12 @@ export default async function HomePage({
     db.select().from(categories),
     db.select().from(accounts),
     db.select().from(budgets),
+    db.select().from(recurring),
   ]);
   // 超支提醒:当月流水已按月过滤,直接用于预算执行计算
   const overs = overBudget(budgetProgress(budgetRows, rows as Tx[], cats as Cat[], month));
+  // 周期支出到期提醒(与所选月份无关,始终按今天)
+  const dues = dueSoon(recurringRows as RecurringRow[], today());
 
   let expense = 0;
   let income = 0;
@@ -80,6 +84,22 @@ export default async function HomePage({
           </div>
         </div>
       </section>
+
+      {/* 周期支出到期提醒 */}
+      {dues.length > 0 && (
+        <Link
+          href="/recurring"
+          className="flex flex-col gap-1 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm dark:border-amber-900 dark:bg-amber-950"
+        >
+          {dues.slice(0, 3).map((r) => (
+            <span key={r.id} className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
+              📅 {r.name} <b className="tabular-nums">{formatCents(r.amountCents)}</b>
+              {dueStatus(r.nextDate, today()) === "overdue" ? `已到期(${r.nextDate})` : `${r.nextDate} 到期`}
+            </span>
+          ))}
+          <span className="text-xs text-amber-500">点击管理周期支出,可一键记账并顺延 ›</span>
+        </Link>
+      )}
 
       {/* 预算超支提醒 */}
       {overs.length > 0 && (

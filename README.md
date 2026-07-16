@@ -16,7 +16,8 @@
 | P1 | 基金记账:持仓截图 OCR、同名基金按代码归一、跨期涨跌幅表 + 走势图、投资总览、手动记/补录/删除 | ✅ |
 | P2 | 消费分析(环比 / 月度趋势 / 分类结构) | ✅ |
 | P3 | 预算体系(分类月度限额、执行进度、超支提醒) | ✅ |
-| P3 | 周期支出 / 异常检测 / 月度报告 / 净资产 / 备份([路线图](docs/路线图.md)) | ⬜ 规划中 |
+| P3 | 周期支出(订阅/房租登记、流水候选识别、记一笔顺延、到期提醒) | ✅ |
+| P3 | 异常检测 / 月度报告 / 净资产 / 备份([路线图](docs/路线图.md)) | ⬜ 规划中 |
 
 详细需求见 [`docs/需求文档.md`](docs/需求文档.md),界面线框见 [`docs/wireframes.html`](docs/wireframes.html)。
 
@@ -109,7 +110,7 @@ drizzle/               # 迁移 SQL 与元数据
 docs/                  # 需求文档 / 技术选型 / 测试用例 / 界面线框
 ```
 
-数据表:`transactions` `categories` `accounts` `funds` `fund_records` `ocr_import_batches` `merchant_rules`。
+数据表:`transactions` `categories` `accounts` `funds` `fund_records` `ocr_import_batches` `merchant_rules` `budgets` `recurring`。
 
 ## 文档索引
 
