@@ -101,10 +101,10 @@ src/
 │   ├── (tabs)/        # 带底部导航:流水首页 / funds / me
 │   ├── record/        # 记一笔(全屏)
 │   ├── import/        # OCR 批量导入
-│   └── api/           # transactions(含 batch/restore)/ ocr(含 confirm)/ funds
-├── components/        # BottomNav / RecordForm / ImportFlow / TransactionList
-├── db/                # schema(7 表)/ index / seed
-└── lib/               # ocr(多 provider)/ money / date / tx-validate
+│   └── api/           # transactions(含 batch/restore)/ ocr(含 confirm)/ funds / budgets / recurring(含 pay)
+├── components/        # BottomNav / RecordForm / ImportFlow / TransactionList / RecurringManager 等
+├── db/                # schema(9 表)/ index / seed
+└── lib/               # ocr(多 provider)/ fund / analytics / budget / recurring / money / date / 校验
 tests/                 # Playwright E2E + OCR provider 单测
 drizzle/               # 迁移 SQL 与元数据
 docs/                  # 需求文档 / 技术选型 / 测试用例 / 界面线框
