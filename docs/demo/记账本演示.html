@@ -187,7 +187,7 @@ function seed() {
 /* ============ 迷你路由与渲染 ============ */
 const V = document.getElementById("view"), NAV = document.getElementById("nav");
 let route = { name: "home", month: monthOf(today()) };
-function go(name, extra) { route = { ...route, name, ...(extra || {}) }; editId = null; recFormOpen = false; render(); window.scrollTo(0, 0); }
+function go(name, extra) { route = { ...route, name, ...(extra || {}) }; editId = null; recFormOpen = false; fundFormOpen = false; render(); window.scrollTo(0, 0); }
 function toast(t) {
   const el = document.getElementById("toast");
   el.textContent = t; el.classList.add("show");
@@ -405,21 +405,79 @@ function confirmOcr() {
   pending = null; save(); go("home", { month: monthOf(today()) }); toast(`已入账 ${sel.length} 条(OCR)`);
 }
 
-/* ============ 基金 ============ */
+/* ============ 基金:总览 + 手动记快照 + 详情(跨期表 + 逐条删除) ============ */
+let fundFormOpen = false;
+function toggleFundForm() { fundFormOpen = !fundFormOpen; render(); }
 function fundsView() {
   const total = S.funds.reduce((a, f) => a + f.records[f.records.length - 1][1], 0);
-  return `<div class="stack"><h1>基金</h1>
+  return `<div class="stack">
+    <div class="row"><h1>基金</h1>
+      <button class="btn btn-sm" style="margin-left:auto" onclick="toggleFundForm()">${fundFormOpen ? "收起" : "+ 手动记"}</button></div>
     <div class="card pad"><span class="muted">总市值</span>
       <div class="num" style="font-size:26px;font-weight:700">${fmt(total)}</div></div>
-    <div class="card list">${S.funds.map((f) => {
+    ${fundFormOpen ? `<div class="card pad stack" style="gap:10px">
+      <div class="row"><input id="fdCode" inputmode="numeric" placeholder="基金代码,如 161725" aria-label="基金代码" style="flex:1">
+        <input id="fdDate" type="date" value="${today()}" aria-label="快照日期" style="width:150px"></div>
+      <input id="fdName" placeholder="基金名称" aria-label="基金名称">
+      <input id="fdVal" inputmode="decimal" placeholder="当前市值(元)" aria-label="基金市值">
+      <p class="muted" style="margin:0">同代码归一到同一只基金;同日再记会覆盖当日快照(与真实应用一致)。</p>
+      <button class="btn" onclick="saveFund()">保存快照</button></div>` : ""}
+    <div class="card list">${S.funds.length ? S.funds.map((f) => {
       const rs = f.records, last = rs[rs.length - 1][1], prev = rs.length > 1 ? rs[rs.length - 2][1] : null;
       const pct = prev ? ((last - prev) / prev * 100) : null;
-      return `<div><span style="flex:1"><b style="font-size:14px">${esc(f.name)}</b>
-        <span class="muted" style="display:block">${f.code} · ${rs.length} 期快照</span></span>
+      return `<div onclick="go('fundDetail',{code:'${f.code}'})" style="cursor:pointer">
+        <span style="flex:1"><b style="font-size:14px">${esc(f.name)}</b>
+        <span class="muted" style="display:block">${f.code} · ${rs.length} 期快照 ›</span></span>
         <span style="text-align:right"><b class="num" style="display:block">${fmt(last)}</b>
         ${pct !== null ? `<span class="num" style="font-size:12px;color:${pct >= 0 ? "var(--red-ink)" : "var(--green-ink)"}">较上期 ${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%</span>` : ""}</span></div>`;
+    }).join("") : `<div class="muted">还没有基金,点右上「+ 手动记」录入第一笔快照</div>`}</div>
+    <p class="muted" style="margin:0">点基金进详情可看跨期涨跌与删除快照。真实应用还支持持仓截图 OCR 批量录入与市值走势图。</p></div>`;
+}
+function saveFund() {
+  const code = document.getElementById("fdCode").value.trim();
+  const name = document.getElementById("fdName").value.trim();
+  const cents = Math.round(Number(document.getElementById("fdVal").value) * 100);
+  const d = document.getElementById("fdDate").value;
+  if (!/^\d{6}$/.test(code)) return toast("基金代码应为 6 位数字");
+  if (!name) return toast("请填基金名称");
+  if (!(cents > 0)) return toast("请填市值");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return toast("请选日期");
+  let f = S.funds.find((x) => x.code === code);
+  if (!f) { f = { code, name, records: [] }; S.funds.push(f); }
+  else if (name) f.name = name;
+  const hit = f.records.find((r) => r[0] === d);
+  if (hit) { hit[1] = cents; toast("已覆盖当日快照"); }
+  else { f.records.push([d, cents]); f.records.sort((a, b) => a[0].localeCompare(b[0])); toast("已记录"); }
+  fundFormOpen = false; save(); render();
+}
+function fundDetailView() {
+  const f = S.funds.find((x) => x.code === route.code);
+  if (!f) { route.name = "funds"; return fundsView(); }
+  const first = f.records[0][1], last = f.records[f.records.length - 1][1];
+  const hold = f.records.length > 1 ? ((last - first) / first * 100).toFixed(2) : null;
+  return `<div class="stack">
+    <div class="row"><a class="link" onclick="go('funds')">‹</a>
+      <h1 style="font-size:17px">${esc(f.name)}</h1><span class="muted">${f.code}</span></div>
+    <div class="card pad"><span class="muted">最新市值</span>
+      <div class="num" style="font-size:24px;font-weight:700">${fmt(last)}</div>
+      ${hold !== null ? `<span class="muted">持有期累计(${f.records[0][0]} 起):
+        <b class="num" style="color:${+hold >= 0 ? "var(--red-ink)" : "var(--green-ink)"}">${+hold >= 0 ? "+" : ""}${hold}%</b></span>` : ""}</div>
+    <div class="card list">${f.records.slice().reverse().map(([d, v], ri, arr) => {
+      const prev = arr[ri + 1];
+      const pct = prev ? ((v - prev[1]) / prev[1] * 100) : null;
+      return `<div><span style="flex:1"><b class="num" style="font-size:14px">${fmt(v)}</b>
+        <span class="muted" style="display:block">${d}</span></span>
+        ${pct !== null ? `<span class="num" style="font-size:12px;color:${pct >= 0 ? "var(--red-ink)" : "var(--green-ink)"}">较上期 ${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%</span>` : `<span class="muted">首期</span>`}
+        <button class="btn btn-sm btn-ghost" onclick="delSnapshot('${f.code}','${d}')" aria-label="删除 ${d} 快照">✕</button></div>`;
     }).join("")}</div>
-    <p class="muted" style="margin:0">真实应用:持仓截图 OCR 批量录入、同名基金按代码归一(同日覆盖)、跨期涨跌幅表 + 市值走势图 + 持有期汇总。演示版仅展示总览。</p></div>`;
+    <p class="muted" style="margin:0">删除全部快照后该基金自动从列表移除。在基金页「+ 手动记」用同代码可补录新一期。</p></div>`;
+}
+function delSnapshot(code, d) {
+  if (!confirm(`删除 ${d} 这期快照?`)) return;
+  const f = S.funds.find((x) => x.code === code);
+  f.records = f.records.filter((r) => r[0] !== d);
+  if (!f.records.length) { S.funds = S.funds.filter((x) => x.code !== code); toast("快照已清空,基金已移除"); go("funds"); return; }
+  save(); render(); toast("已删除");
 }
 
 /* ============ 消费分析 ============ */
@@ -581,7 +639,8 @@ function resetDemo() {
 
 const VIEWS = {
   login: () => authView("login"), register: () => authView("register"),
-  home: homeView, record: recordView, import: importView, funds: fundsView,
+  home: homeView, record: recordView, import: importView,
+  funds: fundsView, fundDetail: fundDetailView,
   analysis: analysisView, budget: budgetView, recurring: recurringView, me: meView,
 };
 render();
