@@ -11,6 +11,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx src/db/seed.ts",
+    "backup": "node scripts/backup.mjs",
     "test": "next build && playwright test",
     "test:quick": "playwright test",
     "test:list": "playwright test --list",

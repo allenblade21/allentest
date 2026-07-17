@@ -46,3 +46,6 @@ next-env.d.ts
 # Playwright 测试产物
 /playwright-report/
 /test-results/
+
+# 本地备份快照(scripts/backup.mjs 输出)
+/backups/

@@ -28,6 +28,7 @@ src/
 ├── db/                # schema.ts(9 表)、index.ts(连接)、seed.ts
 └── lib/               # ocr(多 provider,交易+基金)、fund(计算)、fund-db(upsert)、analytics、budget、recurring(到期/顺延/候选识别)、money、date、tx-validate
 data/                  # SQLite 数据库与 OCR 原图(git 忽略)
+scripts/               # backup.mjs(在线备份)、macos-setup-server.sh(launchd 部署)
 tests/                 # Playwright E2E + OCR provider 单测
 docs/                  # 规范 + adr/ + memory/ + journal/ + STATUS
 ```

@@ -5,6 +5,7 @@
 ## [未发布]
 
 ### 新增
+- P4 部署套件(macOS 家用服务器,ADR 0011):npm run setup 一键环境搭建;scripts/macos-setup-server.sh(launchd 开机自启+崩溃拉起+每日 03:30 自动备份);npm run backup(SQLite 在线备份+OCR 原图,轮转保留 30 份);docs/部署.md 部署指南(Tailscale 内网访问、防休眠、恢复、升级)。
 - P3 周期支出:登记订阅/房租等固定支出(新表 recurring,ADR 0010);/recurring 管理页;流水候选识别(近 3 个自然月同名同金额)一键采纳;「记一笔」自动入账并顺延下一期;到期前 7 天/过期首页提醒卡;新增 TC-RC 测试组 5 例。
 - P3 预算体系:分类常设月度额度(新表 budgets,ADR 0009);/budget 设置页;分析页执行进度(≥80% 预警、超支标红);首页超支提醒卡;新增 TC-BG 测试组 5 例。
 - P3/P4 路线图(docs/路线图.md)。
