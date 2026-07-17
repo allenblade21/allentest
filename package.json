@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "setup": "npm install && npm run db:migrate && npm run db:seed && node -e \"const fs=require('fs');if(!fs.existsSync('.env.local')){fs.copyFileSync('.env.example','.env.local');console.log('已生成 .env.local:填 ARK_API_KEY 用真实 OCR,或设 OCR_MOCK=1 先体验')}else{console.log('.env.local 已存在,保持不动')}\" && echo 环境就绪,运行 npm run dev 启动",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -38,19 +38,19 @@
 前置:Node.js ≥ 20。
 
 ```bash
-# 1. 安装依赖
-npm install
+git clone https://github.com/allenblade21/allentest.git
+cd allentest
+npm run setup          # 一键:装依赖 + 建库建表 + 默认数据 + 生成 .env.local
+npm run dev            # 启动 → http://localhost:3000
+```
 
-# 2. 建库 + 写入默认分类与账户
-npm run db:migrate
-npm run db:seed
+`setup` 等价于手动执行以下四步(需要单独重跑某步时用):
 
-# 3. 配置环境变量(OCR 用)
-cp .env.example .env.local
-#   编辑 .env.local 填入 OCR 相关配置,见下方「OCR 配置」
-
-# 4. 启动
-npm run dev            # http://localhost:3000
+```bash
+npm install            # 1. 安装依赖
+npm run db:migrate     # 2. 建库建表(自动生成 data/app.db,无需装数据库软件)
+npm run db:seed        # 3. 写入默认分类与账户(重复执行安全)
+cp .env.example .env.local   # 4. 环境变量:编辑填 OCR 配置,见下方「OCR 配置」
 ```
 
 手机测试:与电脑连同一 WiFi,访问 `http://电脑IP:3000`。
@@ -88,6 +88,7 @@ npx tsx tests/ocr-provider.mjs        # OCR provider 单测(7 例,mock fetch)
 
 | 命令 | 作用 |
 |------|------|
+| `npm run setup` | 一键搭建:装依赖 + 建库 + 默认数据 + 生成 .env.local |
 | `npm run dev` / `build` / `start` | 开发 / 构建 / 生产启动 |
 | `npm run db:generate` | 由 schema 生成迁移 |
 | `npm run db:migrate` / `db:seed` | 执行迁移 / 写入默认数据 |
