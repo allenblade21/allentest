@@ -15,8 +15,9 @@
 4. **直接在 `main` 分支开发并推送**;合理默认自行决定,只在真正的方向性问题上才问用户。
 5. **API Key 只放服务端环境变量**,`.env.local` 已 gitignore,严禁写入代码或提交。
 6. **中文注释、中文 UI 文案;代码标识符用英文。**
-7. 数据表:`transactions` `categories` `accounts` `funds` `fund_records` `ocr_import_batches` `merchant_rules` `budgets` `recurring`;`fund_records` 上 `(fund_code, date)` 唯一,`budgets.categoryId` 唯一(常设月度额度,ADR 0009),`recurring` 存下次支付日并按周期顺延(ADR 0010)。
+7. 数据表:`transactions` `categories` `accounts` `funds` `fund_records` `ocr_import_batches` `merchant_rules` `budgets` `recurring` `users` `sessions`;`fund_records` 上 `(fund_code, date)` 唯一,`budgets.categoryId` 唯一(ADR 0009),`recurring` 存下次支付日按周期顺延(ADR 0010),认证为共享账本不按用户隔离(ADR 0012)。
 8. **Next.js 版本较新,有 breaking changes**——API/约定可能与训练数据不同,写代码前参考 `node_modules/next/dist/docs/`,留意弃用提示。
+9. **所有页面与 API 默认要求登录**(src/proxy.ts 中央守卫);新增公开路径必须显式加入 `lib/auth-shared.ts` 的 PUBLIC_PATHS。E2E 默认带固定测试会话(tests/test-session.ts),认证类用例需自行清空 storageState。
 
 ## 信息地图(去哪找什么)
 

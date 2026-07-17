@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { defineConfig } from "@playwright/test";
+import { TEST_SESSION_TOKEN } from "./tests/test-session";
 
 // 优先用 PW_CHROMIUM_PATH 指定的浏览器;云端环境有预装 Chromium 则直接复用;
 // 本机都没有时走 Playwright 默认查找(需 npx playwright install)
@@ -23,6 +24,22 @@ export default defineConfig({
     screenshot: "on", // 每个用例留存页面截图,报告里可查看
     trace: "retain-on-failure",
     launchOptions: { executablePath: chromiumPath },
+    // 默认带登录态(setup-db 写入的固定会话);认证用例用 test.use 清空后单测未登录路径
+    storageState: {
+      cookies: [
+        {
+          name: "ledger_session",
+          value: TEST_SESSION_TOKEN,
+          domain: "localhost",
+          path: "/",
+          expires: -1,
+          httpOnly: true,
+          secure: false,
+          sameSite: "Lax" as const,
+        },
+      ],
+      origins: [],
+    },
   },
   webServer: {
     command: "tsx tests/setup-db.ts && npm run start -- -p 3210",

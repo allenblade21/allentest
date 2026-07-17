@@ -17,6 +17,8 @@
 | P2 | 消费分析(环比 / 月度趋势 / 分类结构) | ✅ |
 | P3 | 预算体系(分类月度限额、执行进度、超支提醒) | ✅ |
 | P3 | 周期支出(订阅/房租登记、流水候选识别、记一笔顺延、到期提醒) | ✅ |
+| P4 | 登录 / 注册(访问保护,`ALLOW_REGISTER=0` 可关闭注册) | ✅ |
+| P4 | macOS 家用服务器部署(常驻自启 + 自动备份 + Tailscale) | ✅ |
 | P3 | 异常检测 / 月度报告 / 净资产 / 备份([路线图](docs/路线图.md)) | ⬜ 规划中 |
 
 详细需求见 [`docs/需求文档.md`](docs/需求文档.md),界面线框见 [`docs/wireframes.html`](docs/wireframes.html)。
@@ -104,16 +106,17 @@ src/
 │   ├── (tabs)/        # 带底部导航:流水首页 / funds / me
 │   ├── record/        # 记一笔(全屏)
 │   ├── import/        # OCR 批量导入
-│   └── api/           # transactions(含 batch/restore)/ ocr(含 confirm)/ funds / budgets / recurring(含 pay)
-├── components/        # BottomNav / RecordForm / ImportFlow / TransactionList / RecurringManager 等
-├── db/                # schema(9 表)/ index / seed
-└── lib/               # ocr(多 provider)/ fund / analytics / budget / recurring / money / date / 校验
+│   └── api/           # transactions(含 batch/restore)/ ocr(含 confirm)/ funds / budgets / recurring(含 pay)/ auth
+├── components/        # BottomNav / RecordForm / ImportFlow / TransactionList / RecurringManager / AuthForm 等
+├── db/                # schema(11 表)/ index / seed
+├── lib/               # ocr(多 provider)/ fund / analytics / budget / recurring / auth / money / date / 校验
+└── proxy.ts           # 中央访问守卫:未登录页面→/login、API→401
 tests/                 # Playwright E2E + OCR provider 单测
 drizzle/               # 迁移 SQL 与元数据
 docs/                  # 需求文档 / 技术选型 / 测试用例 / 界面线框
 ```
 
-数据表:`transactions` `categories` `accounts` `funds` `fund_records` `ocr_import_batches` `merchant_rules` `budgets` `recurring`。
+数据表:`transactions` `categories` `accounts` `funds` `fund_records` `ocr_import_batches` `merchant_rules` `budgets` `recurring` `users` `sessions`。
 
 ## 文档索引
 

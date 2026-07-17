@@ -110,3 +110,22 @@ export const merchantRules = sqliteTable("merchant_rules", {
     .notNull()
     .references(() => categories.id),
 });
+
+// 用户与会话:访问保护(登录/注册)。账本数据为共享账本(家庭场景),不按用户隔离——见 ADR 0012
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  username: text("username").notNull().unique(),
+  passwordHash: text("password_hash").notNull(), // scrypt,格式 salt:hash
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`(datetime('now'))`),
+});
+
+export const sessions = sqliteTable("sessions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  tokenHash: text("token_hash").notNull().unique(), // sha256(cookie 中的明文 token)
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  expiresAt: text("expires_at").notNull(), // ISO 时间
+});

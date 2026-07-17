@@ -25,8 +25,9 @@ src/
 │   ├── import/        # OCR 批量导入
 │   └── api/           # transactions(含 batch/restore/[id])/ ocr(含 confirm)/ funds
 ├── components/        # BottomNav / RecordForm / ImportFlow / TransactionList
-├── db/                # schema.ts(9 表)、index.ts(连接)、seed.ts
-└── lib/               # ocr(多 provider,交易+基金)、fund(计算)、fund-db(upsert)、analytics、budget、recurring(到期/顺延/候选识别)、money、date、tx-validate
+├── db/                # schema.ts(11 表)、index.ts(连接)、seed.ts
+├── lib/               # ocr(多 provider,交易+基金)、fund(计算)、fund-db(upsert)、analytics、budget、recurring(到期/顺延/候选识别)、auth(scrypt+会话)、money、date、tx-validate
+└── proxy.ts           # 中央访问守卫(Next 16 proxy,Node runtime 直查 SQLite)
 data/                  # SQLite 数据库与 OCR 原图(git 忽略)
 scripts/               # backup.mjs(在线备份)、macos-setup-server.sh(launchd 部署)
 tests/                 # Playwright E2E + OCR provider 单测

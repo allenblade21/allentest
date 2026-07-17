@@ -1,4 +1,8 @@
 import Link from "next/link";
+import { getSessionUser } from "@/lib/auth";
+import LogoutButton from "@/components/LogoutButton";
+
+export const dynamic = "force-dynamic";
 
 // ⑥ 我的/设置
 type Item = { label: string; hint?: string; href?: string };
@@ -29,10 +33,14 @@ const groups: { title: string; items: Item[] }[] = [
   },
 ];
 
-export default function MePage() {
+export default async function MePage() {
+  const user = await getSessionUser();
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-lg font-bold">我的</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-bold">我的</h1>
+        {user && <span className="text-sm text-neutral-500">👤 {user.username}</span>}
+      </div>
       {groups.map((g) => (
         <section key={g.title}>
           <p className="mb-2 px-1 text-xs text-neutral-500">{g.title}</p>
@@ -57,6 +65,7 @@ export default function MePage() {
           </div>
         </section>
       ))}
+      <LogoutButton />
     </div>
   );
 }
