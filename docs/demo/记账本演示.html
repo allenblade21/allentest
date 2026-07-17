@@ -1,0 +1,588 @@
+<title>记账本 · 交互演示版</title>
+<style>
+  :root {
+    --bg: #f4f5f2; --card: #ffffff; --ink: #22282c; --muted: #5c666d; --line: #e3e6e2;
+    --accent: #2f7a68; --accent-ink: #ffffff; --chip: #f0f1ee;
+    --amber-bg: #fef3c7; --amber-line: #f3ddaa; --amber-ink: #92400e;
+    --red-bg: #fdeeee; --red-line: #f2c7c7; --red-ink: #dc2626;
+    --green-ink: #2f7a68;
+    --shadow: 0 1px 3px rgba(30,40,38,.08), 0 6px 18px rgba(30,40,38,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #191d1c; --card: #222725; --ink: #e8ebe8; --muted: #9aa4a0; --line: #363d3a;
+      --accent: #57ab97; --accent-ink: #10201b; --chip: #2b312e;
+      --amber-bg: #453a12; --amber-line: #5c4d1a; --amber-ink: #fbd77e;
+      --red-bg: #3a1d1d; --red-line: #543030; --red-ink: #f08c8c;
+      --green-ink: #57ab97; --shadow: 0 1px 3px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f5f2; --card: #ffffff; --ink: #22282c; --muted: #5c666d; --line: #e3e6e2;
+    --accent: #2f7a68; --accent-ink: #ffffff; --chip: #f0f1ee;
+    --amber-bg: #fef3c7; --amber-line: #f3ddaa; --amber-ink: #92400e;
+    --red-bg: #fdeeee; --red-line: #f2c7c7; --red-ink: #dc2626;
+    --green-ink: #2f7a68;
+    --shadow: 0 1px 3px rgba(30,40,38,.08), 0 6px 18px rgba(30,40,38,.06);
+  }
+  :root[data-theme="dark"] {
+    --bg: #191d1c; --card: #222725; --ink: #e8ebe8; --muted: #9aa4a0; --line: #363d3a;
+    --accent: #57ab97; --accent-ink: #10201b; --chip: #2b312e;
+    --amber-bg: #453a12; --amber-line: #5c4d1a; --amber-ink: #fbd77e;
+    --red-bg: #3a1d1d; --red-line: #543030; --red-ink: #f08c8c;
+    --green-ink: #57ab97; --shadow: 0 1px 3px rgba(0,0,0,.4);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.55;
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
+    font-size: 15px; }
+  #phone { max-width: 430px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+  #banner { text-align: center; font-size: 11px; padding: 6px 12px; color: var(--muted); background: var(--chip); }
+  #view { flex: 1; padding: 16px 16px 92px; }
+  h1 { font-size: 19px; margin: 0; }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); }
+  .pad { padding: 16px; }
+  .muted { color: var(--muted); font-size: 12px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .btn { border: 0; border-radius: 12px; background: var(--accent); color: var(--accent-ink);
+    font: inherit; font-weight: 600; padding: 10px 14px; cursor: pointer; }
+  .btn:disabled { opacity: .5; }
+  .btn:focus-visible, .cat:focus-visible, #nav button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-ghost { background: var(--chip); color: var(--ink); }
+  .btn-sm { padding: 6px 10px; font-size: 13px; border-radius: 10px; }
+  input, select { font: inherit; color: var(--ink); background: transparent;
+    border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; outline: none; width: 100%; }
+  input:focus, select:focus { border-color: var(--accent); }
+  .list > * { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+  .list > * + * { border-top: 1px solid var(--line); }
+  .tag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; vertical-align: 1px; }
+  .tag-red { background: var(--red-bg); color: var(--red-ink); }
+  .tag-amber { background: var(--amber-bg); color: var(--amber-ink); }
+  .notice { display: block; border-radius: 16px; padding: 12px 14px; font-size: 13px; cursor: pointer; }
+  .notice-amber { background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber-ink); }
+  .notice-red { background: var(--red-bg); border: 1px solid var(--red-line); color: var(--red-ink); }
+  #nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px;
+    display: flex; background: var(--card); border-top: 1px solid var(--line); padding: 6px 8px 10px; }
+  #nav button { flex: 1; border: 0; background: none; font: inherit; font-size: 11px; color: var(--muted);
+    display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; padding: 4px 0; }
+  #nav button.on { color: var(--accent); font-weight: 600; }
+  #nav .ico { font-size: 20px; line-height: 1; }
+  #nav .fab span.ico { width: 44px; height: 44px; border-radius: 50%; background: var(--accent);
+    color: var(--accent-ink); display: grid; place-items: center; margin-top: -18px; font-size: 24px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .cat { border: 1px solid var(--line); border-radius: 12px; padding: 8px 2px; text-align: center;
+    font-size: 12px; cursor: pointer; background: none; color: var(--ink); font-family: inherit; }
+  .cat.on { border-color: var(--accent); background: var(--chip); font-weight: 600; }
+  .keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .keys button { font: inherit; font-size: 20px; font-weight: 600; padding: 12px 0; border: 0;
+    border-radius: 12px; background: var(--chip); color: var(--ink); cursor: pointer; }
+  .bar { height: 10px; border-radius: 5px; background: var(--chip); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); border-radius: 5px; }
+  .bar i.over { background: var(--red-ink); }
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .toast { position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--bg); font-size: 13px; padding: 8px 16px; border-radius: 20px;
+    opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 90%; }
+  .toast.show { opacity: .95; }
+  a.link { color: var(--accent); font-weight: 600; text-decoration: none; cursor: pointer; }
+  .center { text-align: center; }
+  .backdrop { position: fixed; inset: 0; background: rgba(10, 14, 12, .4); z-index: 10; }
+  .sheet { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px;
+    background: var(--card); border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+    z-index: 11; box-shadow: 0 -8px 30px rgba(10, 20, 16, .18); }
+  .sheet-grip { width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 0 auto 12px; }
+  .btn-danger { background: var(--red-bg); color: var(--red-ink); }
+  @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+
+<div id="phone">
+  <div id="banner">交互演示版 · 数据仅存于此浏览器 · 真实应用为 Next.js + SQLite 自托管</div>
+  <div id="view"></div>
+  <div id="nav" hidden></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+/* ============ 数据与工具(金额一律整数「分」,与真实应用一致) ============ */
+const KEY = "ledger-demo-v2";
+const CATS = [
+  { id: 1, name: "餐饮", icon: "🍚" }, { id: 2, name: "交通", icon: "🚇" },
+  { id: 3, name: "购物", icon: "🛍️" }, { id: 4, name: "居住", icon: "🏠" },
+  { id: 5, name: "娱乐", icon: "🎬" }, { id: 6, name: "医疗", icon: "💊" },
+  { id: 7, name: "人情", icon: "🎁" }, { id: 8, name: "其他", icon: "📦" },
+];
+const cat = (id) => CATS.find((c) => c.id === id) ?? CATS[7];
+const pad = (n) => String(n).padStart(2, "0");
+const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const today = () => iso(new Date());
+const monthOf = (s) => s.slice(0, 7);
+const fmt = (c, sign) => (c < 0 ? "-" : sign ? "+" : "") + "¥" + (Math.abs(c) / 100).toFixed(2);
+function shiftMonth(m, delta) {
+  const [y, mo] = m.split("-").map(Number);
+  const d = new Date(y, mo - 1 + delta, 1);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+}
+function daysFromNow(n) { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); }
+const dayShift = (m, day) => `${m}-${pad(day)}`;
+// 顺延一个周期,月末安全(1-31 → 2-28)
+function advanceDate(date, cycle) {
+  const [y, m, d] = date.split("-").map(Number);
+  const ty = cycle === "yearly" ? y + 1 : y, tm = cycle === "yearly" ? m : m + 1;
+  const last = new Date(ty, tm, 0).getDate();
+  return iso(new Date(ty, tm - 1, Math.min(d, last)));
+}
+function dueStatus(nextDate, t) {
+  if (nextDate < t) return "overdue";
+  const diff = (new Date(nextDate + "T00:00:00") - new Date(t + "T00:00:00")) / 864e5;
+  return diff <= 7 ? "upcoming" : "later";
+}
+
+let S = load();
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.txs) return s; } catch {}
+  return seed();
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+function seed() {
+  const m0 = monthOf(today()), m1 = shiftMonth(m0, -1), m2 = shiftMonth(m0, -2);
+  let id = 1;
+  const tx = (type, amountCents, catId, date, note, source = "manual") =>
+    ({ id: id++, type, amountCents, catId, date, note, source });
+  const monthly = (m) => [
+    tx("expense", 19900, 5, dayShift(m, 8), "健身房"),
+    tx("expense", 2500, 5, dayShift(m, 5), "视频会员"),
+    tx("expense", 3550, 1, dayShift(m, 12), "午饭"),
+    tx("expense", 8800, 1, dayShift(m, 15), "周末聚餐"),
+    tx("expense", 1200, 2, dayShift(m, 15), "地铁"),
+    tx("expense", 26900, 3, dayShift(m, 18), "球鞋", "ocr"),
+    tx("income", 1200000, 8, dayShift(m, 10), "工资"),
+  ];
+  return {
+    user: null, users: [],
+    txs: [...monthly(m2), ...monthly(m1),
+      tx("expense", 19900, 5, dayShift(m0, 3), "健身房"),
+      tx("expense", 2500, 5, dayShift(m0, 2), "视频会员"),
+      tx("expense", 4180, 1, dayShift(m0, 6), "早餐+咖啡"),
+      tx("expense", 15600, 1, dayShift(m0, 9), "火锅", "ocr"),
+      tx("expense", 890, 2, dayShift(m0, 9), "公交"),
+      tx("expense", 12800, 1, dayShift(m0, 13), "日料"),
+      tx("income", 1200000, 8, dayShift(m0, 10), "工资"),
+    ],
+    budgets: { 1: 30000, 3: 50000 }, // 餐饮 300 / 购物 500 —— 餐饮会自然超支,演示提醒链路
+    recurring: [
+      { id: 1, name: "房租", amountCents: 300000, catId: 4, cycle: "monthly", nextDate: daysFromNow(-2) },
+      { id: 2, name: "视频会员", amountCents: 2500, catId: 5, cycle: "monthly", nextDate: daysFromNow(3) },
+      { id: 3, name: "云存储年费", amountCents: 6800, catId: 8, cycle: "yearly", nextDate: daysFromNow(45) },
+    ],
+    funds: [
+      { code: "005827", name: "易方达蓝筹精选", records: [[dayShift(m1, 15), 2012000], [dayShift(m0, 10), 2158000]] },
+      { code: "110011", name: "易方达中小盘", records: [[dayShift(m1, 15), 1500000], [dayShift(m0, 10), 1463000]] },
+    ],
+    nextId: id, nextRec: 4,
+  };
+}
+
+/* ============ 迷你路由与渲染 ============ */
+const V = document.getElementById("view"), NAV = document.getElementById("nav");
+let route = { name: "home", month: monthOf(today()) };
+function go(name, extra) { route = { ...route, name, ...(extra || {}) }; editId = null; recFormOpen = false; render(); window.scrollTo(0, 0); }
+function toast(t) {
+  const el = document.getElementById("toast");
+  el.textContent = t; el.classList.add("show");
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 1800);
+}
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+function render() {
+  if (!S.user && !["login", "register"].includes(route.name)) route.name = "login";
+  NAV.hidden = !S.user || !["home", "funds", "me"].includes(route.name);
+  if (!NAV.hidden) {
+    NAV.innerHTML = [
+      `<button class="${route.name === "home" ? "on" : ""}" onclick="go('home')"><span class="ico">📒</span>流水</button>`,
+      `<button class="fab" onclick="go('record')"><span class="ico">＋</span>记一笔</button>`,
+      `<button class="${route.name === "funds" ? "on" : ""}" onclick="go('funds')"><span class="ico">📈</span>基金</button>`,
+      `<button class="${route.name === "me" ? "on" : ""}" onclick="go('me')"><span class="ico">👤</span>我的</button>`,
+    ].join("");
+  }
+  V.innerHTML = VIEWS[route.name]();
+}
+
+/* ============ 登录 / 注册(演示:账号只存浏览器本地;真实应用为服务端会话) ============ */
+function authView(mode) {
+  const isLogin = mode === "login";
+  return `<div class="stack" style="justify-content:center;min-height:78vh">
+    <div class="center"><div style="font-size:40px">📒</div><h1>记账本</h1>
+      <p class="muted">${isLogin ? "登录后继续记账" : "创建你的演示账号"}</p></div>
+    <div class="card pad stack" style="gap:10px">
+      <input id="au" placeholder="用户名" autocomplete="username" aria-label="用户名">
+      <input id="ap" type="password" placeholder="密码(至少 6 位)" aria-label="密码"
+        autocomplete="${isLogin ? "current" : "new"}-password" onkeydown="if(event.key==='Enter')authSubmit('${mode}')">
+      <p class="muted" id="amsg" style="color:var(--red-ink);margin:0"></p>
+      <button class="btn" onclick="authSubmit('${mode}')">${isLogin ? "登录" : "注册"}</button>
+    </div>
+    <p class="center muted">${isLogin
+      ? `还没有账号?<a class="link" onclick="go('register')">去注册</a>`
+      : `已有账号?<a class="link" onclick="go('login')">去登录</a>`}</p>
+    <p class="center muted">演示版账号仅存于本浏览器;真实应用为服务端加密会话,<br>并可用 ALLOW_REGISTER=0 关闭注册</p>
+  </div>`;
+}
+function authSubmit(mode) {
+  const u = document.getElementById("au").value.trim(), p = document.getElementById("ap").value;
+  const msg = document.getElementById("amsg");
+  if (u.length < 2) return (msg.textContent = "用户名至少 2 位");
+  if (p.length < 6) return (msg.textContent = "密码至少 6 位");
+  if (mode === "register") {
+    if (S.users.some((x) => x.name === u)) return (msg.textContent = "用户名已存在");
+    S.users.push({ name: u, pass: p }); S.user = { name: u }; save(); go("home"); toast("注册成功,已自动登录");
+  } else {
+    if (!S.users.find((x) => x.name === u && x.pass === p)) return (msg.textContent = "用户名或密码错误");
+    S.user = { name: u }; save(); go("home");
+  }
+}
+function logout() { S.user = null; save(); go("login"); }
+
+/* ============ 首页:汇总 + 到期/超支提醒卡 + 按日流水 ============ */
+function budgetCalc(month) {
+  return Object.entries(S.budgets).map(([cid, limit]) => {
+    const spent = S.txs.filter((t) => t.type === "expense" && t.catId == cid && monthOf(t.date) === month)
+      .reduce((a, t) => a + t.amountCents, 0);
+    return { cid: +cid, limit, spent };
+  }).filter((b) => b.limit > 0);
+}
+function homeView() {
+  const m = route.month;
+  const rows = S.txs.filter((t) => monthOf(t.date) === m).sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+  let exp = 0, inc = 0;
+  rows.forEach((t) => (t.type === "expense" ? (exp += t.amountCents) : (inc += t.amountCents)));
+  const overs = budgetCalc(m).filter((b) => b.spent > b.limit);
+  const dues = S.recurring.filter((r) => dueStatus(r.nextDate, today()) !== "later")
+    .sort((a, b) => a.nextDate.localeCompare(b.nextDate));
+  const days = [...new Set(rows.map((t) => t.date))];
+  const [y, mo] = m.split("-");
+  return `<div class="stack">
+    <div class="row"><h1><a class="link" onclick="go('home',{month:'${shiftMonth(m, -1)}'})">‹</a>
+      ${y}年${+mo}月 <a class="link" onclick="go('home',{month:'${shiftMonth(m, 1)}'})">›</a></h1>
+      <button class="btn btn-sm" style="margin-left:auto" onclick="go('import')">⤓ 导入</button></div>
+    <div class="card pad"><p class="muted" style="margin:0">本月结余</p>
+      <p class="num" style="font-size:26px;font-weight:700;margin:4px 0 10px">${fmt(inc - exp, true)}</p>
+      <div class="row">
+        <div style="flex:1;background:var(--chip);border-radius:12px;padding:10px 12px">
+          <span class="muted">支出</span><br><b class="num">${fmt(exp)}</b></div>
+        <div style="flex:1;background:var(--chip);border-radius:12px;padding:10px 12px">
+          <span class="muted">收入</span><br><b class="num">${fmt(inc)}</b></div></div></div>
+    ${dues.length ? `<a class="notice notice-amber" onclick="go('recurring')">
+      ${dues.slice(0, 3).map((r) => `📅 ${esc(r.name)} <b class="num">${fmt(r.amountCents)}</b> ${
+        dueStatus(r.nextDate, today()) === "overdue" ? `已到期(${r.nextDate})` : `${r.nextDate} 到期`}`).join("<br>")}
+      <br><span style="font-size:11px;opacity:.75">点击管理周期支出,可一键记账并顺延 ›</span></a>` : ""}
+    ${overs.length ? `<a class="notice notice-red" onclick="go('analysis')">
+      ${overs.slice(0, 3).map((b) => `⚠️ ${cat(b.cid).name} 已超预算 <b class="num">${fmt(b.spent - b.limit)}</b>`).join("<br>")}
+      <br><span style="font-size:11px;opacity:.75">点击查看消费分析 ›</span></a>` : ""}
+    ${days.length === 0 ? `<div class="card pad muted center">本月还没有账目,点下方「＋」记一笔</div>` :
+      days.map((d) => {
+        const dayRows = rows.filter((t) => t.date === d);
+        const dayExp = dayRows.filter((t) => t.type === "expense").reduce((a, t) => a + t.amountCents, 0);
+        return `<div><div class="row" style="padding:0 4px 6px"><span class="muted">${d.slice(5)}</span>
+          <span class="muted num" style="margin-left:auto">支出 ${fmt(dayExp)}</span></div>
+        <div class="card list">${dayRows.map((t) => `<div onclick="editTx(${t.id})" style="cursor:pointer">
+          <span style="font-size:20px">${cat(t.catId).icon}</span>
+          <span style="flex:1;min-width:0"><b style="font-size:14px">${esc(t.note || cat(t.catId).name)}</b>
+            <span class="muted" style="display:block">${cat(t.catId).name}${t.source === "ocr" ? " · OCR" : ""}</span></span>
+          <b class="num" style="color:${t.type === "income" ? "var(--green-ink)" : "var(--ink)"}">
+            ${t.type === "income" ? "+" : "-"}${fmt(t.amountCents)}</b></div>`).join("")}</div></div>`;
+      }).join("")}
+    ${editId !== null ? editSheet() : ""}
+  </div>`;
+}
+
+/* 编辑面板:底部弹层,金额/分类可改,带独立删除键 */
+let editId = null;
+function editTx(id) { editId = id; render(); }
+function closeEdit() { editId = null; render(); }
+function editSheet() {
+  const t = S.txs.find((x) => x.id === editId);
+  if (!t) { editId = null; return ""; }
+  return `<div class="backdrop" onclick="closeEdit()"></div>
+  <div class="sheet stack" style="gap:12px" role="dialog" aria-label="编辑账目">
+    <div class="sheet-grip"></div>
+    <div class="row"><span style="font-size:24px">${cat(t.catId).icon}</span>
+      <span style="flex:1"><b>${esc(t.note || cat(t.catId).name)}</b>
+        <span class="muted" style="display:block">${t.date}${t.source === "ocr" ? " · OCR 导入" : ""}</span></span></div>
+    <label class="muted">金额(元)
+      <input id="editAmt" inputmode="decimal" value="${(t.amountCents / 100).toFixed(2)}" style="margin-top:4px"></label>
+    <label class="muted">分类
+      <select id="editCat" style="margin-top:4px">${CATS.map((c) =>
+        `<option value="${c.id}" ${c.id === t.catId ? "selected" : ""}>${c.icon} ${c.name}</option>`).join("")}</select></label>
+    <div class="row" style="gap:10px">
+      <button class="btn btn-danger" style="flex:1" onclick="deleteTx()">🗑 删除</button>
+      <button class="btn" style="flex:2" onclick="saveEdit()">保存修改</button>
+    </div>
+  </div>`;
+}
+function saveEdit() {
+  const t = S.txs.find((x) => x.id === editId);
+  const c = Math.round(Number(document.getElementById("editAmt").value) * 100);
+  if (!(c > 0)) return toast("金额无效");
+  t.amountCents = c; t.catId = +document.getElementById("editCat").value;
+  editId = null; save(); render(); toast("已修改");
+}
+function deleteTx() {
+  if (!confirm("确定删除这笔记录?")) return;
+  S.txs = S.txs.filter((x) => x.id !== editId);
+  editId = null; save(); render(); toast("已删除");
+}
+
+/* ============ 记一笔:键盘 + 分类宫格 ============ */
+let rec = { type: "expense", cents: 0, catId: 1 };
+function recordView() {
+  rec = { type: "expense", cents: 0, catId: 1 };
+  return `<div class="stack">
+    <div class="row"><a class="link" onclick="go('home')">‹</a><h1>记一笔</h1>
+      <div class="row" style="margin-left:auto;gap:4px">
+        <button class="btn btn-sm" id="tE" onclick="recType('expense')">支出</button>
+        <button class="btn btn-sm btn-ghost" id="tI" onclick="recType('income')">收入</button></div></div>
+    <div class="card pad center"><span class="muted">金额</span>
+      <div class="num" id="amt" style="font-size:32px;font-weight:700">¥0.00</div></div>
+    <div class="grid" id="cats">${CATS.map((c) =>
+      `<button class="cat ${c.id === 1 ? "on" : ""}" data-c="${c.id}" onclick="recCat(${c.id})">${c.icon}<br>${c.name}</button>`).join("")}</div>
+    <input id="note" placeholder="备注(可选)" aria-label="备注">
+    <div class="keys">${[1,2,3,4,5,6,7,8,9].map((n) => `<button onclick="key(${n})">${n}</button>`).join("")}
+      <button onclick="key('c')">C</button><button onclick="key(0)">0</button><button onclick="key('b')">⌫</button></div>
+    <button class="btn" onclick="saveRec()">保存</button></div>`;
+}
+function recType(t) { rec.type = t;
+  document.getElementById("tE").className = "btn btn-sm" + (t === "expense" ? "" : " btn-ghost");
+  document.getElementById("tI").className = "btn btn-sm" + (t === "income" ? "" : " btn-ghost"); }
+function recCat(id) { rec.catId = id;
+  document.querySelectorAll("#cats .cat").forEach((b) => b.classList.toggle("on", +b.dataset.c === id)); }
+function key(k) {
+  if (k === "c") rec.cents = 0;
+  else if (k === "b") rec.cents = Math.floor(rec.cents / 10);
+  else if (rec.cents < 1e9) rec.cents = rec.cents * 10 + k;
+  document.getElementById("amt").textContent = fmt(rec.cents);
+}
+function saveRec() {
+  if (rec.cents <= 0) return toast("请输入金额");
+  S.txs.push({ id: S.nextId++, type: rec.type, amountCents: rec.cents, catId: rec.catId,
+    date: today(), note: document.getElementById("note").value.trim(), source: "manual" });
+  save(); go("home", { month: monthOf(today()) }); toast("已入账");
+}
+
+/* ============ OCR 导入(模拟识别 → 待确认清单 → 入账) ============ */
+let pending = null;
+function importView() {
+  return `<div class="stack">
+    <div class="row"><a class="link" onclick="go('home')">‹</a><h1>OCR 批量导入</h1></div>
+    <p class="muted" style="margin:0">演示版使用模拟识别。真实应用:上传账单截图(可多张)→ 视觉大模型识别 → 待确认清单(自动查重、模糊项标疑)→ 勾选入账,并学习商户→分类映射。</p>
+    ${!pending ? `<div class="card pad center stack">
+      <div style="font-size:36px">🧾</div><p class="muted" style="margin:0">模拟一张「支付账单」截图</p>
+      <button class="btn" onclick="mockOcr()">识别(模拟)</button></div>`
+    : `<p class="muted" style="margin:0">识别到 ${pending.length} 条,存疑项已标黄且默认不勾选:</p>
+      <div class="card list">${pending.map((p, i) => `<label style="cursor:pointer">
+        <input type="checkbox" ${p.checked ? "checked" : ""} onchange="pending[${i}].checked=this.checked" style="width:18px">
+        <span style="flex:1"><b style="font-size:14px">${esc(p.note)}</b>
+          <span class="muted" style="display:block">${cat(p.catId).name} · ${p.date}
+          ${p.doubt ? ' <span class="tag tag-amber">存疑</span>' : ""}</span></span>
+        <b class="num">-${fmt(p.amountCents)}</b></label>`).join("")}</div>
+      <button class="btn" onclick="confirmOcr()">入账已勾选</button>`}
+  </div>`;
+}
+function mockOcr() {
+  const m = monthOf(today());
+  pending = [
+    { note: "瑞幸咖啡", amountCents: 1590, catId: 1, date: dayShift(m, 14), checked: true },
+    { note: "滴滴出行", amountCents: 2340, catId: 2, date: dayShift(m, 14), checked: true },
+    { note: "山姆会员店", amountCents: 45620, catId: 3, date: dayShift(m, 13), checked: true },
+    { note: "美团(金额不清晰)", amountCents: 9900, catId: 1, date: dayShift(m, 13), checked: false, doubt: true },
+  ];
+  render();
+}
+function confirmOcr() {
+  const sel = pending.filter((p) => p.checked);
+  sel.forEach((p) => S.txs.push({ id: S.nextId++, type: "expense", amountCents: p.amountCents,
+    catId: p.catId, date: p.date, note: p.note, source: "ocr" }));
+  pending = null; save(); go("home", { month: monthOf(today()) }); toast(`已入账 ${sel.length} 条(OCR)`);
+}
+
+/* ============ 基金 ============ */
+function fundsView() {
+  const total = S.funds.reduce((a, f) => a + f.records[f.records.length - 1][1], 0);
+  return `<div class="stack"><h1>基金</h1>
+    <div class="card pad"><span class="muted">总市值</span>
+      <div class="num" style="font-size:26px;font-weight:700">${fmt(total)}</div></div>
+    <div class="card list">${S.funds.map((f) => {
+      const rs = f.records, last = rs[rs.length - 1][1], prev = rs.length > 1 ? rs[rs.length - 2][1] : null;
+      const pct = prev ? ((last - prev) / prev * 100) : null;
+      return `<div><span style="flex:1"><b style="font-size:14px">${esc(f.name)}</b>
+        <span class="muted" style="display:block">${f.code} · ${rs.length} 期快照</span></span>
+        <span style="text-align:right"><b class="num" style="display:block">${fmt(last)}</b>
+        ${pct !== null ? `<span class="num" style="font-size:12px;color:${pct >= 0 ? "var(--red-ink)" : "var(--green-ink)"}">较上期 ${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%</span>` : ""}</span></div>`;
+    }).join("")}</div>
+    <p class="muted" style="margin:0">真实应用:持仓截图 OCR 批量录入、同名基金按代码归一(同日覆盖)、跨期涨跌幅表 + 市值走势图 + 持有期汇总。演示版仅展示总览。</p></div>`;
+}
+
+/* ============ 消费分析 ============ */
+function analysisView() {
+  const m0 = monthOf(today()), months = Array.from({ length: 6 }, (_, i) => shiftMonth(m0, i - 5));
+  const expOf = (m) => S.txs.filter((t) => t.type === "expense" && monthOf(t.date) === m).reduce((a, t) => a + t.amountCents, 0);
+  const cur = expOf(m0), prev = expOf(shiftMonth(m0, -1));
+  const mom = prev ? ((cur - prev) / prev * 100).toFixed(1) : null;
+  const max = Math.max(...months.map(expOf), 1);
+  const byCat = CATS.map((c) => ({ c, v: S.txs.filter((t) => t.type === "expense" && t.catId === c.id && monthOf(t.date) === m0)
+    .reduce((a, t) => a + t.amountCents, 0) })).filter((x) => x.v > 0).sort((a, b) => b.v - a.v);
+  const catMax = Math.max(...byCat.map((x) => x.v), 1);
+  const budgets = budgetCalc(m0);
+  return `<div class="stack">
+    <div class="row"><a class="link" onclick="go('me')">‹</a><h1>消费分析</h1></div>
+    <div class="card pad"><span class="muted">本月支出</span>
+      <div class="num" style="font-size:24px;font-weight:700">${fmt(cur)}</div>
+      ${mom !== null ? `<span class="muted">环比上月(${fmt(prev)}):
+        <b style="color:${+mom > 0 ? "var(--red-ink)" : "var(--green-ink)"}">${+mom > 0 ? "+" : ""}${mom}%</b></span>` : ""}</div>
+    <div class="card pad"><p class="muted" style="margin:0 0 10px">近 6 月支出趋势</p>
+      <div class="row" style="align-items:flex-end;height:110px;gap:6px">${months.map((m) => {
+        const v = expOf(m);
+        return `<div style="flex:1;text-align:center"><div style="background:${m === m0 ? "var(--accent)" : "var(--chip)"};
+          border-radius:6px 6px 0 0;height:${Math.max(4, (v / max) * 90)}px"></div>
+          <span class="muted" style="font-size:10px">${+m.slice(5)}月</span></div>`;
+      }).join("")}</div></div>
+    <div class="card pad stack" style="gap:10px"><p class="muted" style="margin:0">当月分类结构</p>
+      ${byCat.length ? byCat.map((x) => `<div><div class="row" style="font-size:13px">
+        <span>${x.c.icon} ${x.c.name}</span><b class="num" style="margin-left:auto">${fmt(x.v)}
+        <span class="muted">${(x.v / cur * 100).toFixed(0)}%</span></b></div>
+        <div class="bar"><i style="width:${(x.v / catMax) * 100}%"></i></div></div>`).join("")
+      : `<span class="muted">本月暂无支出</span>`}</div>
+    <div class="card pad stack" style="gap:10px"><div class="row"><p class="muted" style="margin:0">分类预算</p>
+      <a class="link" style="margin-left:auto;font-size:13px" onclick="go('budget')">去设置 ›</a></div>
+      ${budgets.length ? budgets.map((b) => { const over = b.spent > b.limit, pct = Math.min(100, b.spent / b.limit * 100);
+        return `<div><div class="row" style="font-size:13px"><span>${cat(b.cid).icon} ${cat(b.cid).name}
+          ${over ? ' <span class="tag tag-red">超支</span>' : ""}</span>
+          <span class="num muted" style="margin-left:auto">${fmt(b.spent)} / ${fmt(b.limit)}</span></div>
+          <div class="bar"><i class="${over ? "over" : ""}" style="width:${pct}%"></i></div></div>`; }).join("")
+      : `<span class="muted">还没设预算</span>`}</div></div>`;
+}
+
+/* ============ 预算设置 ============ */
+function budgetView() {
+  return `<div class="stack">
+    <div class="row"><a class="link" onclick="go('me')">‹</a><h1>预算设置</h1></div>
+    <p class="muted" style="margin:0">按分类设常设月度限额(设一次每月生效);清空即取消该分类预算。超过 80% 预警,超支后首页出现提醒卡。</p>
+    <div class="card list">${CATS.map((c) => `<div><span style="flex:1">${c.icon} ${c.name}</span>
+      <input id="bg${c.id}" inputmode="decimal" placeholder="不限" aria-label="${c.name}预算"
+        value="${S.budgets[c.id] ? S.budgets[c.id] / 100 : ""}" style="width:110px;text-align:right">
+      <span class="muted">元/月</span></div>`).join("")}</div>
+    <button class="btn" onclick="saveBudget()">保存</button></div>`;
+}
+function saveBudget() {
+  CATS.forEach((c) => { const v = document.getElementById("bg" + c.id).value.trim();
+    const cents = Math.round(Number(v) * 100);
+    if (v && cents > 0) S.budgets[c.id] = cents; else delete S.budgets[c.id]; });
+  save(); toast("已保存"); go("analysis");
+}
+
+/* ============ 周期支出 ============ */
+function detectCandidates() {
+  const m0 = monthOf(today()), months = [m0, shiftMonth(m0, -1), shiftMonth(m0, -2)];
+  const g = new Map();
+  S.txs.filter((t) => t.type === "expense" && t.note && months.includes(monthOf(t.date))).forEach((t) => {
+    const k = t.note + "|" + t.amountCents;
+    const e = g.get(k) ?? { seen: new Set(), last: t };
+    e.seen.add(monthOf(t.date)); if (t.date > e.last.date) e.last = t; g.set(k, e);
+  });
+  const names = new Set(S.recurring.map((r) => r.name));
+  return [...g.values()].filter((e) => e.seen.size >= 3 && !names.has(e.last.note))
+    .map((e) => e.last).sort((a, b) => b.amountCents - a.amountCents);
+}
+let recFormOpen = false;
+function toggleRecForm() { recFormOpen = !recFormOpen; render(); }
+function recurringView() {
+  const t = today(), cands = detectCandidates();
+  return `<div class="stack">
+    <div class="row"><a class="link" onclick="go('me')">‹</a><h1>周期支出</h1>
+      <button class="btn btn-sm" style="margin-left:auto" onclick="toggleRecForm()">${recFormOpen ? "收起" : "+ 新增"}</button></div>
+    <p class="muted" style="margin:0">登记订阅、房租等固定支出;到期前 7 天在首页提醒,「记一笔」自动入账并顺延到下一期。</p>
+    ${recFormOpen ? `<div class="card pad stack" style="gap:10px">
+      <input id="rcName" placeholder="名称,如 房租 / 视频会员" aria-label="周期支出名称">
+      <div class="row"><input id="rcAmt" inputmode="decimal" placeholder="金额(元)" aria-label="周期支出金额" style="flex:1">
+        <select id="rcCycle" aria-label="周期" style="width:96px"><option value="monthly">每月</option><option value="yearly">每年</option></select></div>
+      <div class="row"><select id="rcCat" aria-label="分类" style="flex:1">${CATS.map((c) =>
+        `<option value="${c.id}">${c.icon} ${c.name}</option>`).join("")}</select>
+        <input id="rcDate" type="date" value="${daysFromNow(30)}" aria-label="下次日期" style="width:150px"></div>
+      <button class="btn" onclick="saveRecurring()">保存</button></div>` : ""}
+    <div class="card list">${S.recurring.length ? S.recurring
+      .slice().sort((a, b) => a.nextDate.localeCompare(b.nextDate)).map((r) => {
+        const st = dueStatus(r.nextDate, t);
+        return `<div><span style="flex:1;min-width:0"><b style="font-size:14px">${esc(r.name)}
+          ${st === "overdue" ? ' <span class="tag tag-red">已到期</span>' : st === "upcoming" ? ' <span class="tag tag-amber">即将到期</span>' : ""}</b>
+          <span class="muted num" style="display:block">${fmt(r.amountCents)} · ${r.cycle === "yearly" ? "每年" : "每月"} · 下次 ${r.nextDate}</span></span>
+          <button class="btn btn-sm" onclick="payRecurring(${r.id})">记一笔</button>
+          <button class="btn btn-sm btn-ghost" onclick="delRecurring(${r.id})">✕</button></div>`;
+      }).join("") : `<div class="muted">还没有登记周期支出</div>`}</div>
+    ${cands.length ? `<p class="muted" style="margin:0">从流水中发现的疑似周期支出(近 3 个月每月出现、同名同金额):</p>
+      <div class="card list">${cands.map((c, i) => `<div><span style="flex:1"><b style="font-size:14px">${esc(c.note)}</b>
+        <span class="muted num" style="display:block">${fmt(c.amountCents)}/月 · 上次 ${c.date}</span></span>
+        <button class="btn btn-sm btn-ghost" onclick="adoptCandidate(${c.id})">+ 添加</button></div>`).join("")}</div>` : ""}
+  </div>`;
+}
+function saveRecurring() {
+  const name = document.getElementById("rcName").value.trim();
+  const cents = Math.round(Number(document.getElementById("rcAmt").value) * 100);
+  const d = document.getElementById("rcDate").value;
+  if (!name) return toast("请填名称");
+  if (!(cents > 0)) return toast("请填金额");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return toast("请选下次日期");
+  S.recurring.push({ id: S.nextRec++, name, amountCents: cents,
+    catId: +document.getElementById("rcCat").value,
+    cycle: document.getElementById("rcCycle").value, nextDate: d });
+  recFormOpen = false; save(); render(); toast("已登记");
+}
+function adoptCandidate(txId) {
+  const c = S.txs.find((x) => x.id === txId); if (!c) return;
+  S.recurring.push({ id: S.nextRec++, name: c.note, amountCents: c.amountCents, catId: c.catId,
+    cycle: "monthly", nextDate: advanceDate(c.date, "monthly") });
+  save(); render(); toast("已登记为周期支出");
+}
+function payRecurring(id) {
+  const r = S.recurring.find((x) => x.id === id);
+  S.txs.push({ id: S.nextId++, type: "expense", amountCents: r.amountCents, catId: r.catId,
+    date: today(), note: r.name, source: "manual" });
+  r.nextDate = advanceDate(r.nextDate, r.cycle);
+  save(); render(); toast(`已入账,顺延到 ${r.nextDate}`);
+}
+function delRecurring(id) {
+  if (!confirm("删除这条周期支出?(不影响已记的流水)")) return;
+  S.recurring = S.recurring.filter((x) => x.id !== id); save(); render();
+}
+
+/* ============ 我的 ============ */
+function meView() {
+  return `<div class="stack">
+    <div class="row"><h1>我的</h1><span class="muted" style="margin-left:auto">👤 ${esc(S.user.name)}</span></div>
+    <div><p class="muted" style="padding:0 4px 6px;margin:0">分析与预算</p><div class="card list">
+      <div onclick="go('analysis')" style="cursor:pointer"><span style="flex:1">消费分析</span><span class="muted">环比 · 趋势 · 分类结构 ›</span></div>
+      <div onclick="go('budget')" style="cursor:pointer"><span style="flex:1">预算设置</span><span class="muted">分类月度限额 · 超支提醒 ›</span></div>
+      <div onclick="go('recurring')" style="cursor:pointer"><span style="flex:1">周期支出</span><span class="muted">订阅/房租 · 到期提醒 ›</span></div>
+    </div></div>
+    <div><p class="muted" style="padding:0 4px 6px;margin:0">演示数据</p><div class="card list">
+      <div onclick="resetDemo()" style="cursor:pointer"><span style="flex:1">重置演示数据</span><span class="muted">恢复初始样例 ›</span></div>
+    </div></div>
+    <div><p class="muted" style="padding:0 4px 6px;margin:0">推荐功能(后续版本)</p><div class="card list">
+      <div class="muted"><span style="flex:1">净资产 / 月度报告</span>敬请期待</div>
+      <div class="muted"><span style="flex:1">异常支出提醒</span>敬请期待</div>
+    </div></div>
+    <button class="btn" style="background:var(--red-bg);color:var(--red-ink)" onclick="logout()">退出登录</button>
+  </div>`;
+}
+function resetDemo() {
+  if (!confirm("重置为初始演示数据?(演示账号保留)")) return;
+  const keep = { user: S.user, users: S.users };
+  S = Object.assign(seed(), keep); save(); render(); toast("已重置");
+}
+
+const VIEWS = {
+  login: () => authView("login"), register: () => authView("register"),
+  home: homeView, record: recordView, import: importView, funds: fundsView,
+  analysis: analysisView, budget: budgetView, recurring: recurringView, me: meView,
+};
+render();
+</script>
