@@ -5,6 +5,7 @@
 ## [未发布]
 
 ### 新增
+- P3 净资产总览 + 月度报告(ADR 0013):/networth(现金结余 + 基金最新市值 + 构成条);/report(结余、支出环比、分类 Top5、最大单笔 Top3、预算执行,月份切换);新增 TC-NW 2 例 + TC-RP 3 例。
 - 测试报告自动生成:npm run test:doc 从 Playwright 结果生成 docs/测试报告.md(按功能模块汇总 + 用例明细,入库存档);新增 TC-N3 用例覆盖新版首页。
 - P4 访问保护(ADR 0012):登录 + 注册(ALLOW_REGISTER=0 可关)、HttpOnly 会话(scrypt 密码、库存 sha256 token 可吊销)、Next 16 proxy.ts 中央守卫(页面 302 /login、API 401,新路由默认受保护)、「我的」显示用户名与退出登录;新表 users/sessions(迁移 0003);新增 TC-AU 测试组 6 例,E2E 默认注入固定测试会话。
 - P4 部署套件(macOS 家用服务器,ADR 0011):npm run setup 一键环境搭建;scripts/macos-setup-server.sh(launchd 开机自启+崩溃拉起+每日 03:30 自动备份);npm run backup(SQLite 在线备份+OCR 原图,轮转保留 30 份);docs/部署.md 部署指南(Tailscale 内网访问、防休眠、恢复、升级)。

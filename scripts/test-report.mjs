@@ -40,6 +40,8 @@ const GROUP_NAMES = {
   "budget.spec.ts": "预算体系(TC-BG)",
   "recurring.spec.ts": "周期支出(TC-RC)",
   "auth.spec.ts": "认证与访问保护(TC-AU)",
+  "networth.spec.ts": "净资产总览(TC-NW)",
+  "report.spec.ts": "月度报告(TC-RP)",
 };
 const groups = new Map();
 for (const r of rows) {

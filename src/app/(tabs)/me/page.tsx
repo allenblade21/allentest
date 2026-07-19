@@ -13,6 +13,8 @@ const groups: { title: string; items: Item[] }[] = [
       { label: "消费分析", hint: "环比 · 趋势 · 分类结构", href: "/analysis" },
       { label: "预算设置", hint: "分类月度限额 · 超支提醒", href: "/budget" },
       { label: "周期支出", hint: "订阅/房租 · 到期提醒", href: "/recurring" },
+      { label: "净资产总览", hint: "现金 + 基金", href: "/networth" },
+      { label: "月度报告", hint: "收支 · 分类 Top · 预算执行", href: "/report" },
     ],
   },
   {
@@ -27,7 +29,6 @@ const groups: { title: string; items: Item[] }[] = [
   {
     title: "推荐功能(后续版本)",
     items: [
-      { label: "净资产 / 月度报告", hint: "敬请期待" },
       { label: "异常支出提醒", hint: "敬请期待" },
     ],
   },
