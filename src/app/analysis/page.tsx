@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { budgets, categories, transactions } from "@/db/schema";
 import { categoryBreakdown, momCompare, monthlyTrend, shiftMonth, type Cat, type Tx } from "@/lib/analytics";
 import { budgetProgress } from "@/lib/budget";
+import { detectAnomalies } from "@/lib/anomaly";
 import { formatCents } from "@/lib/money";
 import { monthOf, today } from "@/lib/date";
 
@@ -26,6 +27,7 @@ export default async function AnalysisPage({
   const breakdown = categoryBreakdown(txs as Tx[], cats as Cat[], month, "expense");
   const mom = momCompare(txs as Tx[], month);
   const budgetList = budgetProgress(budgetRows, txs as Tx[], cats as Cat[], month);
+  const anomalies = detectAnomalies(txs as Tx[], cats as Cat[], month);
   const [year, mon] = month.split("-");
 
   const maxTrend = Math.max(...trend.map((t) => t.expenseCents), 1);
@@ -57,6 +59,27 @@ export default async function AnalysisPage({
         </div>
         <p className="mt-1 text-xs text-neutral-500">上月 {formatCents(mom.lastExpense)}</p>
       </section>
+
+      {/* 异常支出(P3,ADR 0014):有异常才显示 */}
+      {anomalies.length > 0 && (
+        <section className="rounded-2xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
+          <p className="text-xs font-semibold text-red-700 dark:text-red-300">🔎 异常支出 {anomalies.length} 项(对比近 3 月)</p>
+          <div className="mt-2 flex flex-col gap-1.5 text-sm">
+            {anomalies.slice(0, 5).map((a, i) => (
+              <p key={i} className="flex items-center gap-1.5 text-red-800 dark:text-red-200">
+                <span>{a.icon}</span>
+                <span className="min-w-0 flex-1 truncate">
+                  {a.kind === "tx" ? `单笔「${a.name}」` : `「${a.name}」本月合计`}
+                  <b className="tabular-nums"> {formatCents(a.amountCents)}</b>
+                </span>
+                <span className="text-xs text-red-500 dark:text-red-400 tabular-nums">
+                  {a.kind === "tx" ? "常见单笔" : "月均"} {formatCents(a.baselineCents)}
+                </span>
+              </p>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 月度趋势柱状 */}
       <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">

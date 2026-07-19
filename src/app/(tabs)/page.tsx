@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { accounts, budgets, categories, recurring, transactions } from "@/db/schema";
 import { budgetProgress, overBudget } from "@/lib/budget";
 import { dueSoon, dueStatus, type RecurringRow } from "@/lib/recurring";
+import { detectAnomalies } from "@/lib/anomaly";
 import type { Cat, Tx } from "@/lib/analytics";
 import { formatCents } from "@/lib/money";
 import { monthOf, today } from "@/lib/date";
@@ -53,6 +54,9 @@ export default async function HomePage({
 
   const due0 = dues[0];
   const over0 = overs[0];
+  // 异常检测需要基线,查全量流水(个人数据量小,可接受)
+  const allTxs = await db.select().from(transactions);
+  const anomalies = detectAnomalies(allTxs as Tx[], cats as Cat[], month);
 
   return (
     <div className="flex flex-col gap-3">
@@ -105,6 +109,20 @@ export default async function HomePage({
           <span className="min-w-0 truncate">
             {over0.name} 已超预算 <b className="tabular-nums">{formatCents(over0.spentCents - over0.limitCents)}</b>
             {overs.length > 1 ? ` · 另有 ${overs.length - 1} 类` : ""}
+          </span>
+          <span className="ml-auto opacity-60">›</span>
+        </Link>
+      )}
+
+      {/* 异常支出提醒条 */}
+      {anomalies.length > 0 && (
+        <Link
+          href={`/analysis?month=${month}`}
+          className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
+        >
+          🔎
+          <span className="min-w-0 truncate">
+            检测到 <b>{anomalies.length}</b> 项异常支出(对比近 3 月)
           </span>
           <span className="ml-auto opacity-60">›</span>
         </Link>
