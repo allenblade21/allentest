@@ -40,7 +40,7 @@
 ```
 1. 读 docs/STATUS.md 了解当前进度与在办项
 2. 改代码
-3. 补/改测试 → npm run test:quick 跑绿(必须)
+3. 补/改测试 → npm run test:quick 跑绿(必须;改了 src 先 npm run build)→ npm run test:doc 刷新测试报告
 4. 同步文档:
    - 新功能 → 更新 docs/测试用例.md、docs/STATUS.md
    - 关键决策 → 新增一条 docs/adr/000N-*.md

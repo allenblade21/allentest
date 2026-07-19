@@ -15,7 +15,8 @@
     "test": "next build && playwright test",
     "test:quick": "playwright test",
     "test:list": "playwright test --list",
-    "test:report": "playwright show-report"
+    "test:report": "playwright show-report",
+    "test:doc": "node scripts/test-report.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",

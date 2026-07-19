@@ -45,7 +45,7 @@ export default async function AnalysisPage({
       </div>
 
       {/* 环比卡 */}
-      <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-900">
+      <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
         <p className="text-xs text-neutral-500">本月支出</p>
         <div className="mt-1 flex items-baseline gap-3">
           <p className="text-2xl font-bold tabular-nums">{formatCents(mom.thisExpense)}</p>
@@ -59,7 +59,7 @@ export default async function AnalysisPage({
       </section>
 
       {/* 月度趋势柱状 */}
-      <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-900">
+      <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
         <p className="mb-3 text-xs text-neutral-500">近 6 个月支出趋势</p>
         <svg viewBox={`0 0 ${W} ${H + 18}`} className="w-full" role="img" aria-label="月度支出趋势">
           {trend.map((t, i) => {
@@ -77,7 +77,7 @@ export default async function AnalysisPage({
       </section>
 
       {/* 分类预算执行 */}
-      <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-900">
+      <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-3 flex items-center justify-between">
           <p className="text-xs text-neutral-500">分类预算</p>
           <Link href="/budget" className="text-xs text-emerald-700 dark:text-emerald-400">设置 ›</Link>
@@ -115,7 +115,7 @@ export default async function AnalysisPage({
       </section>
 
       {/* 分类结构 */}
-      <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-900">
+      <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
         <p className="mb-3 text-xs text-neutral-500">本月支出分类结构</p>
         {breakdown.length === 0 ? (
           <p className="text-sm text-neutral-500">本月还没有支出记录。</p>

@@ -152,8 +152,10 @@ export default function ImportFlow({ categories }: { categories: Category[] }) {
           {items.map((it) => (
             <div
               key={it.id}
-              className={`flex flex-col gap-2 rounded-2xl bg-white p-3 shadow-sm dark:bg-neutral-900 ${
-                it.duplicate || it.confidence === "low" ? "border border-dashed border-amber-400" : ""
+              className={`flex flex-col gap-2 rounded-2xl bg-white p-3 dark:bg-neutral-900 ${
+                it.duplicate || it.confidence === "low"
+                  ? "border border-dashed border-amber-400"
+                  : "border border-neutral-200 dark:border-neutral-800"
               }`}
             >
               <div className="flex items-center gap-3">

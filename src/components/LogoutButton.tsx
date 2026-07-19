@@ -6,7 +6,7 @@ export default function LogoutButton() {
     window.location.href = "/login";
   }
   return (
-    <button onClick={logout} className="w-full rounded-2xl bg-white px-4 py-3 text-sm font-medium text-red-600 shadow-sm dark:bg-neutral-900 dark:text-red-400">
+    <button onClick={logout} className="w-full rounded-2xl bg-white px-4 py-3 text-sm font-medium text-red-600 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900 dark:text-red-400">
       退出登录
     </button>
   );

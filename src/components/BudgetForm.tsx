@@ -64,7 +64,7 @@ export default function BudgetForm({
         为分类设置每月支出上限,月月生效;留空表示不设预算。超支会在首页和消费分析中提醒。
       </p>
 
-      <div className="divide-y divide-neutral-100 rounded-2xl bg-white px-4 shadow-sm dark:divide-neutral-800 dark:bg-neutral-900">
+      <div className="divide-y divide-neutral-100 rounded-2xl bg-white px-4 border border-neutral-200 dark:border-neutral-800 dark:divide-neutral-800 dark:bg-neutral-900">
         {categories.map((c) => (
           <label key={c.id} className="flex items-center justify-between gap-3 py-3 text-sm">
             <span className="flex items-center gap-2">

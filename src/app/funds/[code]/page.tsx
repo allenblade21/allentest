@@ -52,22 +52,22 @@ export default async function FundDetailPage({ params }: { params: Promise<{ cod
 
       {/* 汇总 */}
       <div className="flex gap-3">
-        <div className="flex-1 rounded-xl bg-white p-3 shadow-sm dark:bg-neutral-900">
+        <div className="flex-1 rounded-xl bg-white p-3 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
           <p className="text-xs text-neutral-500">最新市值</p>
           <p className="font-semibold tabular-nums">{formatCents(latest.marketValueCents)}</p>
         </div>
-        <div className="flex-1 rounded-xl bg-white p-3 shadow-sm dark:bg-neutral-900">
+        <div className="flex-1 rounded-xl bg-white p-3 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
           <p className="text-xs text-neutral-500">持有收益</p>
           <p className="font-semibold tabular-nums">{latest.holdingProfitCents != null ? formatCents(latest.holdingProfitCents, true) : "—"}</p>
         </div>
-        <div className="flex-1 rounded-xl bg-white p-3 shadow-sm dark:bg-neutral-900">
+        <div className="flex-1 rounded-xl bg-white p-3 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
           <p className="text-xs text-neutral-500">持有期涨跌</p>
           <p className="font-semibold tabular-nums">{fmtPct(series.totalChangePct)}</p>
         </div>
       </div>
 
       {/* 走势图 */}
-      <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-900">
+      <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-2 flex justify-between text-xs text-neutral-500">
           <span>市值走势</span>
           <span>近 {series.points.length} 期</span>

@@ -178,7 +178,7 @@ export default function RecordForm({
       )}
 
       {/* 账户 / 日期 / 备注 */}
-      <div className="flex flex-col divide-y divide-neutral-100 rounded-2xl bg-white px-4 text-sm shadow-sm dark:divide-neutral-800 dark:bg-neutral-900">
+      <div className="flex flex-col divide-y divide-neutral-100 rounded-2xl bg-white px-4 text-sm border border-neutral-200 dark:border-neutral-800 dark:divide-neutral-800 dark:bg-neutral-900">
         <label className="flex items-center justify-between py-2.5">
           <span className="text-neutral-500">账户</span>
           <select
@@ -221,7 +221,7 @@ export default function RecordForm({
             <button
               key={k}
               onClick={() => tap(k)}
-              className="rounded-lg bg-white py-3 text-lg font-semibold shadow-sm active:bg-neutral-200 dark:bg-neutral-900 dark:active:bg-neutral-700"
+              className="rounded-lg bg-white py-3 text-lg font-semibold border border-neutral-200 dark:border-neutral-800 active:bg-neutral-200 dark:bg-neutral-900 dark:active:bg-neutral-700"
             >
               {k === "del" ? "⌫" : k}
             </button>
@@ -232,7 +232,7 @@ export default function RecordForm({
             <button
               onClick={() => save(true)}
               disabled={busy}
-              className="flex-1 rounded-lg bg-white text-sm shadow-sm disabled:opacity-50 dark:bg-neutral-900"
+              className="flex-1 rounded-lg bg-white text-sm border border-neutral-200 dark:border-neutral-800 disabled:opacity-50 dark:bg-neutral-900"
             >
               再记一笔
             </button>
@@ -240,7 +240,7 @@ export default function RecordForm({
           <button
             onClick={() => save(false)}
             disabled={busy}
-            className="flex-[2] rounded-lg bg-emerald-700 font-semibold text-white shadow-sm disabled:opacity-50"
+            className="flex-[2] rounded-lg bg-emerald-700 font-semibold text-white border border-neutral-200 dark:border-neutral-800 disabled:opacity-50"
           >
             保存
           </button>

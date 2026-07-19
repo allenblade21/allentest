@@ -30,7 +30,7 @@ export default function FundSnapshots({ points }: { points: Point[] }) {
   }
 
   return (
-    <section className="rounded-2xl bg-white p-3 shadow-sm dark:bg-neutral-900">
+    <section className="rounded-2xl bg-white p-3 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
       <div className="mb-2 px-1 text-xs text-neutral-500">历史快照 · {points.length} 条</div>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-xs tabular-nums">

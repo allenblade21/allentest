@@ -24,7 +24,7 @@ export default async function FundsPage() {
       </div>
 
       {/* 投资总览卡 */}
-      <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-900">
+      <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
         <p className="text-xs text-neutral-500">总市值</p>
         <p className="mt-1 text-2xl font-bold tabular-nums">{formatCents(ov.totalMarketValueCents)}</p>
         <div className="mt-3 flex gap-3">
@@ -40,7 +40,7 @@ export default async function FundsPage() {
       </section>
 
       {ov.list.length === 0 ? (
-        <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-900">
+        <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
           <p className="text-sm text-neutral-500">
             还没有基金记录。点「导入持仓截图」用 OCR 批量录入,或
             <Link href="/funds/new" className="text-emerald-700 dark:text-emerald-400"> 手动记一笔</Link>。
@@ -53,7 +53,7 @@ export default async function FundsPage() {
             <span>持有基金 · {ov.list.length} 只</span>
             <Link href="/funds/new" className="text-emerald-700 dark:text-emerald-400">+ 手动记一笔</Link>
           </div>
-          <div className="divide-y divide-neutral-100 rounded-2xl bg-white shadow-sm dark:divide-neutral-800 dark:bg-neutral-900">
+          <div className="divide-y divide-neutral-100 rounded-2xl bg-white border border-neutral-200 dark:border-neutral-800 dark:divide-neutral-800 dark:bg-neutral-900">
             {ov.list.map((f) => (
               <Link key={f.code} href={`/funds/${f.code}`} className="flex items-center gap-3 px-4 py-3">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-100 text-sm dark:bg-neutral-800">📈</span>

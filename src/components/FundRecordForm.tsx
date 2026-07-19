@@ -62,7 +62,7 @@ export default function FundRecordForm({
         <h1 className="font-bold">{initialCode ? "补录 / 修正快照" : "手动记一笔基金"}</h1>
       </div>
 
-      <div className="rounded-2xl bg-white px-4 shadow-sm dark:bg-neutral-900">
+      <div className="rounded-2xl bg-white px-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
         <label className={field.replace("border-t border-neutral-100 dark:border-neutral-800", "")}>
           <span className="text-neutral-500">基金代码</span>
           <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="6 位数字" inputMode="numeric" readOnly={!!initialCode} className={input} />

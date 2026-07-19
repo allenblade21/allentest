@@ -119,7 +119,7 @@ export default function TransactionList({
   if (rows.length === 0) {
     return (
       <>
-        <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-900">
+        <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
           <p className="text-sm text-neutral-500">
             本月还没有账目。点击下方「+」记一笔,或右上角「导入」上传账单截图批量记账。
           </p>
@@ -169,7 +169,7 @@ export default function TransactionList({
               <span>{dayLabel(date)}</span>
               {dayExpense > 0 && <span className="tabular-nums">支出 {formatCents(dayExpense)}</span>}
             </div>
-            <div className="divide-y divide-neutral-100 rounded-2xl bg-white shadow-sm dark:divide-neutral-800 dark:bg-neutral-900">
+            <div className="divide-y divide-neutral-100 rounded-2xl bg-white border border-neutral-200 dark:border-neutral-800 dark:divide-neutral-800 dark:bg-neutral-900">
               {list.map((t) => {
                 const cat = t.categoryId ? catMap.get(t.categoryId) : undefined;
                 const acct = t.accountId ? acctMap.get(t.accountId) : undefined;

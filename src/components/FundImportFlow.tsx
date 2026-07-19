@@ -106,7 +106,7 @@ export default function FundImportFlow({ today }: { today: string }) {
         <section className="flex flex-col gap-2">
           <p className="px-1 text-xs text-neutral-500">待确认 {items.length} 只 · 无代码/存疑/疑似重复默认不勾选</p>
           {items.map((it) => (
-            <div key={it.id} className={`flex flex-col gap-2 rounded-2xl bg-white p-3 shadow-sm dark:bg-neutral-900 ${it.duplicate || it.confidence === "low" || !it.code ? "border border-dashed border-amber-400" : ""}`}>
+            <div key={it.id} className={`flex flex-col gap-2 rounded-2xl bg-white p-3 dark:bg-neutral-900 ${it.duplicate || it.confidence === "low" || !it.code ? "border border-dashed border-amber-400" : "border border-neutral-200 dark:border-neutral-800"}`}>
               <div className="flex items-center gap-3">
                 <input type="checkbox" checked={it.checked} onChange={(e) => update(it.id, { checked: e.target.checked })} className="h-4 w-4 accent-emerald-700" />
                 <input value={it.name} onChange={(e) => update(it.id, { name: e.target.value })} className="min-w-0 flex-1 bg-transparent text-sm font-medium outline-none" />

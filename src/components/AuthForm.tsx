@@ -40,7 +40,7 @@ export default function AuthForm({ mode, registerOpen }: { mode: "login" | "regi
         <p className="mt-1 text-sm text-neutral-500">{isLogin ? "登录后继续记账" : "创建你的账号"}</p>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-2xl bg-white p-5 shadow-sm dark:bg-neutral-900">
+      <div className="flex flex-col gap-3 rounded-2xl bg-white p-5 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
         <input
           aria-label="用户名"
           value={username}

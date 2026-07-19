@@ -44,7 +44,7 @@ export default async function MePage() {
       {groups.map((g) => (
         <section key={g.title}>
           <p className="mb-2 px-1 text-xs text-neutral-500">{g.title}</p>
-          <div className="divide-y divide-neutral-100 rounded-2xl bg-white shadow-sm dark:divide-neutral-800 dark:bg-neutral-900">
+          <div className="divide-y divide-neutral-100 rounded-2xl bg-white border border-neutral-200 dark:border-neutral-800 dark:divide-neutral-800 dark:bg-neutral-900">
             {g.items.map((item) => {
               const inner = (
                 <>

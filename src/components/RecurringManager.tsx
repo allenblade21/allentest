@@ -106,7 +106,7 @@ export default function RecurringManager({
 
       {/* 新增表单 */}
       {showForm && (
-        <div className="flex flex-col gap-2 rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-900">
+        <div className="flex flex-col gap-2 rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
           <input aria-label="周期支出名称" value={name} onChange={(e) => setName(e.target.value)} placeholder="名称,如 房租 / 视频会员" className={input} />
           <div className="flex gap-2">
             <input aria-label="周期支出金额" value={amountYuan} onChange={(e) => setAmountYuan(e.target.value)} placeholder="金额(元)" inputMode="decimal" className={`${input} flex-1`} />
@@ -131,11 +131,11 @@ export default function RecurringManager({
 
       {/* 已登记列表 */}
       {rows.length === 0 ? (
-        <div className="rounded-2xl bg-white p-4 text-sm text-neutral-500 shadow-sm dark:bg-neutral-900">
+        <div className="rounded-2xl bg-white p-4 text-sm text-neutral-500 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
           还没有登记周期支出。点右上「+ 新增」,或从下方流水中发现的候选一键添加。
         </div>
       ) : (
-        <div className="divide-y divide-neutral-100 rounded-2xl bg-white shadow-sm dark:divide-neutral-800 dark:bg-neutral-900">
+        <div className="divide-y divide-neutral-100 rounded-2xl bg-white border border-neutral-200 dark:border-neutral-800 dark:divide-neutral-800 dark:bg-neutral-900">
           {rows.map((r) => {
             const st = dueStatus(r.nextDate, today);
             return (
@@ -164,7 +164,7 @@ export default function RecurringManager({
       {candidates.length > 0 && (
         <section>
           <p className="mb-2 px-1 text-xs text-neutral-500">从流水中发现的疑似周期支出(近 3 个月每月出现、同名同金额)</p>
-          <div className="divide-y divide-neutral-100 rounded-2xl bg-white shadow-sm dark:divide-neutral-800 dark:bg-neutral-900">
+          <div className="divide-y divide-neutral-100 rounded-2xl bg-white border border-neutral-200 dark:border-neutral-800 dark:divide-neutral-800 dark:bg-neutral-900">
             {candidates.map((c) => (
               <div key={c.name + c.amountCents} className="flex items-center gap-3 px-4 py-3">
                 <span className="min-w-0 flex-1">

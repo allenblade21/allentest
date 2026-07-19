@@ -74,12 +74,12 @@ test.describe("周期支出", () => {
     await expect(page.getByText("已到期", { exact: true })).toBeVisible();
     await expect(page.getByText("即将到期", { exact: true })).toBeVisible();
 
-    // 首页提醒卡:只含 7 天内两条,不含还早的「云存储」
+    // 首页提醒条(单行):显示最紧急的「房租 已到期」+ 剩余计数;还早的「云存储」不参与
     await page.goto("/");
-    await expect(page.getByText(/📅 房租/)).toBeVisible();
-    await expect(page.getByText(/已到期/)).toBeVisible();
-    await expect(page.getByText(/📅 音乐会员/)).toBeVisible();
-    await expect(page.getByText(/📅 云存储/)).not.toBeVisible();
+    await expect(page.getByText(/房租 .*已到期/)).toBeVisible();
+    await expect(page.getByText(/另有 1 项/)).toBeVisible();
+    await expect(page.getByText(/音乐会员/)).not.toBeVisible();
+    await expect(page.getByText(/云存储/)).not.toBeVisible();
   });
 
   test("TC-RC3 记一笔:生成当日流水且 nextDate 顺延一个月", async ({ page }) => {
