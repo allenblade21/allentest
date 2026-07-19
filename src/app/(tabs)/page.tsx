@@ -9,6 +9,8 @@ import type { Cat, Tx } from "@/lib/analytics";
 import { formatCents } from "@/lib/money";
 import { monthOf, today } from "@/lib/date";
 import TransactionList from "@/components/TransactionList";
+import AlertStrip, { type AlertTone } from "@/components/ui/AlertStrip";
+import type { ReactNode } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +60,42 @@ export default async function HomePage({
   const allTxs = await db.select().from(transactions);
   const anomalies = detectAnomalies(allTxs as Tx[], cats as Cat[], month);
 
+  // 提醒源:到期(琥珀)/ 超支(红 ⚠️)/ 异常(红 🔎)
+  const alerts: { key: string; href: string; tone: AlertTone; icon: string; node: ReactNode }[] = [];
+  if (due0) {
+    alerts.push({
+      key: "due", href: "/recurring", tone: "amber", icon: "📅",
+      node: (
+        <>
+          {due0.name} <b className="tabular-nums">{formatCents(due0.amountCents)}</b>{" "}
+          {dueStatus(due0.nextDate, today()) === "overdue" ? "已到期" : `${due0.nextDate.slice(5)} 到期`}
+          {dues.length > 1 ? ` · 另有 ${dues.length - 1} 项` : ""}
+        </>
+      ),
+    });
+  }
+  if (over0) {
+    alerts.push({
+      key: "over", href: `/analysis?month=${month}`, tone: "red", icon: "⚠️",
+      node: (
+        <>
+          {over0.name} 已超预算 <b className="tabular-nums">{formatCents(over0.spentCents - over0.limitCents)}</b>
+          {overs.length > 1 ? ` · 另有 ${overs.length - 1} 类` : ""}
+        </>
+      ),
+    });
+  }
+  if (anomalies.length > 0) {
+    alerts.push({
+      key: "anomaly", href: `/analysis?month=${month}`, tone: "red", icon: "🔎",
+      node: (
+        <>
+          检测到 <b>{anomalies.length}</b> 项异常支出(对比近 3 月)
+        </>
+      ),
+    });
+  }
+
   return (
     <div className="flex flex-col gap-3">
       {/* hero 卡:月份切换 + 结余 + 收支一行(简化版设计) */}
@@ -83,50 +121,12 @@ export default async function HomePage({
         </p>
       </section>
 
-      {/* 到期提醒条(单行:首项 + 剩余计数) */}
-      {due0 && (
-        <Link
-          href="/recurring"
-          className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200"
-        >
-          📅
-          <span className="min-w-0 truncate">
-            {due0.name} <b className="tabular-nums">{formatCents(due0.amountCents)}</b>{" "}
-            {dueStatus(due0.nextDate, today()) === "overdue" ? "已到期" : `${due0.nextDate.slice(5)} 到期`}
-            {dues.length > 1 ? ` · 另有 ${dues.length - 1} 项` : ""}
-          </span>
-          <span className="ml-auto opacity-60">›</span>
-        </Link>
-      )}
-
-      {/* 超支提醒条(单行:首项 + 剩余计数) */}
-      {over0 && (
-        <Link
-          href={`/analysis?month=${month}`}
-          className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
-        >
-          ⚠️
-          <span className="min-w-0 truncate">
-            {over0.name} 已超预算 <b className="tabular-nums">{formatCents(over0.spentCents - over0.limitCents)}</b>
-            {overs.length > 1 ? ` · 另有 ${overs.length - 1} 类` : ""}
-          </span>
-          <span className="ml-auto opacity-60">›</span>
-        </Link>
-      )}
-
-      {/* 异常支出提醒条 */}
-      {anomalies.length > 0 && (
-        <Link
-          href={`/analysis?month=${month}`}
-          className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
-        >
-          🔎
-          <span className="min-w-0 truncate">
-            检测到 <b>{anomalies.length}</b> 项异常支出(对比近 3 月)
-          </span>
-          <span className="ml-auto opacity-60">›</span>
-        </Link>
-      )}
+      {/* 提醒源列表(页面架构 §二.1):新增提醒 = 往 alerts 里 push 一项 */}
+      {alerts.map((a) => (
+        <AlertStrip key={a.key} href={a.href} tone={a.tone} icon={a.icon}>
+          {a.node}
+        </AlertStrip>
+      ))}
 
       <TransactionList rows={rows} categories={cats} accounts={accts} />
     </div>

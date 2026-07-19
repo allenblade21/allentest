@@ -27,7 +27,7 @@
 
 ## 待办 ⬜
 
-- 页面架构落地第 1 步:抽共享 UI 组件 + lib/alerts 提醒源聚合(纯重构,见 docs/页面架构.md)
+- 页面架构落地(续):PageHeader / Card / ProgressBar 等组件抽取(AlertStrip + 首页提醒源列表已完成)
 - 演示版同步净资产/月报视图(维护约定见 docs/演示版.md)
 
 > P3 / P4 完整演进规划见 [路线图.md](路线图.md)。
