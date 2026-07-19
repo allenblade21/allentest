@@ -33,6 +33,7 @@
 | 变更历史 | [`CHANGELOG.md`](CHANGELOG.md) |
 | 测试用例清单 | [`docs/测试用例.md`](docs/测试用例.md) |
 | 界面长什么样 | [`docs/wireframes.html`](docs/wireframes.html) |
+| 页面怎么拆、新功能往哪插 | [`docs/页面架构.md`](docs/页面架构.md) |
 | 命令、Claude 工具用法 | [`CLAUDE.md`](CLAUDE.md) |
 
 ## 标准工作流(每次改动)

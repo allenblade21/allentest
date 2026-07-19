@@ -5,6 +5,7 @@
 ## [未发布]
 
 ### 新增
+- 页面架构设计文档(docs/页面架构.md):各页面区块拆分、提醒源注册制、共享 UI 组件规划与 P3/P4 扩展位。
 - P3 净资产总览 + 月度报告(ADR 0013):/networth(现金结余 + 基金最新市值 + 构成条);/report(结余、支出环比、分类 Top5、最大单笔 Top3、预算执行,月份切换);新增 TC-NW 2 例 + TC-RP 3 例。
 - 测试报告自动生成:npm run test:doc 从 Playwright 结果生成 docs/测试报告.md(按功能模块汇总 + 用例明细,入库存档);新增 TC-N3 用例覆盖新版首页。
 - P4 访问保护(ADR 0012):登录 + 注册(ALLOW_REGISTER=0 可关)、HttpOnly 会话(scrypt 密码、库存 sha256 token 可吊销)、Next 16 proxy.ts 中央守卫(页面 302 /login、API 401,新路由默认受保护)、「我的」显示用户名与退出登录;新表 users/sessions(迁移 0003);新增 TC-AU 测试组 6 例,E2E 默认注入固定测试会话。
