@@ -48,3 +48,19 @@ test.describe("净资产", () => {
     await expect(page.getByText("¥8,000.00")).toBeVisible();
   });
 });
+
+test.describe("净资产·补充", () => {
+  test.beforeEach(() => { resetData(); });
+  test("TC-NW3 转账不影响净资产", async ({ page }) => {
+    const m = curMonth();
+    for (const t of [
+      { type: "income", amountCents: 500000, categoryId: 9, date: `${m}-05` },
+      { type: "transfer", amountCents: 200000, categoryId: null, date: `${m}-06`, note: "现金→微信" },
+    ]) {
+      const r = await page.request.post("/api/transactions", { data: t });
+      expect(r.ok()).toBeTruthy();
+    }
+    await page.goto("/networth");
+    await expect(page.getByText("¥5,000.00").first()).toBeVisible();
+  });
+});

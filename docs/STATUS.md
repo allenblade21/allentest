@@ -40,5 +40,5 @@ P3 迭代 3「净资产总览 + 月度报告」已完成。下一步:P3 迭代 4
 
 ## 关键指标
 
-- 测试:52 E2E(TC-N 3 / TC-T 7 / TC-O 5 / TC-B 5 / TC-F 7 / TC-A 4 / TC-BG 5 / TC-RC 5 / TC-AU 6 / TC-NW 2 / TC-RP 3)+ 7 单测,最近一次全绿;报告见 [测试报告.md](测试报告.md)(`npm run test:doc` 生成)
+- 测试:55 E2E(TC-N 3 / TC-T 7 / TC-O 5 / TC-B 5 / TC-F 7 / TC-A 4 / TC-BG 5 / TC-RC 5 / TC-AU 6 / TC-NW 3 / TC-RP 5)+ 7 单测,最近一次全绿;报告见 [测试报告.md](测试报告.md)(`npm run test:doc` 生成)
 - 数据表:11;E2E 用例组:11

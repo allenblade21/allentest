@@ -53,3 +53,20 @@ test.describe("月度报告", () => {
     await expect(page.getByText("上月餐", { exact: false })).toBeVisible();
   });
 });
+
+test.describe("月度报告·补充", () => {
+  test.beforeEach(() => resetData());
+  test("TC-RP4 上月无支出:不显示环比行", async ({ page }) => {
+    await addTx(page, { type: "expense", amountCents: 5000, categoryId: 1, date: `${monthShift(0)}-05`, note: "早餐" });
+    await page.goto("/report");
+    await expect(page.getByText("¥50.00").first()).toBeVisible();
+    await expect(page.getByText(/支出环比上月/)).not.toBeVisible();
+  });
+  test("TC-RP5 预算未超支:显示全部在额度内", async ({ page }) => {
+    await addTx(page, { type: "expense", amountCents: 5000, categoryId: 1, date: `${monthShift(0)}-05`, note: "早餐" });
+    await page.request.put("/api/budgets", { data: { items: [{ categoryId: 1, limitCents: 100000 }] } });
+    await page.goto("/report");
+    await expect(page.getByText(/全部在额度内/)).toBeVisible();
+    await expect(page.getByText(/类超支/)).not.toBeVisible();
+  });
+});
