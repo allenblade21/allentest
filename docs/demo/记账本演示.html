@@ -1,106 +1,111 @@
 <title>记账本 · 交互演示版</title>
 <style>
   :root {
-    --bg: #f4f5f2; --card: #ffffff; --ink: #22282c; --muted: #5c666d; --line: #e3e6e2;
-    --accent: #2f7a68; --accent-ink: #ffffff; --chip: #f0f1ee;
-    --amber-bg: #fef3c7; --amber-line: #f3ddaa; --amber-ink: #92400e;
-    --red-bg: #fdeeee; --red-line: #f2c7c7; --red-ink: #dc2626;
+    --bg: #f6f7f5; --card: #ffffff; --ink: #212724; --muted: #79817c; --line: #e6e9e6;
+    --accent: #2f7a68; --accent-ink: #ffffff; --chip: #eef1ee;
+    --amber-bg: #fdf6e3; --amber-line: #efe0b4; --amber-ink: #8a5c08;
+    --red-bg: #fceeed; --red-line: #f0cbc8; --red-ink: #c2352b;
     --green-ink: #2f7a68;
-    --shadow: 0 1px 3px rgba(30,40,38,.08), 0 6px 18px rgba(30,40,38,.06);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #191d1c; --card: #222725; --ink: #e8ebe8; --muted: #9aa4a0; --line: #363d3a;
-      --accent: #57ab97; --accent-ink: #10201b; --chip: #2b312e;
-      --amber-bg: #453a12; --amber-line: #5c4d1a; --amber-ink: #fbd77e;
-      --red-bg: #3a1d1d; --red-line: #543030; --red-ink: #f08c8c;
-      --green-ink: #57ab97; --shadow: 0 1px 3px rgba(0,0,0,.4);
+      --bg: #141716; --card: #1d211f; --ink: #e7eae8; --muted: #8d948f; --line: #2b302d;
+      --accent: #5cb39d; --accent-ink: #0d221c; --chip: #262b28;
+      --amber-bg: #2b2310; --amber-line: #4c3e17; --amber-ink: #eec872;
+      --red-bg: #331b19; --red-line: #543029; --red-ink: #ee9188;
+      --green-ink: #5cb39d;
     }
   }
   :root[data-theme="light"] {
-    --bg: #f4f5f2; --card: #ffffff; --ink: #22282c; --muted: #5c666d; --line: #e3e6e2;
-    --accent: #2f7a68; --accent-ink: #ffffff; --chip: #f0f1ee;
-    --amber-bg: #fef3c7; --amber-line: #f3ddaa; --amber-ink: #92400e;
-    --red-bg: #fdeeee; --red-line: #f2c7c7; --red-ink: #dc2626;
+    --bg: #f6f7f5; --card: #ffffff; --ink: #212724; --muted: #79817c; --line: #e6e9e6;
+    --accent: #2f7a68; --accent-ink: #ffffff; --chip: #eef1ee;
+    --amber-bg: #fdf6e3; --amber-line: #efe0b4; --amber-ink: #8a5c08;
+    --red-bg: #fceeed; --red-line: #f0cbc8; --red-ink: #c2352b;
     --green-ink: #2f7a68;
-    --shadow: 0 1px 3px rgba(30,40,38,.08), 0 6px 18px rgba(30,40,38,.06);
   }
   :root[data-theme="dark"] {
-    --bg: #191d1c; --card: #222725; --ink: #e8ebe8; --muted: #9aa4a0; --line: #363d3a;
-    --accent: #57ab97; --accent-ink: #10201b; --chip: #2b312e;
-    --amber-bg: #453a12; --amber-line: #5c4d1a; --amber-ink: #fbd77e;
-    --red-bg: #3a1d1d; --red-line: #543030; --red-ink: #f08c8c;
-    --green-ink: #57ab97; --shadow: 0 1px 3px rgba(0,0,0,.4);
+    --bg: #141716; --card: #1d211f; --ink: #e7eae8; --muted: #8d948f; --line: #2b302d;
+    --accent: #5cb39d; --accent-ink: #0d221c; --chip: #262b28;
+    --amber-bg: #2b2310; --amber-line: #4c3e17; --amber-ink: #eec872;
+    --red-bg: #331b19; --red-line: #543029; --red-ink: #ee9188;
+    --green-ink: #5cb39d;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.55;
-    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
-    font-size: 15px; }
+  body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.55; font-size: 15px;
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif; }
   #phone { max-width: 430px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
-  #banner { text-align: center; font-size: 11px; padding: 6px 12px; color: var(--muted); background: var(--chip); }
-  #view { flex: 1; padding: 16px 16px 92px; }
-  h1 { font-size: 19px; margin: 0; }
+  #view { flex: 1; padding: 14px 14px 92px; }
+  h1 { font-size: 20px; margin: 0; font-weight: 700; letter-spacing: .01em; }
+  .hdr { display: flex; align-items: center; gap: 10px; padding: 2px 2px 12px; }
+  .hdr .back { font-size: 22px; line-height: 1; color: var(--muted); text-decoration: none; cursor: pointer; }
   .row { display: flex; align-items: center; gap: 8px; }
-  .card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
   .pad { padding: 16px; }
   .muted { color: var(--muted); font-size: 12px; }
   .num { font-variant-numeric: tabular-nums; }
+  .money { font-size: 30px; font-weight: 750; letter-spacing: -.01em; }
   .btn { border: 0; border-radius: 12px; background: var(--accent); color: var(--accent-ink);
-    font: inherit; font-weight: 600; padding: 10px 14px; cursor: pointer; }
+    font: inherit; font-weight: 600; padding: 11px 14px; cursor: pointer; }
   .btn:disabled { opacity: .5; }
-  .btn:focus-visible, .cat:focus-visible, #nav button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn:focus-visible, .cat:focus-visible, #nav button:focus-visible, .seg button:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; }
   .btn-ghost { background: var(--chip); color: var(--ink); }
-  .btn-sm { padding: 6px 10px; font-size: 13px; border-radius: 10px; }
+  .btn-danger { background: var(--red-bg); color: var(--red-ink); }
+  .btn-sm { padding: 7px 12px; font-size: 13px; border-radius: 10px; }
   input, select { font: inherit; color: var(--ink); background: transparent;
-    border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; outline: none; width: 100%; }
+    border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; outline: none; width: 100%; }
   input:focus, select:focus { border-color: var(--accent); }
-  .list > * { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+  .list > * { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
   .list > * + * { border-top: 1px solid var(--line); }
   .tag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; vertical-align: 1px; }
   .tag-red { background: var(--red-bg); color: var(--red-ink); }
   .tag-amber { background: var(--amber-bg); color: var(--amber-ink); }
-  .notice { display: block; border-radius: 16px; padding: 12px 14px; font-size: 13px; cursor: pointer; }
-  .notice-amber { background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber-ink); }
-  .notice-red { background: var(--red-bg); border: 1px solid var(--red-line); color: var(--red-ink); }
+  .strip { display: flex; align-items: center; gap: 8px; border-radius: 12px; padding: 10px 12px;
+    font-size: 13px; cursor: pointer; }
+  .strip b { font-variant-numeric: tabular-nums; }
+  .strip .arrow { margin-left: auto; opacity: .6; }
+  .strip-amber { background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber-ink); }
+  .strip-red { background: var(--red-bg); border: 1px solid var(--red-line); color: var(--red-ink); }
   #nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px;
-    display: flex; background: var(--card); border-top: 1px solid var(--line); padding: 6px 8px 10px; }
+    display: flex; background: var(--card); border-top: 1px solid var(--line);
+    padding: 6px 8px calc(8px + env(safe-area-inset-bottom)); }
   #nav button { flex: 1; border: 0; background: none; font: inherit; font-size: 11px; color: var(--muted);
     display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; padding: 4px 0; }
   #nav button.on { color: var(--accent); font-weight: 600; }
   #nav .ico { font-size: 20px; line-height: 1; }
-  #nav .fab span.ico { width: 44px; height: 44px; border-radius: 50%; background: var(--accent);
-    color: var(--accent-ink); display: grid; place-items: center; margin-top: -18px; font-size: 24px; }
+  #nav .fab span.ico { width: 46px; height: 46px; border-radius: 50%; background: var(--accent);
+    color: var(--accent-ink); display: grid; place-items: center; margin-top: -20px; font-size: 26px; }
+  .seg { display: flex; background: var(--chip); border-radius: 11px; padding: 3px; }
+  .seg button { border: 0; background: none; font: inherit; font-size: 13px; font-weight: 600;
+    color: var(--muted); padding: 5px 14px; border-radius: 9px; cursor: pointer; }
+  .seg button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgba(15, 25, 20, .12); }
   .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .cat { border: 1px solid var(--line); border-radius: 12px; padding: 8px 2px; text-align: center;
+  .cat { border: 1px solid var(--line); border-radius: 12px; padding: 9px 2px; text-align: center;
     font-size: 12px; cursor: pointer; background: none; color: var(--ink); font-family: inherit; }
   .cat.on { border-color: var(--accent); background: var(--chip); font-weight: 600; }
   .keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .keys button { font: inherit; font-size: 20px; font-weight: 600; padding: 12px 0; border: 0;
-    border-radius: 12px; background: var(--chip); color: var(--ink); cursor: pointer; }
-  .bar { height: 10px; border-radius: 5px; background: var(--chip); overflow: hidden; }
-  .bar i { display: block; height: 100%; background: var(--accent); border-radius: 5px; }
+  .keys button { font: inherit; font-size: 21px; font-weight: 600; padding: 13px 0; border: 1px solid var(--line);
+    border-radius: 12px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .keys button:active { background: var(--chip); }
+  .bar { height: 8px; border-radius: 4px; background: var(--chip); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
   .bar i.over { background: var(--red-ink); }
-  .stack { display: flex; flex-direction: column; gap: 14px; }
-  .toast { position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%);
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .toast { position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%);
     background: var(--ink); color: var(--bg); font-size: 13px; padding: 8px 16px; border-radius: 20px;
-    opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 90%; }
+    opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 90%; z-index: 20; }
   .toast.show { opacity: .95; }
   a.link { color: var(--accent); font-weight: 600; text-decoration: none; cursor: pointer; }
   .center { text-align: center; }
-  .backdrop { position: fixed; inset: 0; background: rgba(10, 14, 12, .4); z-index: 10; }
+  .backdrop { position: fixed; inset: 0; background: rgba(10, 14, 12, .42); z-index: 10; }
   .sheet { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px;
-    background: var(--card); border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
-    z-index: 11; box-shadow: 0 -8px 30px rgba(10, 20, 16, .18); }
+    background: var(--card); border-radius: 20px 20px 0 0; padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
+    z-index: 11; box-shadow: 0 -10px 34px rgba(10, 20, 16, .22); }
   .sheet-grip { width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 0 auto 12px; }
-  .btn-danger { background: var(--red-bg); color: var(--red-ink); }
   @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
 </style>
 
-<div id="phone">
-  <div id="banner">交互演示版 · 数据仅存于此浏览器 · 真实应用为 Next.js + SQLite 自托管</div>
-  <div id="view"></div>
-  <div id="nav" hidden></div>
-</div>
+<div id="phone"><div id="view"></div><div id="nav" hidden></div></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -126,8 +131,7 @@ function shiftMonth(m, delta) {
 }
 function daysFromNow(n) { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); }
 const dayShift = (m, day) => `${m}-${pad(day)}`;
-// 顺延一个周期,月末安全(1-31 → 2-28)
-function advanceDate(date, cycle) {
+function advanceDate(date, cycle) { // 顺延一个周期,月末安全(1-31 → 2-28)
   const [y, m, d] = date.split("-").map(Number);
   const ty = cycle === "yearly" ? y + 1 : y, tm = cycle === "yearly" ? m : m + 1;
   const last = new Date(ty, tm, 0).getDate();
@@ -170,7 +174,7 @@ function seed() {
       tx("expense", 12800, 1, dayShift(m0, 13), "日料"),
       tx("income", 1200000, 8, dayShift(m0, 10), "工资"),
     ],
-    budgets: { 1: 30000, 3: 50000 }, // 餐饮 300 / 购物 500 —— 餐饮会自然超支,演示提醒链路
+    budgets: { 1: 30000, 3: 50000 }, // 餐饮 300 / 购物 500 —— 餐饮自然超支,演示提醒链路
     recurring: [
       { id: 1, name: "房租", amountCents: 300000, catId: 4, cycle: "monthly", nextDate: daysFromNow(-2) },
       { id: 2, name: "视频会员", amountCents: 2500, catId: 5, cycle: "monthly", nextDate: daysFromNow(3) },
@@ -187,13 +191,21 @@ function seed() {
 /* ============ 迷你路由与渲染 ============ */
 const V = document.getElementById("view"), NAV = document.getElementById("nav");
 let route = { name: "home", month: monthOf(today()) };
-function go(name, extra) { route = { ...route, name, ...(extra || {}) }; editId = null; recFormOpen = false; fundFormOpen = false; render(); window.scrollTo(0, 0); }
+let editId = null, recFormOpen = false, fundFormOpen = false;
+function go(name, extra) {
+  route = { ...route, name, ...(extra || {}) };
+  editId = null; recFormOpen = false; fundFormOpen = false;
+  render(); window.scrollTo(0, 0);
+}
 function toast(t) {
   const el = document.getElementById("toast");
   el.textContent = t; el.classList.add("show");
   clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 1800);
 }
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const hdr = (title, backTo, action) => `<div class="hdr">
+  ${backTo ? `<a class="back" onclick="go('${backTo}')">‹</a>` : ""}
+  <h1>${title}</h1>${action ? `<span style="margin-left:auto">${action}</span>` : ""}</div>`;
 
 function render() {
   if (!S.user && !["login", "register"].includes(route.name)) route.name = "login";
@@ -212,7 +224,7 @@ function render() {
 /* ============ 登录 / 注册(演示:账号只存浏览器本地;真实应用为服务端会话) ============ */
 function authView(mode) {
   const isLogin = mode === "login";
-  return `<div class="stack" style="justify-content:center;min-height:78vh">
+  return `<div class="stack" style="justify-content:center;min-height:82vh;gap:16px">
     <div class="center"><div style="font-size:40px">📒</div><h1>记账本</h1>
       <p class="muted">${isLogin ? "登录后继续记账" : "创建你的演示账号"}</p></div>
     <div class="card pad stack" style="gap:10px">
@@ -225,7 +237,7 @@ function authView(mode) {
     <p class="center muted">${isLogin
       ? `还没有账号?<a class="link" onclick="go('register')">去注册</a>`
       : `已有账号?<a class="link" onclick="go('login')">去登录</a>`}</p>
-    <p class="center muted">演示版账号仅存于本浏览器;真实应用为服务端加密会话,<br>并可用 ALLOW_REGISTER=0 关闭注册</p>
+    <p class="center muted" style="opacity:.75">交互演示版 · 数据与账号仅存于此浏览器<br>真实应用为服务端加密会话,可关闭注册(ALLOW_REGISTER=0)</p>
   </div>`;
 }
 function authSubmit(mode) {
@@ -243,7 +255,7 @@ function authSubmit(mode) {
 }
 function logout() { S.user = null; save(); go("login"); }
 
-/* ============ 首页:汇总 + 到期/超支提醒卡 + 按日流水 ============ */
+/* ============ 首页:hero 汇总 + 单行提醒条 + 按日流水 ============ */
 function budgetCalc(month) {
   return Object.entries(S.budgets).map(([cid, limit]) => {
     const spent = S.txs.filter((t) => t.type === "expense" && t.catId == cid && monthOf(t.date) === month)
@@ -261,29 +273,36 @@ function homeView() {
     .sort((a, b) => a.nextDate.localeCompare(b.nextDate));
   const days = [...new Set(rows.map((t) => t.date))];
   const [y, mo] = m.split("-");
+  const due0 = dues[0];
   return `<div class="stack">
-    <div class="row"><h1><a class="link" onclick="go('home',{month:'${shiftMonth(m, -1)}'})">‹</a>
-      ${y}年${+mo}月 <a class="link" onclick="go('home',{month:'${shiftMonth(m, 1)}'})">›</a></h1>
-      <button class="btn btn-sm" style="margin-left:auto" onclick="go('import')">⤓ 导入</button></div>
-    <div class="card pad"><p class="muted" style="margin:0">本月结余</p>
-      <p class="num" style="font-size:26px;font-weight:700;margin:4px 0 10px">${fmt(inc - exp, true)}</p>
-      <div class="row">
-        <div style="flex:1;background:var(--chip);border-radius:12px;padding:10px 12px">
-          <span class="muted">支出</span><br><b class="num">${fmt(exp)}</b></div>
-        <div style="flex:1;background:var(--chip);border-radius:12px;padding:10px 12px">
-          <span class="muted">收入</span><br><b class="num">${fmt(inc)}</b></div></div></div>
-    ${dues.length ? `<a class="notice notice-amber" onclick="go('recurring')">
-      ${dues.slice(0, 3).map((r) => `📅 ${esc(r.name)} <b class="num">${fmt(r.amountCents)}</b> ${
-        dueStatus(r.nextDate, today()) === "overdue" ? `已到期(${r.nextDate})` : `${r.nextDate} 到期`}`).join("<br>")}
-      <br><span style="font-size:11px;opacity:.75">点击管理周期支出,可一键记账并顺延 ›</span></a>` : ""}
-    ${overs.length ? `<a class="notice notice-red" onclick="go('analysis')">
-      ${overs.slice(0, 3).map((b) => `⚠️ ${cat(b.cid).name} 已超预算 <b class="num">${fmt(b.spent - b.limit)}</b>`).join("<br>")}
-      <br><span style="font-size:11px;opacity:.75">点击查看消费分析 ›</span></a>` : ""}
+    <div class="card pad">
+      <div class="row" style="margin-bottom:10px">
+        <a class="back" style="font-size:20px" onclick="go('home',{month:'${shiftMonth(m, -1)}'})">‹</a>
+        <b>${y}年${+mo}月</b>
+        <a class="back" style="font-size:20px" onclick="go('home',{month:'${shiftMonth(m, 1)}'})">›</a>
+        <button class="btn btn-sm" style="margin-left:auto" onclick="go('import')">⤓ 导入</button>
+      </div>
+      <span class="muted">本月结余</span>
+      <div class="num money">${fmt(inc - exp, true)}</div>
+      <div class="row muted num" style="gap:14px;margin-top:4px">
+        <span>支出 <b style="color:var(--ink)">${fmt(exp)}</b></span>
+        <span>收入 <b style="color:var(--ink)">${fmt(inc)}</b></span>
+      </div>
+    </div>
+    ${due0 ? `<div class="strip strip-amber" onclick="go('recurring')">📅
+      <span>${esc(due0.name)} <b>${fmt(due0.amountCents)}</b> ${
+        dueStatus(due0.nextDate, today()) === "overdue" ? "已到期" : due0.nextDate.slice(5) + " 到期"}${
+        dues.length > 1 ? ` · 另有 ${dues.length - 1} 项` : ""}</span>
+      <span class="arrow">›</span></div>` : ""}
+    ${overs.length ? `<div class="strip strip-red" onclick="go('analysis')">⚠️
+      <span>${cat(overs[0].cid).name} 已超预算 <b>${fmt(overs[0].spent - overs[0].limit)}</b>${
+        overs.length > 1 ? ` · 另有 ${overs.length - 1} 类` : ""}</span>
+      <span class="arrow">›</span></div>` : ""}
     ${days.length === 0 ? `<div class="card pad muted center">本月还没有账目,点下方「＋」记一笔</div>` :
       days.map((d) => {
         const dayRows = rows.filter((t) => t.date === d);
         const dayExp = dayRows.filter((t) => t.type === "expense").reduce((a, t) => a + t.amountCents, 0);
-        return `<div><div class="row" style="padding:0 4px 6px"><span class="muted">${d.slice(5)}</span>
+        return `<div><div class="row" style="padding:2px 4px 6px"><span class="muted">${d.slice(5)}</span>
           <span class="muted num" style="margin-left:auto">支出 ${fmt(dayExp)}</span></div>
         <div class="card list">${dayRows.map((t) => `<div onclick="editTx(${t.id})" style="cursor:pointer">
           <span style="font-size:20px">${cat(t.catId).icon}</span>
@@ -297,7 +316,6 @@ function homeView() {
 }
 
 /* 编辑面板:底部弹层,金额/分类可改,带独立删除键 */
-let editId = null;
 function editTx(id) { editId = id; render(); }
 function closeEdit() { editId = null; render(); }
 function editSheet() {
@@ -333,38 +351,39 @@ function deleteTx() {
   editId = null; save(); render(); toast("已删除");
 }
 
-/* ============ 记一笔:键盘 + 分类宫格 ============ */
-let rec = { type: "expense", cents: 0, catId: 1 };
+/* ============ 记一笔:常规小数键盘(含 . 键) ============ */
+let rec = { type: "expense", amt: "", catId: 1 };
 function recordView() {
-  rec = { type: "expense", cents: 0, catId: 1 };
+  rec = { type: "expense", amt: "", catId: 1 };
   return `<div class="stack">
-    <div class="row"><a class="link" onclick="go('home')">‹</a><h1>记一笔</h1>
-      <div class="row" style="margin-left:auto;gap:4px">
-        <button class="btn btn-sm" id="tE" onclick="recType('expense')">支出</button>
-        <button class="btn btn-sm btn-ghost" id="tI" onclick="recType('income')">收入</button></div></div>
+    ${hdr("记一笔", "home", `<div class="seg">
+      <button id="tE" class="on" onclick="recType('expense')">支出</button>
+      <button id="tI" onclick="recType('income')">收入</button></div>`)}
     <div class="card pad center"><span class="muted">金额</span>
-      <div class="num" id="amt" style="font-size:32px;font-weight:700">¥0.00</div></div>
+      <div class="num money" id="amt">¥0</div></div>
     <div class="grid" id="cats">${CATS.map((c) =>
       `<button class="cat ${c.id === 1 ? "on" : ""}" data-c="${c.id}" onclick="recCat(${c.id})">${c.icon}<br>${c.name}</button>`).join("")}</div>
     <input id="note" placeholder="备注(可选)" aria-label="备注">
-    <div class="keys">${[1,2,3,4,5,6,7,8,9].map((n) => `<button onclick="key(${n})">${n}</button>`).join("")}
-      <button onclick="key('c')">C</button><button onclick="key(0)">0</button><button onclick="key('b')">⌫</button></div>
-    <button class="btn" onclick="saveRec()">保存</button></div>`;
+    <div class="keys">${[1,2,3,4,5,6,7,8,9].map((n) => `<button onclick="key('${n}')">${n}</button>`).join("")}
+      <button onclick="key('.')">.</button><button onclick="key('0')">0</button><button onclick="key('b')" aria-label="退格">⌫</button></div>
+    <button class="btn" style="padding:13px" onclick="saveRec()">保存</button></div>`;
 }
 function recType(t) { rec.type = t;
-  document.getElementById("tE").className = "btn btn-sm" + (t === "expense" ? "" : " btn-ghost");
-  document.getElementById("tI").className = "btn btn-sm" + (t === "income" ? "" : " btn-ghost"); }
+  document.getElementById("tE").classList.toggle("on", t === "expense");
+  document.getElementById("tI").classList.toggle("on", t === "income"); }
 function recCat(id) { rec.catId = id;
   document.querySelectorAll("#cats .cat").forEach((b) => b.classList.toggle("on", +b.dataset.c === id)); }
 function key(k) {
-  if (k === "c") rec.cents = 0;
-  else if (k === "b") rec.cents = Math.floor(rec.cents / 10);
-  else if (rec.cents < 1e9) rec.cents = rec.cents * 10 + k;
-  document.getElementById("amt").textContent = fmt(rec.cents);
+  if (k === "b") rec.amt = rec.amt.slice(0, -1);
+  else if (k === ".") { if (!rec.amt.includes(".")) rec.amt = (rec.amt || "0") + "."; }
+  else if (rec.amt.includes(".") && rec.amt.split(".")[1].length >= 2) return; // 最多两位小数
+  else if (rec.amt.length < 9) rec.amt += k;
+  document.getElementById("amt").textContent = "¥" + (rec.amt || "0");
 }
 function saveRec() {
-  if (rec.cents <= 0) return toast("请输入金额");
-  S.txs.push({ id: S.nextId++, type: rec.type, amountCents: rec.cents, catId: rec.catId,
+  const cents = Math.round(Number(rec.amt) * 100);
+  if (!(cents > 0)) return toast("请输入金额");
+  S.txs.push({ id: S.nextId++, type: rec.type, amountCents: cents, catId: rec.catId,
     date: today(), note: document.getElementById("note").value.trim(), source: "manual" });
   save(); go("home", { month: monthOf(today()) }); toast("已入账");
 }
@@ -373,7 +392,7 @@ function saveRec() {
 let pending = null;
 function importView() {
   return `<div class="stack">
-    <div class="row"><a class="link" onclick="go('home')">‹</a><h1>OCR 批量导入</h1></div>
+    ${hdr("OCR 批量导入", "home")}
     <p class="muted" style="margin:0">演示版使用模拟识别。真实应用:上传账单截图(可多张)→ 视觉大模型识别 → 待确认清单(自动查重、模糊项标疑)→ 勾选入账,并学习商户→分类映射。</p>
     ${!pending ? `<div class="card pad center stack">
       <div style="font-size:36px">🧾</div><p class="muted" style="margin:0">模拟一张「支付账单」截图</p>
@@ -406,15 +425,13 @@ function confirmOcr() {
 }
 
 /* ============ 基金:总览 + 手动记快照 + 详情(跨期表 + 逐条删除) ============ */
-let fundFormOpen = false;
 function toggleFundForm() { fundFormOpen = !fundFormOpen; render(); }
 function fundsView() {
   const total = S.funds.reduce((a, f) => a + f.records[f.records.length - 1][1], 0);
   return `<div class="stack">
-    <div class="row"><h1>基金</h1>
-      <button class="btn btn-sm" style="margin-left:auto" onclick="toggleFundForm()">${fundFormOpen ? "收起" : "+ 手动记"}</button></div>
+    ${hdr("基金", null, `<button class="btn btn-sm" onclick="toggleFundForm()">${fundFormOpen ? "收起" : "+ 手动记"}</button>`)}
     <div class="card pad"><span class="muted">总市值</span>
-      <div class="num" style="font-size:26px;font-weight:700">${fmt(total)}</div></div>
+      <div class="num money">${fmt(total)}</div></div>
     ${fundFormOpen ? `<div class="card pad stack" style="gap:10px">
       <div class="row"><input id="fdCode" inputmode="numeric" placeholder="基金代码,如 161725" aria-label="基金代码" style="flex:1">
         <input id="fdDate" type="date" value="${today()}" aria-label="快照日期" style="width:150px"></div>
@@ -456,10 +473,9 @@ function fundDetailView() {
   const first = f.records[0][1], last = f.records[f.records.length - 1][1];
   const hold = f.records.length > 1 ? ((last - first) / first * 100).toFixed(2) : null;
   return `<div class="stack">
-    <div class="row"><a class="link" onclick="go('funds')">‹</a>
-      <h1 style="font-size:17px">${esc(f.name)}</h1><span class="muted">${f.code}</span></div>
+    ${hdr(esc(f.name), "funds", `<span class="muted">${f.code}</span>`)}
     <div class="card pad"><span class="muted">最新市值</span>
-      <div class="num" style="font-size:24px;font-weight:700">${fmt(last)}</div>
+      <div class="num money">${fmt(last)}</div>
       ${hold !== null ? `<span class="muted">持有期累计(${f.records[0][0]} 起):
         <b class="num" style="color:${+hold >= 0 ? "var(--red-ink)" : "var(--green-ink)"}">${+hold >= 0 ? "+" : ""}${hold}%</b></span>` : ""}</div>
     <div class="card list">${f.records.slice().reverse().map(([d, v], ri, arr) => {
@@ -492,9 +508,9 @@ function analysisView() {
   const catMax = Math.max(...byCat.map((x) => x.v), 1);
   const budgets = budgetCalc(m0);
   return `<div class="stack">
-    <div class="row"><a class="link" onclick="go('me')">‹</a><h1>消费分析</h1></div>
+    ${hdr("消费分析", "me")}
     <div class="card pad"><span class="muted">本月支出</span>
-      <div class="num" style="font-size:24px;font-weight:700">${fmt(cur)}</div>
+      <div class="num money">${fmt(cur)}</div>
       ${mom !== null ? `<span class="muted">环比上月(${fmt(prev)}):
         <b style="color:${+mom > 0 ? "var(--red-ink)" : "var(--green-ink)"}">${+mom > 0 ? "+" : ""}${mom}%</b></span>` : ""}</div>
     <div class="card pad"><p class="muted" style="margin:0 0 10px">近 6 月支出趋势</p>
@@ -523,8 +539,8 @@ function analysisView() {
 /* ============ 预算设置 ============ */
 function budgetView() {
   return `<div class="stack">
-    <div class="row"><a class="link" onclick="go('me')">‹</a><h1>预算设置</h1></div>
-    <p class="muted" style="margin:0">按分类设常设月度限额(设一次每月生效);清空即取消该分类预算。超过 80% 预警,超支后首页出现提醒卡。</p>
+    ${hdr("预算设置", "me")}
+    <p class="muted" style="margin:0">按分类设常设月度限额(设一次每月生效);清空即取消该分类预算。超过 80% 预警,超支后首页出现提醒。</p>
     <div class="card list">${CATS.map((c) => `<div><span style="flex:1">${c.icon} ${c.name}</span>
       <input id="bg${c.id}" inputmode="decimal" placeholder="不限" aria-label="${c.name}预算"
         value="${S.budgets[c.id] ? S.budgets[c.id] / 100 : ""}" style="width:110px;text-align:right">
@@ -551,13 +567,11 @@ function detectCandidates() {
   return [...g.values()].filter((e) => e.seen.size >= 3 && !names.has(e.last.note))
     .map((e) => e.last).sort((a, b) => b.amountCents - a.amountCents);
 }
-let recFormOpen = false;
 function toggleRecForm() { recFormOpen = !recFormOpen; render(); }
 function recurringView() {
   const t = today(), cands = detectCandidates();
   return `<div class="stack">
-    <div class="row"><a class="link" onclick="go('me')">‹</a><h1>周期支出</h1>
-      <button class="btn btn-sm" style="margin-left:auto" onclick="toggleRecForm()">${recFormOpen ? "收起" : "+ 新增"}</button></div>
+    ${hdr("周期支出", "me", `<button class="btn btn-sm" onclick="toggleRecForm()">${recFormOpen ? "收起" : "+ 新增"}</button>`)}
     <p class="muted" style="margin:0">登记订阅、房租等固定支出;到期前 7 天在首页提醒,「记一笔」自动入账并顺延到下一期。</p>
     ${recFormOpen ? `<div class="card pad stack" style="gap:10px">
       <input id="rcName" placeholder="名称,如 房租 / 视频会员" aria-label="周期支出名称">
@@ -577,7 +591,7 @@ function recurringView() {
           <button class="btn btn-sm btn-ghost" onclick="delRecurring(${r.id})">✕</button></div>`;
       }).join("") : `<div class="muted">还没有登记周期支出</div>`}</div>
     ${cands.length ? `<p class="muted" style="margin:0">从流水中发现的疑似周期支出(近 3 个月每月出现、同名同金额):</p>
-      <div class="card list">${cands.map((c, i) => `<div><span style="flex:1"><b style="font-size:14px">${esc(c.note)}</b>
+      <div class="card list">${cands.map((c) => `<div><span style="flex:1"><b style="font-size:14px">${esc(c.note)}</b>
         <span class="muted num" style="display:block">${fmt(c.amountCents)}/月 · 上次 ${c.date}</span></span>
         <button class="btn btn-sm btn-ghost" onclick="adoptCandidate(${c.id})">+ 添加</button></div>`).join("")}</div>` : ""}
   </div>`;
@@ -615,7 +629,7 @@ function delRecurring(id) {
 /* ============ 我的 ============ */
 function meView() {
   return `<div class="stack">
-    <div class="row"><h1>我的</h1><span class="muted" style="margin-left:auto">👤 ${esc(S.user.name)}</span></div>
+    ${hdr("我的", null, `<span class="muted">👤 ${esc(S.user.name)}</span>`)}
     <div><p class="muted" style="padding:0 4px 6px;margin:0">分析与预算</p><div class="card list">
       <div onclick="go('analysis')" style="cursor:pointer"><span style="flex:1">消费分析</span><span class="muted">环比 · 趋势 · 分类结构 ›</span></div>
       <div onclick="go('budget')" style="cursor:pointer"><span style="flex:1">预算设置</span><span class="muted">分类月度限额 · 超支提醒 ›</span></div>
@@ -628,7 +642,8 @@ function meView() {
       <div class="muted"><span style="flex:1">净资产 / 月度报告</span>敬请期待</div>
       <div class="muted"><span style="flex:1">异常支出提醒</span>敬请期待</div>
     </div></div>
-    <button class="btn" style="background:var(--red-bg);color:var(--red-ink)" onclick="logout()">退出登录</button>
+    <button class="btn btn-danger" onclick="logout()">退出登录</button>
+    <p class="muted center" style="margin:0;opacity:.75">交互演示版 · 数据仅存于此浏览器<br>真实应用:Next.js + SQLite + LLM OCR,自托管运行</p>
   </div>`;
 }
 function resetDemo() {
