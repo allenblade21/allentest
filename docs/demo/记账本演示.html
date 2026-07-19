@@ -35,7 +35,7 @@
     font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif; }
   #phone { max-width: 430px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
   #view { flex: 1; padding: 14px 14px 92px; }
-  h1 { font-size: 20px; margin: 0; font-weight: 700; letter-spacing: .01em; }
+  h1 { font-size: 20px; margin: 0; font-weight: 700; }
   .hdr { display: flex; align-items: center; gap: 10px; padding: 2px 2px 12px; }
   .hdr .back { font-size: 22px; line-height: 1; color: var(--muted); text-decoration: none; cursor: pointer; }
   .row { display: flex; align-items: center; gap: 8px; }
@@ -47,8 +47,7 @@
   .btn { border: 0; border-radius: 12px; background: var(--accent); color: var(--accent-ink);
     font: inherit; font-weight: 600; padding: 11px 14px; cursor: pointer; }
   .btn:disabled { opacity: .5; }
-  .btn:focus-visible, .cat:focus-visible, #nav button:focus-visible, .seg button:focus-visible {
-    outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn:focus-visible, .cat:focus-visible, #nav button:focus-visible, .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .btn-ghost { background: var(--chip); color: var(--ink); }
   .btn-danger { background: var(--red-bg); color: var(--red-ink); }
   .btn-sm { padding: 7px 12px; font-size: 13px; border-radius: 10px; }
@@ -60,15 +59,13 @@
   .tag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; vertical-align: 1px; }
   .tag-red { background: var(--red-bg); color: var(--red-ink); }
   .tag-amber { background: var(--amber-bg); color: var(--amber-ink); }
-  .strip { display: flex; align-items: center; gap: 8px; border-radius: 12px; padding: 10px 12px;
-    font-size: 13px; cursor: pointer; }
+  .strip { display: flex; align-items: center; gap: 8px; border-radius: 12px; padding: 10px 12px; font-size: 13px; cursor: pointer; }
   .strip b { font-variant-numeric: tabular-nums; }
   .strip .arrow { margin-left: auto; opacity: .6; }
   .strip-amber { background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber-ink); }
   .strip-red { background: var(--red-bg); border: 1px solid var(--red-line); color: var(--red-ink); }
   #nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px;
-    display: flex; background: var(--card); border-top: 1px solid var(--line);
-    padding: 6px 8px calc(8px + env(safe-area-inset-bottom)); }
+    display: flex; background: var(--card); border-top: 1px solid var(--line); padding: 6px 8px calc(8px + env(safe-area-inset-bottom)); }
   #nav button { flex: 1; border: 0; background: none; font: inherit; font-size: 11px; color: var(--muted);
     display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; padding: 4px 0; }
   #nav button.on { color: var(--accent); font-weight: 600; }
@@ -78,7 +75,7 @@
   .seg { display: flex; background: var(--chip); border-radius: 11px; padding: 3px; }
   .seg button { border: 0; background: none; font: inherit; font-size: 13px; font-weight: 600;
     color: var(--muted); padding: 5px 14px; border-radius: 9px; cursor: pointer; }
-  .seg button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgba(15, 25, 20, .12); }
+  .seg button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgba(15,25,20,.12); }
   .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .cat { border: 1px solid var(--line); border-radius: 12px; padding: 9px 2px; text-align: center;
     font-size: 12px; cursor: pointer; background: none; color: var(--ink); font-family: inherit; }
@@ -97,10 +94,10 @@
   .toast.show { opacity: .95; }
   a.link { color: var(--accent); font-weight: 600; text-decoration: none; cursor: pointer; }
   .center { text-align: center; }
-  .backdrop { position: fixed; inset: 0; background: rgba(10, 14, 12, .42); z-index: 10; }
+  .backdrop { position: fixed; inset: 0; background: rgba(10,14,12,.42); z-index: 10; }
   .sheet { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px;
     background: var(--card); border-radius: 20px 20px 0 0; padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
-    z-index: 11; box-shadow: 0 -10px 34px rgba(10, 20, 16, .22); }
+    z-index: 11; box-shadow: 0 -10px 34px rgba(10,20,16,.22); }
   .sheet-grip { width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 0 auto 12px; }
   @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
 </style>
@@ -110,7 +107,60 @@
 
 <script>
 "use strict";
-/* ============ 数据与工具(金额一律整数「分」,与真实应用一致) ============ */
+/* ============ i18n:中文为源语言,EN 词典按中文键翻译,缺词回退中文 ============ */
+const LANG_KEY = "ledger-demo-lang";
+let lang = localStorage.getItem(LANG_KEY) || "zh";
+const EN = {
+  "记账本":"Ledger","流水":"Home","记一笔":"Add","基金":"Funds","我的":"Me",
+  "登录后继续记账":"Sign in to continue","创建你的演示账号":"Create your demo account",
+  "用户名":"Username","密码":"Password","密码(至少 6 位)":"Password (min 6 chars)","登录":"Sign in","注册":"Sign up",
+  "还没有账号?":"No account? ","去注册":"Sign up","已有账号?":"Have an account? ","去登录":"Sign in",
+  "用户名至少 2 位":"Username: at least 2 chars","密码至少 6 位":"Password: at least 6 chars",
+  "用户名已存在":"Username already exists","用户名或密码错误":"Wrong username or password","注册成功,已自动登录":"Signed up & logged in",
+  "交互演示版 · 数据与账号仅存于此浏览器":"Interactive demo · data stays in this browser",
+  "本月结余":"Monthly balance","支出":"Expense","收入":"Income","导入":"Import","已到期":"due","到期":"due","另有":"and","项":"more","类":"more",
+  "已超预算":"over budget","本月还没有账目,点下方「＋」记一笔":"No records this month. Tap + to add one.",
+  "点击管理":"Manage ›","金额":"Amount","分类":"Category","备注(可选)":"Note (optional)","保存":"Save","请输入金额":"Enter an amount","已入账":"Saved",
+  "编辑账目":"Edit record","金额(元)":"Amount (¥)","删除":"Delete","保存修改":"Save changes","已修改":"Updated","已删除":"Deleted",
+  "确定删除这笔记录?":"Delete this record?","金额无效":"Invalid amount","OCR 导入":"OCR Import",
+  "OCR 批量导入":"OCR Batch Import","识别(模拟)":"Recognize (mock)","入账已勾选":"Import selected","存疑":"check",
+  "模拟一张「支付账单」截图":"Mock a payment-bill screenshot",
+  "演示版使用模拟识别。真实应用由视觉大模型识别账单截图,经待确认清单校对后入账。":"Demo uses mock recognition. The real app parses bill screenshots with a vision LLM, then you confirm before saving.",
+  "识别到":"Recognized","条,存疑项已标黄且默认不勾选:":"items. Doubtful ones are highlighted and unchecked:",
+  "条(OCR)":"items (OCR)","总市值":"Total market value","期快照":"snapshots","较上期":"vs prev","首期":"first","手动记":"Manual",
+  "持仓截图 OCR(模拟)":"Holdings OCR (mock)","识别到以下持仓,同代码归一、同日覆盖:":"Recognized holdings. Same code merges; same day overwrites:",
+  "无代码,需补填":"no code","已入基金":"funds saved","基金代码,如 161725":"Fund code, e.g. 161725","基金名称":"Fund name",
+  "当前市值(元)":"Market value (¥)","保存快照":"Save snapshot","已记录":"Saved","已覆盖当日快照":"Overwrote today's snapshot",
+  "基金代码应为 6 位数字":"Code must be 6 digits","请填基金名称":"Enter fund name","请填市值":"Enter market value","请选日期":"Pick a date",
+  "同代码归一到同一只基金;同日再记会覆盖当日快照(与真实应用一致)。":"Same code merges into one fund; same-day entries overwrite (same as real app).",
+  "还没有基金,点右上「+ 手动记」或「OCR」录入":"No funds yet. Use Manual or OCR to add.",
+  "点基金进详情可看跨期涨跌与删除快照。":"Tap a fund for history and deletion.",
+  "最新市值":"Latest value","持有期累计":"Holding return","起":"since","删除全部快照后该基金自动从列表移除。":"Deleting all snapshots removes the fund.",
+  "删除这期快照?":"Delete this snapshot?","快照已清空,基金已移除":"Snapshots cleared, fund removed",
+  "消费分析":"Analytics","本月支出":"This month","环比上月":"vs last month","近 6 月支出趋势":"6-month trend","月":"","当月分类结构":"Category breakdown",
+  "本月暂无支出":"No expense this month","分类预算":"Budgets","去设置":"Set up","超支":"over","还没设预算":"No budgets yet",
+  "预算设置":"Budget Settings","不限":"none","元/月":"¥/mo","已保存":"Saved",
+  "按分类设常设月度限额;清空即取消。超过 80% 预警,超支后首页提醒。":"Set standing monthly limits per category; clear to remove. Warns at 80%, alerts when over.",
+  "周期支出":"Recurring","+ 新增":"+ New","收起":"Close","每月":"monthly","每年":"yearly","下次":"next","已登记":"Added",
+  "登记订阅、房租等固定支出;到期前 7 天在首页提醒,「记一笔」自动入账并顺延。":"Track subscriptions & rent. Reminded 7 days ahead; Pay records it and rolls the date.",
+  "名称,如 房租 / 视频会员":"Name, e.g. Rent / Video sub","下次日期":"Next date","请填名称":"Enter a name","请填金额":"Enter an amount","请选下次日期":"Pick next date",
+  "还没有登记周期支出":"No recurring expenses yet","从流水中发现的疑似周期支出(近 3 个月每月出现、同名同金额):":"Detected from your records (same name & amount, 3 months in a row):",
+  "上次":"last","+ 添加":"+ Add","已登记为周期支出":"Added as recurring","已入账,顺延到":"Recorded. Next:","删除这条周期支出?(不影响已记的流水)":"Delete this recurring item? (records stay)",
+  "即将到期":"due soon","语言":"Language","分析与预算":"Analytics & Budget","环比 · 趋势 · 分类结构":"Trends & breakdown",
+  "分类月度限额 · 超支提醒":"Limits & alerts","订阅/房租 · 到期提醒":"Subscriptions & reminders","演示数据":"Demo data",
+  "重置演示数据":"Reset demo data","恢复初始样例":"Restore samples","推荐功能(后续版本)":"Coming soon","净资产 / 月度报告":"Net worth / Monthly report",
+  "异常支出提醒":"Anomaly alerts","敬请期待":"soon","退出登录":"Sign out","已重置":"Reset done",
+  "重置为初始演示数据?(演示账号保留)":"Reset to sample data? (account kept)",
+  "餐饮":"Food","交通":"Transit","购物":"Shopping","居住":"Housing","娱乐":"Fun","医疗":"Health","人情":"Gifts","其他":"Other",
+  "工资":"Salary","健身房":"Gym","视频会员":"Video sub","午饭":"Lunch","周末聚餐":"Dinner out","地铁":"Metro","球鞋":"Sneakers",
+  "早餐+咖啡":"Breakfast+coffee","火锅":"Hotpot","公交":"Bus","日料":"Japanese food","房租":"Rent","云存储年费":"Cloud storage (yearly)",
+  "瑞幸咖啡":"Luckin Coffee","滴滴出行":"DiDi ride","山姆会员店":"Sam's Club","美团(金额不清晰)":"Meituan (amount unclear)",
+  "检测到":"Found","项异常支出":"anomalies",
+};
+const t = (s) => (lang === "en" ? (EN[s] ?? s) : s);
+function setLang(l) { lang = l; localStorage.setItem(LANG_KEY, l); render(); }
+
+/* ============ 数据与工具(金额一律整数「分」) ============ */
 const KEY = "ledger-demo-v2";
 const CATS = [
   { id: 1, name: "餐饮", icon: "🍚" }, { id: 2, name: "交通", icon: "🚇" },
@@ -131,15 +181,15 @@ function shiftMonth(m, delta) {
 }
 function daysFromNow(n) { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); }
 const dayShift = (m, day) => `${m}-${pad(day)}`;
-function advanceDate(date, cycle) { // 顺延一个周期,月末安全(1-31 → 2-28)
+function advanceDate(date, cycle) { // 月末安全顺延
   const [y, m, d] = date.split("-").map(Number);
   const ty = cycle === "yearly" ? y + 1 : y, tm = cycle === "yearly" ? m : m + 1;
   const last = new Date(ty, tm, 0).getDate();
   return iso(new Date(ty, tm - 1, Math.min(d, last)));
 }
-function dueStatus(nextDate, t) {
-  if (nextDate < t) return "overdue";
-  const diff = (new Date(nextDate + "T00:00:00") - new Date(t + "T00:00:00")) / 864e5;
+function dueStatus(nextDate, tday) {
+  if (nextDate < tday) return "overdue";
+  const diff = (new Date(nextDate + "T00:00:00") - new Date(tday + "T00:00:00")) / 864e5;
   return diff <= 7 ? "upcoming" : "later";
 }
 
@@ -152,8 +202,7 @@ function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
 function seed() {
   const m0 = monthOf(today()), m1 = shiftMonth(m0, -1), m2 = shiftMonth(m0, -2);
   let id = 1;
-  const tx = (type, amountCents, catId, date, note, source = "manual") =>
-    ({ id: id++, type, amountCents, catId, date, note, source });
+  const tx = (type, amountCents, catId, date, note, source = "manual") => ({ id: id++, type, amountCents, catId, date, note, source });
   const monthly = (m) => [
     tx("expense", 19900, 5, dayShift(m, 8), "健身房"),
     tx("expense", 2500, 5, dayShift(m, 5), "视频会员"),
@@ -174,7 +223,7 @@ function seed() {
       tx("expense", 12800, 1, dayShift(m0, 13), "日料"),
       tx("income", 1200000, 8, dayShift(m0, 10), "工资"),
     ],
-    budgets: { 1: 30000, 3: 50000 }, // 餐饮 300 / 购物 500 —— 餐饮自然超支,演示提醒链路
+    budgets: { 1: 30000, 3: 50000 },
     recurring: [
       { id: 1, name: "房租", amountCents: 300000, catId: 4, cycle: "monthly", nextDate: daysFromNow(-2) },
       { id: 2, name: "视频会员", amountCents: 2500, catId: 5, cycle: "monthly", nextDate: daysFromNow(3) },
@@ -188,7 +237,7 @@ function seed() {
   };
 }
 
-/* ============ 迷你路由与渲染 ============ */
+/* ============ 路由与渲染 ============ */
 const V = document.getElementById("view"), NAV = document.getElementById("nav");
 let route = { name: "home", month: monthOf(today()) };
 let editId = null, recFormOpen = false, fundFormOpen = false;
@@ -197,12 +246,13 @@ function go(name, extra) {
   editId = null; recFormOpen = false; fundFormOpen = false;
   render(); window.scrollTo(0, 0);
 }
-function toast(t) {
+function toast(s) {
   const el = document.getElementById("toast");
-  el.textContent = t; el.classList.add("show");
+  el.textContent = s; el.classList.add("show");
   clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 1800);
 }
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const tn = (s) => esc(t(s)); // 翻译 + 转义(用于用户可见名称)
 const hdr = (title, backTo, action) => `<div class="hdr">
   ${backTo ? `<a class="back" onclick="go('${backTo}')">‹</a>` : ""}
   <h1>${title}</h1>${action ? `<span style="margin-left:auto">${action}</span>` : ""}</div>`;
@@ -212,199 +262,203 @@ function render() {
   NAV.hidden = !S.user || !["home", "funds", "me"].includes(route.name);
   if (!NAV.hidden) {
     NAV.innerHTML = [
-      `<button class="${route.name === "home" ? "on" : ""}" onclick="go('home')"><span class="ico">📒</span>流水</button>`,
-      `<button class="fab" onclick="go('record')"><span class="ico">＋</span>记一笔</button>`,
-      `<button class="${route.name === "funds" ? "on" : ""}" onclick="go('funds')"><span class="ico">📈</span>基金</button>`,
-      `<button class="${route.name === "me" ? "on" : ""}" onclick="go('me')"><span class="ico">👤</span>我的</button>`,
+      `<button class="${route.name === "home" ? "on" : ""}" onclick="go('home')"><span class="ico">📒</span>${t("流水")}</button>`,
+      `<button class="fab" onclick="go('record')"><span class="ico">＋</span>${t("记一笔")}</button>`,
+      `<button class="${route.name === "funds" ? "on" : ""}" onclick="go('funds')"><span class="ico">📈</span>${t("基金")}</button>`,
+      `<button class="${route.name === "me" ? "on" : ""}" onclick="go('me')"><span class="ico">👤</span>${t("我的")}</button>`,
     ].join("");
   }
   V.innerHTML = VIEWS[route.name]();
 }
+const langChip = () => `<span class="seg" style="font-size:12px">
+  <button class="${lang === "zh" ? "on" : ""}" onclick="setLang('zh')">中</button>
+  <button class="${lang === "en" ? "on" : ""}" onclick="setLang('en')">EN</button></span>`;
 
-/* ============ 登录 / 注册(演示:账号只存浏览器本地;真实应用为服务端会话) ============ */
+/* ============ 登录 / 注册 ============ */
 function authView(mode) {
   const isLogin = mode === "login";
   return `<div class="stack" style="justify-content:center;min-height:82vh;gap:16px">
-    <div class="center"><div style="font-size:40px">📒</div><h1>记账本</h1>
-      <p class="muted">${isLogin ? "登录后继续记账" : "创建你的演示账号"}</p></div>
+    <div class="center"><div style="font-size:40px">📒</div><h1>${t("记账本")}</h1>
+      <p class="muted">${isLogin ? t("登录后继续记账") : t("创建你的演示账号")}</p></div>
     <div class="card pad stack" style="gap:10px">
-      <input id="au" placeholder="用户名" autocomplete="username" aria-label="用户名">
-      <input id="ap" type="password" placeholder="密码(至少 6 位)" aria-label="密码"
+      <input id="au" placeholder="${t("用户名")}" autocomplete="username" aria-label="用户名">
+      <input id="ap" type="password" placeholder="${t("密码(至少 6 位)")}" aria-label="密码"
         autocomplete="${isLogin ? "current" : "new"}-password" onkeydown="if(event.key==='Enter')authSubmit('${mode}')">
       <p class="muted" id="amsg" style="color:var(--red-ink);margin:0"></p>
-      <button class="btn" onclick="authSubmit('${mode}')">${isLogin ? "登录" : "注册"}</button>
+      <button class="btn" onclick="authSubmit('${mode}')">${isLogin ? t("登录") : t("注册")}</button>
     </div>
     <p class="center muted">${isLogin
-      ? `还没有账号?<a class="link" onclick="go('register')">去注册</a>`
-      : `已有账号?<a class="link" onclick="go('login')">去登录</a>`}</p>
-    <p class="center muted" style="opacity:.75">交互演示版 · 数据与账号仅存于此浏览器<br>真实应用为服务端加密会话,可关闭注册(ALLOW_REGISTER=0)</p>
+      ? `${t("还没有账号?")}<a class="link" onclick="go('register')">${t("去注册")}</a>`
+      : `${t("已有账号?")}<a class="link" onclick="go('login')">${t("去登录")}</a>`}</p>
+    <p class="center">${langChip()}</p>
+    <p class="center muted" style="opacity:.75">${t("交互演示版 · 数据与账号仅存于此浏览器")}</p>
   </div>`;
 }
 function authSubmit(mode) {
   const u = document.getElementById("au").value.trim(), p = document.getElementById("ap").value;
   const msg = document.getElementById("amsg");
-  if (u.length < 2) return (msg.textContent = "用户名至少 2 位");
-  if (p.length < 6) return (msg.textContent = "密码至少 6 位");
+  if (u.length < 2) return (msg.textContent = t("用户名至少 2 位"));
+  if (p.length < 6) return (msg.textContent = t("密码至少 6 位"));
   if (mode === "register") {
-    if (S.users.some((x) => x.name === u)) return (msg.textContent = "用户名已存在");
-    S.users.push({ name: u, pass: p }); S.user = { name: u }; save(); go("home"); toast("注册成功,已自动登录");
+    if (S.users.some((x) => x.name === u)) return (msg.textContent = t("用户名已存在"));
+    S.users.push({ name: u, pass: p }); S.user = { name: u }; save(); go("home"); toast(t("注册成功,已自动登录"));
   } else {
-    if (!S.users.find((x) => x.name === u && x.pass === p)) return (msg.textContent = "用户名或密码错误");
+    if (!S.users.find((x) => x.name === u && x.pass === p)) return (msg.textContent = t("用户名或密码错误"));
     S.user = { name: u }; save(); go("home");
   }
 }
 function logout() { S.user = null; save(); go("login"); }
 
-/* ============ 首页:hero 汇总 + 单行提醒条 + 按日流水 ============ */
+/* ============ 首页 ============ */
 function budgetCalc(month) {
   return Object.entries(S.budgets).map(([cid, limit]) => {
-    const spent = S.txs.filter((t) => t.type === "expense" && t.catId == cid && monthOf(t.date) === month)
-      .reduce((a, t) => a + t.amountCents, 0);
+    const spent = S.txs.filter((x) => x.type === "expense" && x.catId == cid && monthOf(x.date) === month)
+      .reduce((a, x) => a + x.amountCents, 0);
     return { cid: +cid, limit, spent };
   }).filter((b) => b.limit > 0);
 }
 function homeView() {
   const m = route.month;
-  const rows = S.txs.filter((t) => monthOf(t.date) === m).sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+  const rows = S.txs.filter((x) => monthOf(x.date) === m).sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
   let exp = 0, inc = 0;
-  rows.forEach((t) => (t.type === "expense" ? (exp += t.amountCents) : (inc += t.amountCents)));
+  rows.forEach((x) => (x.type === "expense" ? (exp += x.amountCents) : (inc += x.amountCents)));
   const overs = budgetCalc(m).filter((b) => b.spent > b.limit);
-  const dues = S.recurring.filter((r) => dueStatus(r.nextDate, today()) !== "later")
-    .sort((a, b) => a.nextDate.localeCompare(b.nextDate));
-  const days = [...new Set(rows.map((t) => t.date))];
+  const dues = S.recurring.filter((r) => dueStatus(r.nextDate, today()) !== "later").sort((a, b) => a.nextDate.localeCompare(b.nextDate));
+  const days = [...new Set(rows.map((x) => x.date))];
   const [y, mo] = m.split("-");
-  const due0 = dues[0];
+  const due0 = dues[0], over0 = overs[0];
+  const monthTitle = lang === "en" ? `${y}-${mo}` : `${y}年${+mo}月`;
   return `<div class="stack">
     <div class="card pad">
       <div class="row" style="margin-bottom:10px">
         <a class="back" style="font-size:20px" onclick="go('home',{month:'${shiftMonth(m, -1)}'})">‹</a>
-        <b>${y}年${+mo}月</b>
+        <b>${monthTitle}</b>
         <a class="back" style="font-size:20px" onclick="go('home',{month:'${shiftMonth(m, 1)}'})">›</a>
-        <button class="btn btn-sm" style="margin-left:auto" onclick="go('import')">⤓ 导入</button>
+        <button class="btn btn-sm" style="margin-left:auto" onclick="go('import')">⤓ ${t("导入")}</button>
       </div>
-      <span class="muted">本月结余</span>
+      <span class="muted">${t("本月结余")}</span>
       <div class="num money">${fmt(inc - exp, true)}</div>
       <div class="row muted num" style="gap:14px;margin-top:4px">
-        <span>支出 <b style="color:var(--ink)">${fmt(exp)}</b></span>
-        <span>收入 <b style="color:var(--ink)">${fmt(inc)}</b></span>
+        <span>${t("支出")} <b style="color:var(--ink)">${fmt(exp)}</b></span>
+        <span>${t("收入")} <b style="color:var(--ink)">${fmt(inc)}</b></span>
       </div>
     </div>
     ${due0 ? `<div class="strip strip-amber" onclick="go('recurring')">📅
-      <span>${esc(due0.name)} <b>${fmt(due0.amountCents)}</b> ${
-        dueStatus(due0.nextDate, today()) === "overdue" ? "已到期" : due0.nextDate.slice(5) + " 到期"}${
-        dues.length > 1 ? ` · 另有 ${dues.length - 1} 项` : ""}</span>
+      <span>${tn(due0.name)} <b>${fmt(due0.amountCents)}</b> ${
+        dueStatus(due0.nextDate, today()) === "overdue" ? t("已到期") : due0.nextDate.slice(5) + " " + t("到期")}${
+        dues.length > 1 ? ` · ${t("另有")} ${dues.length - 1} ${t("项")}` : ""}</span>
       <span class="arrow">›</span></div>` : ""}
-    ${overs.length ? `<div class="strip strip-red" onclick="go('analysis')">⚠️
-      <span>${cat(overs[0].cid).name} 已超预算 <b>${fmt(overs[0].spent - overs[0].limit)}</b>${
-        overs.length > 1 ? ` · 另有 ${overs.length - 1} 类` : ""}</span>
+    ${over0 ? `<div class="strip strip-red" onclick="go('analysis')">⚠️
+      <span>${tn(cat(over0.cid).name)} ${t("已超预算")} <b>${fmt(over0.spent - over0.limit)}</b>${
+        overs.length > 1 ? ` · ${t("另有")} ${overs.length - 1} ${t("类")}` : ""}</span>
       <span class="arrow">›</span></div>` : ""}
-    ${days.length === 0 ? `<div class="card pad muted center">本月还没有账目,点下方「＋」记一笔</div>` :
+    ${days.length === 0 ? `<div class="card pad muted center">${t("本月还没有账目,点下方「＋」记一笔")}</div>` :
       days.map((d) => {
-        const dayRows = rows.filter((t) => t.date === d);
-        const dayExp = dayRows.filter((t) => t.type === "expense").reduce((a, t) => a + t.amountCents, 0);
+        const dayRows = rows.filter((x) => x.date === d);
+        const dayExp = dayRows.filter((x) => x.type === "expense").reduce((a, x) => a + x.amountCents, 0);
         return `<div><div class="row" style="padding:2px 4px 6px"><span class="muted">${d.slice(5)}</span>
-          <span class="muted num" style="margin-left:auto">支出 ${fmt(dayExp)}</span></div>
-        <div class="card list">${dayRows.map((t) => `<div onclick="editTx(${t.id})" style="cursor:pointer">
-          <span style="font-size:20px">${cat(t.catId).icon}</span>
-          <span style="flex:1;min-width:0"><b style="font-size:14px">${esc(t.note || cat(t.catId).name)}</b>
-            <span class="muted" style="display:block">${cat(t.catId).name}${t.source === "ocr" ? " · OCR" : ""}</span></span>
-          <b class="num" style="color:${t.type === "income" ? "var(--green-ink)" : "var(--ink)"}">
-            ${t.type === "income" ? "+" : "-"}${fmt(t.amountCents)}</b></div>`).join("")}</div></div>`;
+          <span class="muted num" style="margin-left:auto">${t("支出")} ${fmt(dayExp)}</span></div>
+        <div class="card list">${dayRows.map((x) => `<div onclick="editTx(${x.id})" style="cursor:pointer">
+          <span style="font-size:20px">${cat(x.catId).icon}</span>
+          <span style="flex:1;min-width:0"><b style="font-size:14px">${tn(x.note || cat(x.catId).name)}</b>
+            <span class="muted" style="display:block">${tn(cat(x.catId).name)}${x.source === "ocr" ? " · OCR" : ""}</span></span>
+          <b class="num" style="color:${x.type === "income" ? "var(--green-ink)" : "var(--ink)"}">
+            ${x.type === "income" ? "+" : "-"}${fmt(x.amountCents)}</b></div>`).join("")}</div></div>`;
       }).join("")}
     ${editId !== null ? editSheet() : ""}
   </div>`;
 }
 
-/* 编辑面板:底部弹层,金额/分类可改,带独立删除键 */
+/* 编辑面板 */
 function editTx(id) { editId = id; render(); }
 function closeEdit() { editId = null; render(); }
 function editSheet() {
-  const t = S.txs.find((x) => x.id === editId);
-  if (!t) { editId = null; return ""; }
+  const x = S.txs.find((v) => v.id === editId);
+  if (!x) { editId = null; return ""; }
   return `<div class="backdrop" onclick="closeEdit()"></div>
   <div class="sheet stack" style="gap:12px" role="dialog" aria-label="编辑账目">
     <div class="sheet-grip"></div>
-    <div class="row"><span style="font-size:24px">${cat(t.catId).icon}</span>
-      <span style="flex:1"><b>${esc(t.note || cat(t.catId).name)}</b>
-        <span class="muted" style="display:block">${t.date}${t.source === "ocr" ? " · OCR 导入" : ""}</span></span></div>
-    <label class="muted">金额(元)
-      <input id="editAmt" inputmode="decimal" value="${(t.amountCents / 100).toFixed(2)}" style="margin-top:4px"></label>
-    <label class="muted">分类
+    <div class="row"><span style="font-size:24px">${cat(x.catId).icon}</span>
+      <span style="flex:1"><b>${tn(x.note || cat(x.catId).name)}</b>
+        <span class="muted" style="display:block">${x.date}${x.source === "ocr" ? " · OCR" : ""}</span></span></div>
+    <label class="muted">${t("金额(元)")}
+      <input id="editAmt" inputmode="decimal" value="${(x.amountCents / 100).toFixed(2)}" style="margin-top:4px"></label>
+    <label class="muted">${t("分类")}
       <select id="editCat" style="margin-top:4px">${CATS.map((c) =>
-        `<option value="${c.id}" ${c.id === t.catId ? "selected" : ""}>${c.icon} ${c.name}</option>`).join("")}</select></label>
+        `<option value="${c.id}" ${c.id === x.catId ? "selected" : ""}>${c.icon} ${tn(c.name)}</option>`).join("")}</select></label>
     <div class="row" style="gap:10px">
-      <button class="btn btn-danger" style="flex:1" onclick="deleteTx()">🗑 删除</button>
-      <button class="btn" style="flex:2" onclick="saveEdit()">保存修改</button>
+      <button class="btn btn-danger" style="flex:1" onclick="deleteTx()">🗑 ${t("删除")}</button>
+      <button class="btn" style="flex:2" onclick="saveEdit()">${t("保存修改")}</button>
     </div>
   </div>`;
 }
 function saveEdit() {
-  const t = S.txs.find((x) => x.id === editId);
+  const x = S.txs.find((v) => v.id === editId);
   const c = Math.round(Number(document.getElementById("editAmt").value) * 100);
-  if (!(c > 0)) return toast("金额无效");
-  t.amountCents = c; t.catId = +document.getElementById("editCat").value;
-  editId = null; save(); render(); toast("已修改");
+  if (!(c > 0)) return toast(t("金额无效"));
+  x.amountCents = c; x.catId = +document.getElementById("editCat").value;
+  editId = null; save(); render(); toast(t("已修改"));
 }
 function deleteTx() {
-  if (!confirm("确定删除这笔记录?")) return;
-  S.txs = S.txs.filter((x) => x.id !== editId);
-  editId = null; save(); render(); toast("已删除");
+  if (!confirm(t("确定删除这笔记录?"))) return;
+  S.txs = S.txs.filter((v) => v.id !== editId);
+  editId = null; save(); render(); toast(t("已删除"));
 }
 
-/* ============ 记一笔:常规小数键盘(含 . 键) ============ */
+/* ============ 记一笔 ============ */
 let rec = { type: "expense", amt: "", catId: 1 };
 function recordView() {
   rec = { type: "expense", amt: "", catId: 1 };
   return `<div class="stack">
-    ${hdr("记一笔", "home", `<div class="seg">
-      <button id="tE" class="on" onclick="recType('expense')">支出</button>
-      <button id="tI" onclick="recType('income')">收入</button></div>`)}
-    <div class="card pad center"><span class="muted">金额</span>
+    ${hdr(t("记一笔"), "home", `<div class="seg">
+      <button id="tE" class="on" onclick="recType('expense')">${t("支出")}</button>
+      <button id="tI" onclick="recType('income')">${t("收入")}</button></div>`)}
+    <div class="card pad center"><span class="muted">${t("金额")}</span>
       <div class="num money" id="amt">¥0</div></div>
     <div class="grid" id="cats">${CATS.map((c) =>
-      `<button class="cat ${c.id === 1 ? "on" : ""}" data-c="${c.id}" onclick="recCat(${c.id})">${c.icon}<br>${c.name}</button>`).join("")}</div>
-    <input id="note" placeholder="备注(可选)" aria-label="备注">
+      `<button class="cat ${c.id === 1 ? "on" : ""}" data-c="${c.id}" onclick="recCat(${c.id})">${c.icon}<br>${tn(c.name)}</button>`).join("")}</div>
+    <input id="note" placeholder="${t("备注(可选)")}" aria-label="备注">
     <div class="keys">${[1,2,3,4,5,6,7,8,9].map((n) => `<button onclick="key('${n}')">${n}</button>`).join("")}
       <button onclick="key('.')">.</button><button onclick="key('0')">0</button><button onclick="key('b')" aria-label="退格">⌫</button></div>
-    <button class="btn" style="padding:13px" onclick="saveRec()">保存</button></div>`;
+    <button class="btn" style="padding:13px" onclick="saveRec()">${t("保存")}</button></div>`;
 }
-function recType(t) { rec.type = t;
-  document.getElementById("tE").classList.toggle("on", t === "expense");
-  document.getElementById("tI").classList.toggle("on", t === "income"); }
+function recType(ty) { rec.type = ty;
+  document.getElementById("tE").classList.toggle("on", ty === "expense");
+  document.getElementById("tI").classList.toggle("on", ty === "income"); }
 function recCat(id) { rec.catId = id;
   document.querySelectorAll("#cats .cat").forEach((b) => b.classList.toggle("on", +b.dataset.c === id)); }
 function key(k) {
   if (k === "b") rec.amt = rec.amt.slice(0, -1);
   else if (k === ".") { if (!rec.amt.includes(".")) rec.amt = (rec.amt || "0") + "."; }
-  else if (rec.amt.includes(".") && rec.amt.split(".")[1].length >= 2) return; // 最多两位小数
+  else if (rec.amt.includes(".") && rec.amt.split(".")[1].length >= 2) return;
   else if (rec.amt.length < 9) rec.amt += k;
   document.getElementById("amt").textContent = "¥" + (rec.amt || "0");
 }
 function saveRec() {
   const cents = Math.round(Number(rec.amt) * 100);
-  if (!(cents > 0)) return toast("请输入金额");
+  if (!(cents > 0)) return toast(t("请输入金额"));
   S.txs.push({ id: S.nextId++, type: rec.type, amountCents: cents, catId: rec.catId,
     date: today(), note: document.getElementById("note").value.trim(), source: "manual" });
-  save(); go("home", { month: monthOf(today()) }); toast("已入账");
+  save(); go("home", { month: monthOf(today()) }); toast(t("已入账"));
 }
 
-/* ============ OCR 导入(模拟识别 → 待确认清单 → 入账) ============ */
+/* ============ 交易 OCR 导入(模拟) ============ */
 let pending = null;
 function importView() {
   return `<div class="stack">
-    ${hdr("OCR 批量导入", "home")}
-    <p class="muted" style="margin:0">演示版使用模拟识别。真实应用:上传账单截图(可多张)→ 视觉大模型识别 → 待确认清单(自动查重、模糊项标疑)→ 勾选入账,并学习商户→分类映射。</p>
+    ${hdr(t("OCR 批量导入"), "home")}
+    <p class="muted" style="margin:0">${t("演示版使用模拟识别。真实应用由视觉大模型识别账单截图,经待确认清单校对后入账。")}</p>
     ${!pending ? `<div class="card pad center stack">
-      <div style="font-size:36px">🧾</div><p class="muted" style="margin:0">模拟一张「支付账单」截图</p>
-      <button class="btn" onclick="mockOcr()">识别(模拟)</button></div>`
-    : `<p class="muted" style="margin:0">识别到 ${pending.length} 条,存疑项已标黄且默认不勾选:</p>
+      <div style="font-size:36px">🧾</div><p class="muted" style="margin:0">${t("模拟一张「支付账单」截图")}</p>
+      <button class="btn" onclick="mockOcr()">${t("识别(模拟)")}</button></div>`
+    : `<p class="muted" style="margin:0">${t("识别到")} ${pending.length} ${t("条,存疑项已标黄且默认不勾选:")}</p>
       <div class="card list">${pending.map((p, i) => `<label style="cursor:pointer">
         <input type="checkbox" ${p.checked ? "checked" : ""} onchange="pending[${i}].checked=this.checked" style="width:18px">
-        <span style="flex:1"><b style="font-size:14px">${esc(p.note)}</b>
-          <span class="muted" style="display:block">${cat(p.catId).name} · ${p.date}
-          ${p.doubt ? ' <span class="tag tag-amber">存疑</span>' : ""}</span></span>
+        <span style="flex:1"><b style="font-size:14px">${tn(p.note)}</b>
+          <span class="muted" style="display:block">${tn(cat(p.catId).name)} · ${p.date}
+          ${p.doubt ? ` <span class="tag tag-amber">${t("存疑")}</span>` : ""}</span></span>
         <b class="num">-${fmt(p.amountCents)}</b></label>`).join("")}</div>
-      <button class="btn" onclick="confirmOcr()">入账已勾选</button>`}
+      <button class="btn" onclick="confirmOcr()">${t("入账已勾选")}</button>`}
   </div>`;
 }
 function mockOcr() {
@@ -421,51 +475,89 @@ function confirmOcr() {
   const sel = pending.filter((p) => p.checked);
   sel.forEach((p) => S.txs.push({ id: S.nextId++, type: "expense", amountCents: p.amountCents,
     catId: p.catId, date: p.date, note: p.note, source: "ocr" }));
-  pending = null; save(); go("home", { month: monthOf(today()) }); toast(`已入账 ${sel.length} 条(OCR)`);
+  pending = null; save(); go("home", { month: monthOf(today()) }); toast(`${t("已入账")} ${sel.length} ${t("条(OCR)")}`);
 }
 
-/* ============ 基金:总览 + 手动记快照 + 详情(跨期表 + 逐条删除) ============ */
+/* ============ 基金:总览 + 手动记 + OCR 导入(模拟)+ 详情 ============ */
+let fundPending = null;
 function toggleFundForm() { fundFormOpen = !fundFormOpen; render(); }
 function fundsView() {
   const total = S.funds.reduce((a, f) => a + f.records[f.records.length - 1][1], 0);
   return `<div class="stack">
-    ${hdr("基金", null, `<button class="btn btn-sm" onclick="toggleFundForm()">${fundFormOpen ? "收起" : "+ 手动记"}</button>`)}
-    <div class="card pad"><span class="muted">总市值</span>
+    ${hdr(t("基金"), null, `<span class="row" style="gap:6px">
+      <button class="btn btn-sm btn-ghost" onclick="go('fundImport')">📷 OCR</button>
+      <button class="btn btn-sm" onclick="toggleFundForm()">${fundFormOpen ? t("收起") : "+ " + t("手动记")}</button></span>`)}
+    <div class="card pad"><span class="muted">${t("总市值")}</span>
       <div class="num money">${fmt(total)}</div></div>
     ${fundFormOpen ? `<div class="card pad stack" style="gap:10px">
-      <div class="row"><input id="fdCode" inputmode="numeric" placeholder="基金代码,如 161725" aria-label="基金代码" style="flex:1">
+      <div class="row"><input id="fdCode" inputmode="numeric" placeholder="${t("基金代码,如 161725")}" aria-label="基金代码" style="flex:1">
         <input id="fdDate" type="date" value="${today()}" aria-label="快照日期" style="width:150px"></div>
-      <input id="fdName" placeholder="基金名称" aria-label="基金名称">
-      <input id="fdVal" inputmode="decimal" placeholder="当前市值(元)" aria-label="基金市值">
-      <p class="muted" style="margin:0">同代码归一到同一只基金;同日再记会覆盖当日快照(与真实应用一致)。</p>
-      <button class="btn" onclick="saveFund()">保存快照</button></div>` : ""}
+      <input id="fdName" placeholder="${t("基金名称")}" aria-label="基金名称">
+      <input id="fdVal" inputmode="decimal" placeholder="${t("当前市值(元)")}" aria-label="基金市值">
+      <p class="muted" style="margin:0">${t("同代码归一到同一只基金;同日再记会覆盖当日快照(与真实应用一致)。")}</p>
+      <button class="btn" onclick="saveFund()">${t("保存快照")}</button></div>` : ""}
     <div class="card list">${S.funds.length ? S.funds.map((f) => {
       const rs = f.records, last = rs[rs.length - 1][1], prev = rs.length > 1 ? rs[rs.length - 2][1] : null;
       const pct = prev ? ((last - prev) / prev * 100) : null;
       return `<div onclick="go('fundDetail',{code:'${f.code}'})" style="cursor:pointer">
         <span style="flex:1"><b style="font-size:14px">${esc(f.name)}</b>
-        <span class="muted" style="display:block">${f.code} · ${rs.length} 期快照 ›</span></span>
+        <span class="muted" style="display:block">${f.code} · ${rs.length} ${t("期快照")} ›</span></span>
         <span style="text-align:right"><b class="num" style="display:block">${fmt(last)}</b>
-        ${pct !== null ? `<span class="num" style="font-size:12px;color:${pct >= 0 ? "var(--red-ink)" : "var(--green-ink)"}">较上期 ${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%</span>` : ""}</span></div>`;
-    }).join("") : `<div class="muted">还没有基金,点右上「+ 手动记」录入第一笔快照</div>`}</div>
-    <p class="muted" style="margin:0">点基金进详情可看跨期涨跌与删除快照。真实应用还支持持仓截图 OCR 批量录入与市值走势图。</p></div>`;
+        ${pct !== null ? `<span class="num" style="font-size:12px;color:${pct >= 0 ? "var(--red-ink)" : "var(--green-ink)"}">${t("较上期")} ${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%</span>` : ""}</span></div>`;
+    }).join("") : `<div class="muted">${t("还没有基金,点右上「+ 手动记」或「OCR」录入")}</div>`}</div>
+    <p class="muted" style="margin:0">${t("点基金进详情可看跨期涨跌与删除快照。")}</p></div>`;
 }
 function saveFund() {
   const code = document.getElementById("fdCode").value.trim();
   const name = document.getElementById("fdName").value.trim();
   const cents = Math.round(Number(document.getElementById("fdVal").value) * 100);
   const d = document.getElementById("fdDate").value;
-  if (!/^\d{6}$/.test(code)) return toast("基金代码应为 6 位数字");
-  if (!name) return toast("请填基金名称");
-  if (!(cents > 0)) return toast("请填市值");
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return toast("请选日期");
+  if (!/^\d{6}$/.test(code)) return toast(t("基金代码应为 6 位数字"));
+  if (!name) return toast(t("请填基金名称"));
+  if (!(cents > 0)) return toast(t("请填市值"));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return toast(t("请选日期"));
+  upsertFund(code, name, d, cents);
+  fundFormOpen = false; save(); render();
+}
+function upsertFund(code, name, d, cents) {
   let f = S.funds.find((x) => x.code === code);
   if (!f) { f = { code, name, records: [] }; S.funds.push(f); }
   else if (name) f.name = name;
   const hit = f.records.find((r) => r[0] === d);
-  if (hit) { hit[1] = cents; toast("已覆盖当日快照"); }
-  else { f.records.push([d, cents]); f.records.sort((a, b) => a[0].localeCompare(b[0])); toast("已记录"); }
-  fundFormOpen = false; save(); render();
+  if (hit) { hit[1] = cents; toast(t("已覆盖当日快照")); }
+  else { f.records.push([d, cents]); f.records.sort((a, b) => a[0].localeCompare(b[0])); toast(t("已记录")); }
+}
+/* 基金 OCR 导入(模拟持仓截图识别):无代码项标疑、默认不勾 */
+function fundImportView() {
+  return `<div class="stack">
+    ${hdr("📷 " + t("持仓截图 OCR(模拟)"), "funds")}
+    <p class="muted" style="margin:0">${t("演示版使用模拟识别。真实应用由视觉大模型识别账单截图,经待确认清单校对后入账。")}</p>
+    ${!fundPending ? `<div class="card pad center stack">
+      <div style="font-size:36px">📈</div>
+      <button class="btn" onclick="mockFundOcr()">${t("识别(模拟)")}</button></div>`
+    : `<p class="muted" style="margin:0">${t("识别到以下持仓,同代码归一、同日覆盖:")}</p>
+      <div class="card list">${fundPending.map((p, i) => `<label style="cursor:pointer">
+        <input type="checkbox" ${p.checked ? "checked" : ""} onchange="fundPending[${i}].checked=this.checked" style="width:18px">
+        <span style="flex:1"><b style="font-size:14px">${esc(p.name)}</b>
+          <span class="muted" style="display:block">${p.code || `<span class="tag tag-amber">${t("无代码,需补填")}</span>`}</span></span>
+        <b class="num">${fmt(p.cents)}</b></label>`).join("")}</div>
+      <button class="btn" onclick="confirmFundOcr()">${t("入账已勾选")}</button>`}
+  </div>`;
+}
+function mockFundOcr() {
+  fundPending = [
+    { code: "005827", name: "易方达蓝筹精选", cents: 2203000, checked: true },
+    { code: "161725", name: "招商中证白酒", cents: 815000, checked: true },
+    { code: "110022", name: "易方达消费行业", cents: 560000, checked: true },
+    { code: "", name: "华夏某某混合(代码未识别)", cents: 120000, checked: false },
+  ];
+  render();
+}
+function confirmFundOcr() {
+  const sel = fundPending.filter((p) => p.checked && /^\d{6}$/.test(p.code));
+  const d = today();
+  sel.forEach((p) => upsertFund(p.code, p.name, d, p.cents));
+  fundPending = null; save(); go("funds"); toast(`${sel.length} ${t("已入基金")}`);
 }
 function fundDetailView() {
   const f = S.funds.find((x) => x.code === route.code);
@@ -474,94 +566,95 @@ function fundDetailView() {
   const hold = f.records.length > 1 ? ((last - first) / first * 100).toFixed(2) : null;
   return `<div class="stack">
     ${hdr(esc(f.name), "funds", `<span class="muted">${f.code}</span>`)}
-    <div class="card pad"><span class="muted">最新市值</span>
+    <div class="card pad"><span class="muted">${t("最新市值")}</span>
       <div class="num money">${fmt(last)}</div>
-      ${hold !== null ? `<span class="muted">持有期累计(${f.records[0][0]} 起):
+      ${hold !== null ? `<span class="muted">${t("持有期累计")}(${f.records[0][0]} ${t("起")}):
         <b class="num" style="color:${+hold >= 0 ? "var(--red-ink)" : "var(--green-ink)"}">${+hold >= 0 ? "+" : ""}${hold}%</b></span>` : ""}</div>
     <div class="card list">${f.records.slice().reverse().map(([d, v], ri, arr) => {
       const prev = arr[ri + 1];
       const pct = prev ? ((v - prev[1]) / prev[1] * 100) : null;
       return `<div><span style="flex:1"><b class="num" style="font-size:14px">${fmt(v)}</b>
         <span class="muted" style="display:block">${d}</span></span>
-        ${pct !== null ? `<span class="num" style="font-size:12px;color:${pct >= 0 ? "var(--red-ink)" : "var(--green-ink)"}">较上期 ${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%</span>` : `<span class="muted">首期</span>`}
+        ${pct !== null ? `<span class="num" style="font-size:12px;color:${pct >= 0 ? "var(--red-ink)" : "var(--green-ink)"}">${t("较上期")} ${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%</span>` : `<span class="muted">${t("首期")}</span>`}
         <button class="btn btn-sm btn-ghost" onclick="delSnapshot('${f.code}','${d}')" aria-label="删除 ${d} 快照">✕</button></div>`;
     }).join("")}</div>
-    <p class="muted" style="margin:0">删除全部快照后该基金自动从列表移除。在基金页「+ 手动记」用同代码可补录新一期。</p></div>`;
+    <p class="muted" style="margin:0">${t("删除全部快照后该基金自动从列表移除。")}</p></div>`;
 }
 function delSnapshot(code, d) {
-  if (!confirm(`删除 ${d} 这期快照?`)) return;
+  if (!confirm(t("删除这期快照?"))) return;
   const f = S.funds.find((x) => x.code === code);
   f.records = f.records.filter((r) => r[0] !== d);
-  if (!f.records.length) { S.funds = S.funds.filter((x) => x.code !== code); toast("快照已清空,基金已移除"); go("funds"); return; }
-  save(); render(); toast("已删除");
+  if (!f.records.length) { S.funds = S.funds.filter((x) => x.code !== code); toast(t("快照已清空,基金已移除")); go("funds"); return; }
+  save(); render(); toast(t("已删除"));
 }
 
 /* ============ 消费分析 ============ */
 function analysisView() {
   const m0 = monthOf(today()), months = Array.from({ length: 6 }, (_, i) => shiftMonth(m0, i - 5));
-  const expOf = (m) => S.txs.filter((t) => t.type === "expense" && monthOf(t.date) === m).reduce((a, t) => a + t.amountCents, 0);
+  const expOf = (m) => S.txs.filter((x) => x.type === "expense" && monthOf(x.date) === m).reduce((a, x) => a + x.amountCents, 0);
   const cur = expOf(m0), prev = expOf(shiftMonth(m0, -1));
   const mom = prev ? ((cur - prev) / prev * 100).toFixed(1) : null;
   const max = Math.max(...months.map(expOf), 1);
-  const byCat = CATS.map((c) => ({ c, v: S.txs.filter((t) => t.type === "expense" && t.catId === c.id && monthOf(t.date) === m0)
-    .reduce((a, t) => a + t.amountCents, 0) })).filter((x) => x.v > 0).sort((a, b) => b.v - a.v);
+  const byCat = CATS.map((c) => ({ c, v: S.txs.filter((x) => x.type === "expense" && x.catId === c.id && monthOf(x.date) === m0)
+    .reduce((a, x) => a + x.amountCents, 0) })).filter((x) => x.v > 0).sort((a, b) => b.v - a.v);
   const catMax = Math.max(...byCat.map((x) => x.v), 1);
   const budgets = budgetCalc(m0);
   return `<div class="stack">
-    ${hdr("消费分析", "me")}
-    <div class="card pad"><span class="muted">本月支出</span>
+    ${hdr(t("消费分析"), "me")}
+    <div class="card pad"><span class="muted">${t("本月支出")}</span>
       <div class="num money">${fmt(cur)}</div>
-      ${mom !== null ? `<span class="muted">环比上月(${fmt(prev)}):
+      ${mom !== null ? `<span class="muted">${t("环比上月")}(${fmt(prev)}):
         <b style="color:${+mom > 0 ? "var(--red-ink)" : "var(--green-ink)"}">${+mom > 0 ? "+" : ""}${mom}%</b></span>` : ""}</div>
-    <div class="card pad"><p class="muted" style="margin:0 0 10px">近 6 月支出趋势</p>
+    <div class="card pad"><p class="muted" style="margin:0 0 10px">${t("近 6 月支出趋势")}</p>
       <div class="row" style="align-items:flex-end;height:110px;gap:6px">${months.map((m) => {
         const v = expOf(m);
+        const label = lang === "en" ? m.slice(5) : `${+m.slice(5)}月`;
         return `<div style="flex:1;text-align:center"><div style="background:${m === m0 ? "var(--accent)" : "var(--chip)"};
           border-radius:6px 6px 0 0;height:${Math.max(4, (v / max) * 90)}px"></div>
-          <span class="muted" style="font-size:10px">${+m.slice(5)}月</span></div>`;
+          <span class="muted" style="font-size:10px">${label}</span></div>`;
       }).join("")}</div></div>
-    <div class="card pad stack" style="gap:10px"><p class="muted" style="margin:0">当月分类结构</p>
+    <div class="card pad stack" style="gap:10px"><p class="muted" style="margin:0">${t("当月分类结构")}</p>
       ${byCat.length ? byCat.map((x) => `<div><div class="row" style="font-size:13px">
-        <span>${x.c.icon} ${x.c.name}</span><b class="num" style="margin-left:auto">${fmt(x.v)}
+        <span>${x.c.icon} ${tn(x.c.name)}</span><b class="num" style="margin-left:auto">${fmt(x.v)}
         <span class="muted">${(x.v / cur * 100).toFixed(0)}%</span></b></div>
         <div class="bar"><i style="width:${(x.v / catMax) * 100}%"></i></div></div>`).join("")
-      : `<span class="muted">本月暂无支出</span>`}</div>
-    <div class="card pad stack" style="gap:10px"><div class="row"><p class="muted" style="margin:0">分类预算</p>
-      <a class="link" style="margin-left:auto;font-size:13px" onclick="go('budget')">去设置 ›</a></div>
+      : `<span class="muted">${t("本月暂无支出")}</span>`}</div>
+    <div class="card pad stack" style="gap:10px"><div class="row"><p class="muted" style="margin:0">${t("分类预算")}</p>
+      <a class="link" style="margin-left:auto;font-size:13px" onclick="go('budget')">${t("去设置")} ›</a></div>
       ${budgets.length ? budgets.map((b) => { const over = b.spent > b.limit, pct = Math.min(100, b.spent / b.limit * 100);
-        return `<div><div class="row" style="font-size:13px"><span>${cat(b.cid).icon} ${cat(b.cid).name}
-          ${over ? ' <span class="tag tag-red">超支</span>' : ""}</span>
+        return `<div><div class="row" style="font-size:13px"><span>${cat(b.cid).icon} ${tn(cat(b.cid).name)}
+          ${over ? ` <span class="tag tag-red">${t("超支")}</span>` : ""}</span>
           <span class="num muted" style="margin-left:auto">${fmt(b.spent)} / ${fmt(b.limit)}</span></div>
           <div class="bar"><i class="${over ? "over" : ""}" style="width:${pct}%"></i></div></div>`; }).join("")
-      : `<span class="muted">还没设预算</span>`}</div></div>`;
+      : `<span class="muted">${t("还没设预算")}</span>`}</div></div>`;
 }
 
 /* ============ 预算设置 ============ */
 function budgetView() {
   return `<div class="stack">
-    ${hdr("预算设置", "me")}
-    <p class="muted" style="margin:0">按分类设常设月度限额(设一次每月生效);清空即取消该分类预算。超过 80% 预警,超支后首页出现提醒。</p>
-    <div class="card list">${CATS.map((c) => `<div><span style="flex:1">${c.icon} ${c.name}</span>
-      <input id="bg${c.id}" inputmode="decimal" placeholder="不限" aria-label="${c.name}预算"
+    ${hdr(t("预算设置"), "me")}
+    <p class="muted" style="margin:0">${t("按分类设常设月度限额;清空即取消。超过 80% 预警,超支后首页提醒。")}</p>
+    <div class="card list">${CATS.map((c) => `<div><span style="flex:1">${c.icon} ${tn(c.name)}</span>
+      <input id="bg${c.id}" inputmode="decimal" placeholder="${t("不限")}" aria-label="${c.name}预算"
         value="${S.budgets[c.id] ? S.budgets[c.id] / 100 : ""}" style="width:110px;text-align:right">
-      <span class="muted">元/月</span></div>`).join("")}</div>
-    <button class="btn" onclick="saveBudget()">保存</button></div>`;
+      <span class="muted">${t("元/月")}</span></div>`).join("")}</div>
+    <button class="btn" onclick="saveBudget()">${t("保存")}</button></div>`;
 }
 function saveBudget() {
   CATS.forEach((c) => { const v = document.getElementById("bg" + c.id).value.trim();
     const cents = Math.round(Number(v) * 100);
     if (v && cents > 0) S.budgets[c.id] = cents; else delete S.budgets[c.id]; });
-  save(); toast("已保存"); go("analysis");
+  save(); toast(t("已保存")); go("analysis");
 }
 
 /* ============ 周期支出 ============ */
 function detectCandidates() {
   const m0 = monthOf(today()), months = [m0, shiftMonth(m0, -1), shiftMonth(m0, -2)];
   const g = new Map();
-  S.txs.filter((t) => t.type === "expense" && t.note && months.includes(monthOf(t.date))).forEach((t) => {
-    const k = t.note + "|" + t.amountCents;
-    const e = g.get(k) ?? { seen: new Set(), last: t };
-    e.seen.add(monthOf(t.date)); if (t.date > e.last.date) e.last = t; g.set(k, e);
+  S.txs.filter((x) => x.type === "expense" && x.note && months.includes(monthOf(x.date))).forEach((x) => {
+    const k = x.note + "|" + x.amountCents;
+    const e = g.get(k) ?? { seen: new Set(), last: x };
+    e.seen.add(monthOf(x.date)); if (x.date > e.last.date) e.last = x; g.set(k, e);
   });
   const names = new Set(S.recurring.map((r) => r.name));
   return [...g.values()].filter((e) => e.seen.size >= 3 && !names.has(e.last.note))
@@ -569,93 +662,93 @@ function detectCandidates() {
 }
 function toggleRecForm() { recFormOpen = !recFormOpen; render(); }
 function recurringView() {
-  const t = today(), cands = detectCandidates();
+  const tday = today(), cands = detectCandidates();
   return `<div class="stack">
-    ${hdr("周期支出", "me", `<button class="btn btn-sm" onclick="toggleRecForm()">${recFormOpen ? "收起" : "+ 新增"}</button>`)}
-    <p class="muted" style="margin:0">登记订阅、房租等固定支出;到期前 7 天在首页提醒,「记一笔」自动入账并顺延到下一期。</p>
+    ${hdr(t("周期支出"), "me", `<button class="btn btn-sm" onclick="toggleRecForm()">${recFormOpen ? t("收起") : t("+ 新增")}</button>`)}
+    <p class="muted" style="margin:0">${t("登记订阅、房租等固定支出;到期前 7 天在首页提醒,「记一笔」自动入账并顺延。")}</p>
     ${recFormOpen ? `<div class="card pad stack" style="gap:10px">
-      <input id="rcName" placeholder="名称,如 房租 / 视频会员" aria-label="周期支出名称">
-      <div class="row"><input id="rcAmt" inputmode="decimal" placeholder="金额(元)" aria-label="周期支出金额" style="flex:1">
-        <select id="rcCycle" aria-label="周期" style="width:96px"><option value="monthly">每月</option><option value="yearly">每年</option></select></div>
+      <input id="rcName" placeholder="${t("名称,如 房租 / 视频会员")}" aria-label="周期支出名称">
+      <div class="row"><input id="rcAmt" inputmode="decimal" placeholder="${t("金额(元)")}" aria-label="周期支出金额" style="flex:1">
+        <select id="rcCycle" aria-label="周期" style="width:110px"><option value="monthly">${t("每月")}</option><option value="yearly">${t("每年")}</option></select></div>
       <div class="row"><select id="rcCat" aria-label="分类" style="flex:1">${CATS.map((c) =>
-        `<option value="${c.id}">${c.icon} ${c.name}</option>`).join("")}</select>
+        `<option value="${c.id}">${c.icon} ${tn(c.name)}</option>`).join("")}</select>
         <input id="rcDate" type="date" value="${daysFromNow(30)}" aria-label="下次日期" style="width:150px"></div>
-      <button class="btn" onclick="saveRecurring()">保存</button></div>` : ""}
+      <button class="btn" onclick="saveRecurring()">${t("保存")}</button></div>` : ""}
     <div class="card list">${S.recurring.length ? S.recurring
       .slice().sort((a, b) => a.nextDate.localeCompare(b.nextDate)).map((r) => {
-        const st = dueStatus(r.nextDate, t);
-        return `<div><span style="flex:1;min-width:0"><b style="font-size:14px">${esc(r.name)}
-          ${st === "overdue" ? ' <span class="tag tag-red">已到期</span>' : st === "upcoming" ? ' <span class="tag tag-amber">即将到期</span>' : ""}</b>
-          <span class="muted num" style="display:block">${fmt(r.amountCents)} · ${r.cycle === "yearly" ? "每年" : "每月"} · 下次 ${r.nextDate}</span></span>
-          <button class="btn btn-sm" onclick="payRecurring(${r.id})">记一笔</button>
+        const st = dueStatus(r.nextDate, tday);
+        return `<div><span style="flex:1;min-width:0"><b style="font-size:14px">${tn(r.name)}
+          ${st === "overdue" ? ` <span class="tag tag-red">${t("已到期")}</span>` : st === "upcoming" ? ` <span class="tag tag-amber">${t("即将到期")}</span>` : ""}</b>
+          <span class="muted num" style="display:block">${fmt(r.amountCents)} · ${t(r.cycle === "yearly" ? "每年" : "每月")} · ${t("下次")} ${r.nextDate}</span></span>
+          <button class="btn btn-sm" onclick="payRecurring(${r.id})">${t("记一笔")}</button>
           <button class="btn btn-sm btn-ghost" onclick="delRecurring(${r.id})">✕</button></div>`;
-      }).join("") : `<div class="muted">还没有登记周期支出</div>`}</div>
-    ${cands.length ? `<p class="muted" style="margin:0">从流水中发现的疑似周期支出(近 3 个月每月出现、同名同金额):</p>
-      <div class="card list">${cands.map((c) => `<div><span style="flex:1"><b style="font-size:14px">${esc(c.note)}</b>
-        <span class="muted num" style="display:block">${fmt(c.amountCents)}/月 · 上次 ${c.date}</span></span>
-        <button class="btn btn-sm btn-ghost" onclick="adoptCandidate(${c.id})">+ 添加</button></div>`).join("")}</div>` : ""}
+      }).join("") : `<div class="muted">${t("还没有登记周期支出")}</div>`}</div>
+    ${cands.length ? `<p class="muted" style="margin:0">${t("从流水中发现的疑似周期支出(近 3 个月每月出现、同名同金额):")}</p>
+      <div class="card list">${cands.map((c) => `<div><span style="flex:1"><b style="font-size:14px">${tn(c.note)}</b>
+        <span class="muted num" style="display:block">${fmt(c.amountCents)} · ${t("上次")} ${c.date}</span></span>
+        <button class="btn btn-sm btn-ghost" onclick="adoptCandidate(${c.id})">${t("+ 添加")}</button></div>`).join("")}</div>` : ""}
   </div>`;
 }
 function saveRecurring() {
   const name = document.getElementById("rcName").value.trim();
   const cents = Math.round(Number(document.getElementById("rcAmt").value) * 100);
   const d = document.getElementById("rcDate").value;
-  if (!name) return toast("请填名称");
-  if (!(cents > 0)) return toast("请填金额");
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return toast("请选下次日期");
+  if (!name) return toast(t("请填名称"));
+  if (!(cents > 0)) return toast(t("请填金额"));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return toast(t("请选下次日期"));
   S.recurring.push({ id: S.nextRec++, name, amountCents: cents,
     catId: +document.getElementById("rcCat").value,
     cycle: document.getElementById("rcCycle").value, nextDate: d });
-  recFormOpen = false; save(); render(); toast("已登记");
+  recFormOpen = false; save(); render(); toast(t("已登记"));
 }
 function adoptCandidate(txId) {
   const c = S.txs.find((x) => x.id === txId); if (!c) return;
   S.recurring.push({ id: S.nextRec++, name: c.note, amountCents: c.amountCents, catId: c.catId,
     cycle: "monthly", nextDate: advanceDate(c.date, "monthly") });
-  save(); render(); toast("已登记为周期支出");
+  save(); render(); toast(t("已登记为周期支出"));
 }
 function payRecurring(id) {
   const r = S.recurring.find((x) => x.id === id);
   S.txs.push({ id: S.nextId++, type: "expense", amountCents: r.amountCents, catId: r.catId,
     date: today(), note: r.name, source: "manual" });
   r.nextDate = advanceDate(r.nextDate, r.cycle);
-  save(); render(); toast(`已入账,顺延到 ${r.nextDate}`);
+  save(); render(); toast(`${t("已入账,顺延到")} ${r.nextDate}`);
 }
 function delRecurring(id) {
-  if (!confirm("删除这条周期支出?(不影响已记的流水)")) return;
+  if (!confirm(t("删除这条周期支出?(不影响已记的流水)"))) return;
   S.recurring = S.recurring.filter((x) => x.id !== id); save(); render();
 }
 
 /* ============ 我的 ============ */
 function meView() {
   return `<div class="stack">
-    ${hdr("我的", null, `<span class="muted">👤 ${esc(S.user.name)}</span>`)}
-    <div><p class="muted" style="padding:0 4px 6px;margin:0">分析与预算</p><div class="card list">
-      <div onclick="go('analysis')" style="cursor:pointer"><span style="flex:1">消费分析</span><span class="muted">环比 · 趋势 · 分类结构 ›</span></div>
-      <div onclick="go('budget')" style="cursor:pointer"><span style="flex:1">预算设置</span><span class="muted">分类月度限额 · 超支提醒 ›</span></div>
-      <div onclick="go('recurring')" style="cursor:pointer"><span style="flex:1">周期支出</span><span class="muted">订阅/房租 · 到期提醒 ›</span></div>
+    ${hdr(t("我的"), null, `<span class="muted">👤 ${esc(S.user.name)}</span>`)}
+    <div class="row card" style="padding:10px 14px"><span style="flex:1">🌐 ${t("语言")}</span>${langChip()}</div>
+    <div><p class="muted" style="padding:0 4px 6px;margin:0">${t("分析与预算")}</p><div class="card list">
+      <div onclick="go('analysis')" style="cursor:pointer"><span style="flex:1">${t("消费分析")}</span><span class="muted">${t("环比 · 趋势 · 分类结构")} ›</span></div>
+      <div onclick="go('budget')" style="cursor:pointer"><span style="flex:1">${t("预算设置")}</span><span class="muted">${t("分类月度限额 · 超支提醒")} ›</span></div>
+      <div onclick="go('recurring')" style="cursor:pointer"><span style="flex:1">${t("周期支出")}</span><span class="muted">${t("订阅/房租 · 到期提醒")} ›</span></div>
     </div></div>
-    <div><p class="muted" style="padding:0 4px 6px;margin:0">演示数据</p><div class="card list">
-      <div onclick="resetDemo()" style="cursor:pointer"><span style="flex:1">重置演示数据</span><span class="muted">恢复初始样例 ›</span></div>
+    <div><p class="muted" style="padding:0 4px 6px;margin:0">${t("演示数据")}</p><div class="card list">
+      <div onclick="resetDemo()" style="cursor:pointer"><span style="flex:1">${t("重置演示数据")}</span><span class="muted">${t("恢复初始样例")} ›</span></div>
     </div></div>
-    <div><p class="muted" style="padding:0 4px 6px;margin:0">推荐功能(后续版本)</p><div class="card list">
-      <div class="muted"><span style="flex:1">净资产 / 月度报告</span>敬请期待</div>
-      <div class="muted"><span style="flex:1">异常支出提醒</span>敬请期待</div>
+    <div><p class="muted" style="padding:0 4px 6px;margin:0">${t("推荐功能(后续版本)")}</p><div class="card list">
+      <div class="muted"><span style="flex:1">${t("净资产 / 月度报告")}</span>${t("敬请期待")}</div>
+      <div class="muted"><span style="flex:1">${t("异常支出提醒")}</span>${t("敬请期待")}</div>
     </div></div>
-    <button class="btn btn-danger" onclick="logout()">退出登录</button>
-    <p class="muted center" style="margin:0;opacity:.75">交互演示版 · 数据仅存于此浏览器<br>真实应用:Next.js + SQLite + LLM OCR,自托管运行</p>
+    <button class="btn btn-danger" onclick="logout()">${t("退出登录")}</button>
   </div>`;
 }
 function resetDemo() {
-  if (!confirm("重置为初始演示数据?(演示账号保留)")) return;
+  if (!confirm(t("重置为初始演示数据?(演示账号保留)"))) return;
   const keep = { user: S.user, users: S.users };
-  S = Object.assign(seed(), keep); save(); render(); toast("已重置");
+  S = Object.assign(seed(), keep); save(); render(); toast(t("已重置"));
 }
 
 const VIEWS = {
   login: () => authView("login"), register: () => authView("register"),
   home: homeView, record: recordView, import: importView,
-  funds: fundsView, fundDetail: fundDetailView,
+  funds: fundsView, fundImport: fundImportView, fundDetail: fundDetailView,
   analysis: analysisView, budget: budgetView, recurring: recurringView, me: meView,
 };
 render();
