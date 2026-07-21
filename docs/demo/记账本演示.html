@@ -88,6 +88,11 @@
   .bar i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
   .bar i.over { background: var(--red-ink); }
   .stack { display: flex; flex-direction: column; gap: 12px; }
+  .btn-add { width: 100%; border: 1.5px dashed var(--line); border-radius: 14px; background: none;
+    color: var(--accent); font: inherit; font-weight: 600; padding: 12px; cursor: pointer; }
+  .btn-add:active { background: var(--chip); }
+  .actions { display: flex; gap: 10px; }
+  .actions .btn { flex: 1; padding: 12px; }
   .toast { position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%);
     background: var(--ink); color: var(--bg); font-size: 13px; padding: 8px 16px; border-radius: 20px;
     opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 90%; z-index: 20; }
@@ -146,7 +151,7 @@ const EN = {
   "名称,如 房租 / 视频会员":"Name, e.g. Rent / Video sub","下次日期":"Next date","请填名称":"Enter a name","请填金额":"Enter an amount","请选下次日期":"Pick next date",
   "还没有登记周期支出":"No recurring expenses yet","从流水中发现的疑似周期支出(近 3 个月每月出现、同名同金额):":"Detected from your records (same name & amount, 3 months in a row):",
   "上次":"last","+ 添加":"+ Add","已登记为周期支出":"Added as recurring","已入账,顺延到":"Recorded. Next:","删除这条周期支出?(不影响已记的流水)":"Delete this recurring item? (records stay)",
-  "即将到期":"due soon","语言":"Language","分析与预算":"Analytics & Budget","环比 · 趋势 · 分类结构":"Trends & breakdown",
+  "即将到期":"due soon","语言":"Language","新增周期支出":"Add recurring","OCR 导入":"OCR Import","分析与预算":"Analytics & Budget","环比 · 趋势 · 分类结构":"Trends & breakdown",
   "分类月度限额 · 超支提醒":"Limits & alerts","订阅/房租 · 到期提醒":"Subscriptions & reminders","演示数据":"Demo data",
   "重置演示数据":"Reset demo data","恢复初始样例":"Restore samples","推荐功能(后续版本)":"Coming soon","净资产 / 月度报告":"Net worth / Monthly report",
   "异常支出提醒":"Anomaly alerts","敬请期待":"soon","退出登录":"Sign out","已重置":"Reset done",
@@ -155,7 +160,7 @@ const EN = {
   "工资":"Salary","健身房":"Gym","视频会员":"Video sub","午饭":"Lunch","周末聚餐":"Dinner out","地铁":"Metro","球鞋":"Sneakers",
   "早餐+咖啡":"Breakfast+coffee","火锅":"Hotpot","公交":"Bus","日料":"Japanese food","房租":"Rent","云存储年费":"Cloud storage (yearly)",
   "瑞幸咖啡":"Luckin Coffee","滴滴出行":"DiDi ride","山姆会员店":"Sam's Club","美团(金额不清晰)":"Meituan (amount unclear)",
-  "检测到":"Found","项异常支出":"anomalies",
+  "检测到":"Found","项异常支出":"anomalies","分析":"Stats",
 };
 const t = (s) => (lang === "en" ? (EN[s] ?? s) : s);
 function setLang(l) { lang = l; localStorage.setItem(LANG_KEY, l); render(); }
@@ -259,12 +264,13 @@ const hdr = (title, backTo, action) => `<div class="hdr">
 
 function render() {
   if (!S.user && !["login", "register"].includes(route.name)) route.name = "login";
-  NAV.hidden = !S.user || !["home", "funds", "me"].includes(route.name);
+  NAV.hidden = !S.user || !["home", "funds", "analysis", "me"].includes(route.name);
   if (!NAV.hidden) {
     NAV.innerHTML = [
       `<button class="${route.name === "home" ? "on" : ""}" onclick="go('home')"><span class="ico">📒</span>${t("流水")}</button>`,
-      `<button class="fab" onclick="go('record')"><span class="ico">＋</span>${t("记一笔")}</button>`,
       `<button class="${route.name === "funds" ? "on" : ""}" onclick="go('funds')"><span class="ico">📈</span>${t("基金")}</button>`,
+      `<button class="fab" onclick="go('record')" aria-label="记一笔"><span class="ico">＋</span>${t("记一笔")}</button>`,
+      `<button class="${route.name === "analysis" ? "on" : ""}" onclick="go('analysis')"><span class="ico">📊</span>${t("分析")}</button>`,
       `<button class="${route.name === "me" ? "on" : ""}" onclick="go('me')"><span class="ico">👤</span>${t("我的")}</button>`,
     ].join("");
   }
@@ -334,7 +340,7 @@ function homeView() {
         <a class="back" style="font-size:20px" onclick="go('home',{month:'${shiftMonth(m, -1)}'})">‹</a>
         <b>${monthTitle}</b>
         <a class="back" style="font-size:20px" onclick="go('home',{month:'${shiftMonth(m, 1)}'})">›</a>
-        <button class="btn btn-sm" style="margin-left:auto" onclick="go('import')">⤓ ${t("导入")}</button>
+        <button class="btn btn-sm btn-ghost" style="margin-left:auto" onclick="go('import')">⤓ ${t("导入")}</button>
       </div>
       <span class="muted">${t("本月结余")}</span>
       <div class="num money">${fmt(inc - exp, true)}</div>
@@ -410,9 +416,10 @@ let rec = { type: "expense", amt: "", catId: 1 };
 function recordView() {
   rec = { type: "expense", amt: "", catId: 1 };
   return `<div class="stack">
-    ${hdr(t("记一笔"), "home", `<div class="seg">
+    ${hdr(t("记一笔"), "home")}
+    <div class="center"><div class="seg" style="display:inline-flex">
       <button id="tE" class="on" onclick="recType('expense')">${t("支出")}</button>
-      <button id="tI" onclick="recType('income')">${t("收入")}</button></div>`)}
+      <button id="tI" onclick="recType('income')">${t("收入")}</button></div></div>
     <div class="card pad center"><span class="muted">${t("金额")}</span>
       <div class="num money" id="amt">¥0</div></div>
     <div class="grid" id="cats">${CATS.map((c) =>
@@ -484,11 +491,13 @@ function toggleFundForm() { fundFormOpen = !fundFormOpen; render(); }
 function fundsView() {
   const total = S.funds.reduce((a, f) => a + f.records[f.records.length - 1][1], 0);
   return `<div class="stack">
-    ${hdr(t("基金"), null, `<span class="row" style="gap:6px">
-      <button class="btn btn-sm btn-ghost" onclick="go('fundImport')">📷 OCR</button>
-      <button class="btn btn-sm" onclick="toggleFundForm()">${fundFormOpen ? t("收起") : "+ " + t("手动记")}</button></span>`)}
+    ${hdr(t("基金"))}
     <div class="card pad"><span class="muted">${t("总市值")}</span>
       <div class="num money">${fmt(total)}</div></div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="go('fundImport')">📷 ${t("OCR 导入")}</button>
+      <button class="btn" onclick="toggleFundForm()">${fundFormOpen ? t("收起") : "＋ " + t("手动记")}</button>
+    </div>
     ${fundFormOpen ? `<div class="card pad stack" style="gap:10px">
       <div class="row"><input id="fdCode" inputmode="numeric" placeholder="${t("基金代码,如 161725")}" aria-label="基金代码" style="flex:1">
         <input id="fdDate" type="date" value="${today()}" aria-label="快照日期" style="width:150px"></div>
@@ -664,8 +673,9 @@ function toggleRecForm() { recFormOpen = !recFormOpen; render(); }
 function recurringView() {
   const tday = today(), cands = detectCandidates();
   return `<div class="stack">
-    ${hdr(t("周期支出"), "me", `<button class="btn btn-sm" onclick="toggleRecForm()">${recFormOpen ? t("收起") : t("+ 新增")}</button>`)}
+    ${hdr(t("周期支出"), "me")}
     <p class="muted" style="margin:0">${t("登记订阅、房租等固定支出;到期前 7 天在首页提醒,「记一笔」自动入账并顺延。")}</p>
+    ${recFormOpen ? "" : `<button class="btn-add" onclick="toggleRecForm()">＋ ${t("新增周期支出")}</button>`}
     ${recFormOpen ? `<div class="card pad stack" style="gap:10px">
       <input id="rcName" placeholder="${t("名称,如 房租 / 视频会员")}" aria-label="周期支出名称">
       <div class="row"><input id="rcAmt" inputmode="decimal" placeholder="${t("金额(元)")}" aria-label="周期支出金额" style="flex:1">
