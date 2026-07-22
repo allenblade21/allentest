@@ -96,15 +96,20 @@ export default function RecurringManager({
       <div className="flex items-center gap-3">
         <Link href="/me" className="text-lg">‹</Link>
         <h1 className="font-bold">周期支出</h1>
-        <button onClick={() => setShowForm((v) => !v)} className="ml-auto rounded-lg bg-emerald-700 px-3 py-1.5 text-sm font-medium text-white">
-          {showForm ? "收起" : "+ 新增"}
-        </button>
       </div>
       <p className="px-1 text-xs text-neutral-500">
         登记订阅、房租等固定支出;到期前 7 天会在首页提醒,「记一笔」自动入账并顺延到下一期。
       </p>
 
-      {/* 新增表单 */}
+      {/* 新增:全宽虚线按钮 ↔ 展开表单(页面架构·按键位置原则) */}
+      {!showForm && (
+        <button
+          onClick={() => setShowForm(true)}
+          className="w-full rounded-2xl border-[1.5px] border-dashed border-neutral-300 py-3 font-medium text-emerald-700 dark:border-neutral-700 dark:text-emerald-400"
+        >
+          ＋ 新增周期支出
+        </button>
+      )}
       {showForm && (
         <div className="flex flex-col gap-2 rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
           <input aria-label="周期支出名称" value={name} onChange={(e) => setName(e.target.value)} placeholder="名称,如 房租 / 视频会员" className={input} />
@@ -132,7 +137,7 @@ export default function RecurringManager({
       {/* 已登记列表 */}
       {rows.length === 0 ? (
         <div className="rounded-2xl bg-white p-4 text-sm text-neutral-500 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
-          还没有登记周期支出。点右上「+ 新增」,或从下方流水中发现的候选一键添加。
+          还没有登记周期支出。点上方「＋ 新增周期支出」,或从下方流水中发现的候选一键添加。
         </div>
       ) : (
         <div className="divide-y divide-neutral-100 rounded-2xl bg-white border border-neutral-200 dark:border-neutral-800 dark:divide-neutral-800 dark:bg-neutral-900">

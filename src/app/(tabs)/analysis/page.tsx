@@ -35,10 +35,9 @@ export default async function AnalysisPage({
   const bw = (W - gap * (trend.length - 1)) / trend.length;
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col gap-4 px-4 py-4 pb-16">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <Link href="/me" className="text-lg">‹</Link>
-        <h1 className="font-bold">消费分析</h1>
+        <h1 className="text-lg font-bold">消费分析</h1>
         <span className="ml-auto flex items-center gap-2 text-sm">
           <Link href={`/analysis?month=${shiftMonth(month, -1)}`} className="px-1 text-neutral-400">‹</Link>
           {year}年{Number(mon)}月

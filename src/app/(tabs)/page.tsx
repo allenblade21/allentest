@@ -106,7 +106,7 @@ export default async function HomePage({
           <Link href={`/?month=${shiftMonth(month, 1)}`} className="px-1 text-xl text-neutral-400">›</Link>
           <Link
             href="/import"
-            className="ml-auto rounded-lg bg-emerald-700 px-3 py-1.5 text-sm font-medium text-white"
+            className="ml-auto rounded-lg bg-neutral-100 px-3 py-1.5 text-sm font-medium dark:bg-neutral-800"
           >
             ⤓ 导入
           </Link>

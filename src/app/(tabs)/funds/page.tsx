@@ -16,12 +16,7 @@ export default async function FundsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-bold">基金</h1>
-        <Link href="/funds/import" className="rounded-lg bg-emerald-700 px-3 py-1.5 text-sm font-medium text-white">
-          ⤓ 导入持仓截图
-        </Link>
-      </div>
+      <h1 className="text-lg font-bold">基金</h1>
 
       {/* 投资总览卡 */}
       <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
@@ -39,6 +34,16 @@ export default async function FundsPage() {
         </div>
       </section>
 
+      {/* 操作行:下沉为等宽双按钮(页面架构·按键位置原则) */}
+      <div className="flex gap-2.5">
+        <Link href="/funds/import" className="flex-1 rounded-xl bg-neutral-100 py-2.5 text-center text-sm font-medium dark:bg-neutral-800">
+          📷 导入持仓截图
+        </Link>
+        <Link href="/funds/new" className="flex-1 rounded-xl bg-emerald-700 py-2.5 text-center text-sm font-medium text-white">
+          ＋ 手动记一笔
+        </Link>
+      </div>
+
       {ov.list.length === 0 ? (
         <section className="rounded-2xl bg-white p-4 border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
           <p className="text-sm text-neutral-500">
@@ -49,10 +54,7 @@ export default async function FundsPage() {
         </section>
       ) : (
         <>
-          <div className="flex items-center justify-between px-1 text-xs text-neutral-500">
-            <span>持有基金 · {ov.list.length} 只</span>
-            <Link href="/funds/new" className="text-emerald-700 dark:text-emerald-400">+ 手动记一笔</Link>
-          </div>
+          <p className="px-1 text-xs text-neutral-500">持有基金 · {ov.list.length} 只</p>
           <div className="divide-y divide-neutral-100 rounded-2xl bg-white border border-neutral-200 dark:border-neutral-800 dark:divide-neutral-800 dark:bg-neutral-900">
             {ov.list.map((f) => (
               <Link key={f.code} href={`/funds/${f.code}`} className="flex items-center gap-3 px-4 py-3">

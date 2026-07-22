@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 
 const tabs = [
   { href: "/", label: "流水", icon: "📒" },
-  { href: "/record", label: "记一笔", icon: "+", fab: true },
   { href: "/funds", label: "基金", icon: "📈" },
+  { href: "/record", label: "记一笔", icon: "+", fab: true },
+  { href: "/analysis", label: "分析", icon: "📊" },
   { href: "/me", label: "我的", icon: "👤" },
 ];
 

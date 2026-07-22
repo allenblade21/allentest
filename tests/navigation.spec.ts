@@ -55,6 +55,10 @@ test.describe("页面与导航", () => {
     await expect(page).toHaveURL(/\/funds$/);
     await expect(page.getByText("总市值")).toBeVisible();
 
+    await page.getByRole("link", { name: /分析/ }).click();
+    await expect(page).toHaveURL(/\/analysis$/);
+    await expect(page.getByText("近 6 个月支出趋势")).toBeVisible();
+
     await page.getByRole("link", { name: /我的/ }).click();
     await expect(page).toHaveURL(/\/me$/);
 

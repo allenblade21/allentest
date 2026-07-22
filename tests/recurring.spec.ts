@@ -52,7 +52,7 @@ test.describe("周期支出", () => {
     await page.getByRole("link", { name: /周期支出/ }).click();
     await expect(page).toHaveURL(/\/recurring/);
 
-    await page.getByRole("button", { name: "+ 新增" }).click();
+    await page.getByRole("button", { name: /新增周期支出/ }).click();
     await page.getByLabel("周期支出名称").fill("视频会员");
     await page.getByLabel("周期支出金额").fill("25");
     await page.getByLabel("下次日期").fill(daysFromNow(20));
