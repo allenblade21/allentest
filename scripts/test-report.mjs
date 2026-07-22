@@ -42,6 +42,8 @@ const GROUP_NAMES = {
   "auth.spec.ts": "认证与访问保护(TC-AU)",
   "networth.spec.ts": "净资产总览(TC-NW)",
   "report.spec.ts": "月度报告(TC-RP)",
+  "anomaly.spec.ts": "异常支出检测(TC-AX)",
+  "pwa.spec.ts": "PWA 加主屏(TC-PW)",
 };
 const groups = new Map();
 for (const r of rows) {

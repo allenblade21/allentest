@@ -5,7 +5,7 @@
 
 ## 当前焦点
 
-按键位置重设计已从演示版移植到真实应用(5 槽对称导航、分析升一级 tab、操作下沉)。下一步:P4(PWA 加主屏 / AI 问答,见路线图)。
+P4「PWA 加主屏」已完成(manifest+图标+iOS 元数据,资源入公开路径)。下一步:P4 AI 财务问答 或 离线壳/通知(见路线图)。
 
 ## 已完成 ✅
 
@@ -18,6 +18,7 @@
 - **P3 周期支出**:登记订阅/房租等固定支出(ADR 0010,新表 `recurring`);`/recurring` 管理页;流水候选识别(近 3 个自然月同名同金额)一键采纳;「记一笔」自动入账并顺延;到期前 7 天/过期首页琥珀提醒卡
 - **OCR 多 provider**:claude / byteplus(默认 Seed-2.0-lite)/ mock;交易与基金识别共用 callVision
 - **P4 访问保护**:登录 + 注册(可 `ALLOW_REGISTER=0` 关闭)、HttpOnly 会话(库存 sha256,可吊销)、`proxy.ts` 中央守卫(未登录页面→/login、API→401,新路由默认受保护)、「我的」显示用户+退出登录;共享账本不按用户隔离(ADR 0012,新表 `users` `sessions`)
+- **P4 PWA 加主屏**:app/manifest.ts(standalone、主题色、192/512 图标)、layout 注入 manifest/apple-web-app/theme-color;manifest 与图标加入 PUBLIC_PATHS(守卫放行无凭证请求);TC-PW 3 例
 - **P4 部署套件(macOS)**:`npm run setup` 一键搭建;`scripts/macos-setup-server.sh`(launchd 常驻自启 + 每日 03:30 自动备份);`npm run backup`(SQLite 在线备份 + OCR 原图,保留 30 份);[docs/部署.md](部署.md) 指南;形态=MacBook 常开 + Tailscale 内网(ADR 0011)
 - **文档/记忆体系**:规范 + adr + memory + journal + STATUS + README + 页面流程图 SVG
 
@@ -32,7 +33,7 @@
 
 > P3 / P4 完整演进规划见 [路线图.md](路线图.md)。
 
-- P4 部署剩余:PWA 加主屏/离线壳
+- P4 剩余:离线壳(Service Worker)、通知推送、AI 问答、自动记账
 - 可选增强:基金快照行内编辑、流水搜索/筛选 UI、分类/账户管理页(当前「我的」为入口占位)
 
 ## 观察项 👀
@@ -45,5 +46,5 @@
 
 ## 关键指标
 
-- 测试:59 E2E(+TC-AX 4;TC-N 3 / TC-T 7 / TC-O 5 / TC-B 5 / TC-F 7 / TC-A 4 / TC-BG 5 / TC-RC 5 / TC-AU 6 / TC-NW 3 / TC-RP 5)+ 7 单测,最近一次全绿;报告见 [测试报告.md](测试报告.md)(`npm run test:doc` 生成)
+- 测试:62 E2E(+TC-PW 3;+TC-AX 4;TC-N 3 / TC-T 7 / TC-O 5 / TC-B 5 / TC-F 7 / TC-A 4 / TC-BG 5 / TC-RC 5 / TC-AU 6 / TC-NW 3 / TC-RP 5)+ 7 单测,最近一次全绿;报告见 [测试报告.md](测试报告.md)(`npm run test:doc` 生成)
 - 数据表:11;E2E 用例组:11

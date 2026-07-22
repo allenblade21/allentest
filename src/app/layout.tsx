@@ -6,12 +6,19 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "记账本",
   description: "个人记账:手动 + OCR 批量导入 + 基金追踪",
+  manifest: "/manifest.webmanifest",
+  icons: { icon: "/icon-192.png", apple: "/icon-192.png" },
+  appleWebApp: { capable: true, title: "记账本", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#047857" },
+    { media: "(prefers-color-scheme: dark)", color: "#141716" },
+  ],
 };
 
 export default function RootLayout({

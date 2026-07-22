@@ -7,7 +7,16 @@ export const SESSION_DAYS = 30;
 export const sha256 = (s: string) => crypto.createHash("sha256").update(s).digest("hex");
 
 // 无需登录即可访问的路径前缀
-export const PUBLIC_PATHS = ["/login", "/register", "/api/auth/login", "/api/auth/register"];
+export const PUBLIC_PATHS = [
+  "/login",
+  "/register",
+  "/api/auth/login",
+  "/api/auth/register",
+  // PWA 资源:浏览器以无凭证请求拉取,必须公开
+  "/manifest.webmanifest",
+  "/icon-192.png",
+  "/icon-512.png",
+];
 
 export function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
