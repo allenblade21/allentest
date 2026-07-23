@@ -45,6 +45,7 @@ const GROUP_NAMES = {
   "anomaly.spec.ts": "异常支出检测(TC-AX)",
   "pwa.spec.ts": "PWA 加主屏(TC-PW)",
   "ai.spec.ts": "AI 财务问答(TC-AI)",
+  "export.spec.ts": "导出 CSV(TC-EX)",
 };
 const groups = new Map();
 for (const r of rows) {

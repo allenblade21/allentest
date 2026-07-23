@@ -23,7 +23,8 @@ const groups: { title: string; items: Item[] }[] = [
     items: [
       { label: "分类管理" },
       { label: "账户管理" },
-      { label: "导出 CSV(流水 / 基金)" },
+      { label: "导出流水 CSV", hint: "全部账目 · Excel 可开", href: "/api/export?type=transactions" },
+      { label: "导出基金 CSV", hint: "全部快照", href: "/api/export?type=funds" },
       { label: "OCR 原图保留期限", hint: "90天" },
     ],
   },

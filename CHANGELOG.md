@@ -5,6 +5,7 @@
 ## [未发布]
 
 ### 新增
+- 导出 CSV:/api/export?type=transactions|funds——UTF-8 BOM(Excel 直接打开不乱码)、金额转元、字段转义与防公式注入;「我的·数据管理」两个下载入口;TC-EX 3 例。
 - P4 AI 财务问答:/ask 页(自然语言问账本 + 快捷问题);lib/ai 只聚合汇总事实(本月收支/环比基数/Top5 分类)不外发逐笔明细;复用 OCR provider 配置(claude/byteplus),OCR_MOCK 返回确定性演示回答;系统提示严禁编造数字;TC-AI 3 例。
 - P4 PWA 加主屏:app/manifest.ts(standalone/主题色/192·512 图标)+ layout 注入 manifest 与 iOS 加主屏元数据;manifest 与图标加入登录守卫公开路径(无凭证请求可达);TC-PW 3 例。安卓 Chrome「添加到主屏幕」即以独立 App 形态运行。
 - Termux 部署详细文档(docs/部署-Termux.md):查证原生 Termux 构建必因缺少 @next/swc-android-arm64 失败,确立 proot-distro Ubuntu 路线;分步安装/部署/Termux:Boot 自启/备份/排查表/实机待确认清单;安卓端文档附录同步更正。
