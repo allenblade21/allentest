@@ -44,6 +44,7 @@ const GROUP_NAMES = {
   "report.spec.ts": "月度报告(TC-RP)",
   "anomaly.spec.ts": "异常支出检测(TC-AX)",
   "pwa.spec.ts": "PWA 加主屏(TC-PW)",
+  "ai.spec.ts": "AI 财务问答(TC-AI)",
 };
 const groups = new Map();
 for (const r of rows) {

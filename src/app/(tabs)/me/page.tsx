@@ -15,6 +15,7 @@ const groups: { title: string; items: Item[] }[] = [
       { label: "周期支出", hint: "订阅/房租 · 到期提醒", href: "/recurring" },
       { label: "净资产总览", hint: "现金 + 基金", href: "/networth" },
       { label: "月度报告", hint: "收支 · 分类 Top · 预算执行", href: "/report" },
+      { label: "AI 问答", hint: "自然语言问账本", href: "/ask" },
     ],
   },
   {
@@ -29,7 +30,7 @@ const groups: { title: string; items: Item[] }[] = [
   {
     title: "推荐功能(后续版本)",
     items: [
-      { label: "异常支出提醒", hint: "敬请期待" },
+      { label: "自动记账 / 支出预测", hint: "敬请期待" },
     ],
   },
 ];
