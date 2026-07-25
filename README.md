@@ -23,6 +23,7 @@
 | P3 | 异常支出检测(近 3 月基线,单笔/分类偏离提醒) | ✅ |
 | P4 | PWA 加主屏(manifest + 图标,独立 App 形态) | ✅ |
 | P4 | AI 财务问答(自然语言问账本,仅发送汇总数据) | ✅ |
+| — | 数据管理:分类/账户增改删(使用中保护)、导出 CSV | ✅ |
 
 详细需求见 [`docs/需求文档.md`](docs/需求文档.md),界面线框见 [`docs/wireframes.html`](docs/wireframes.html)。
 

@@ -46,6 +46,7 @@ const GROUP_NAMES = {
   "pwa.spec.ts": "PWA 加主屏(TC-PW)",
   "ai.spec.ts": "AI 财务问答(TC-AI)",
   "export.spec.ts": "导出 CSV(TC-EX)",
+  "meta.spec.ts": "分类与账户管理(TC-CM)",
 };
 const groups = new Map();
 for (const r of rows) {

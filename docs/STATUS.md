@@ -5,7 +5,7 @@
 
 ## 当前焦点
 
-「导出 CSV」已落地(流水/基金,「我的·数据管理」直连下载)。P4 剩余:离线壳、通知推送、自动记账(见路线图)。
+「分类/账户管理」已落地——「我的·数据管理」全部入口就绪,占位仅剩 OCR 保留期限说明。P4 剩余:离线壳、通知推送、自动记账(见路线图)。
 
 ## 已完成 ✅
 
@@ -18,6 +18,7 @@
 - **P3 周期支出**:登记订阅/房租等固定支出(ADR 0010,新表 `recurring`);`/recurring` 管理页;流水候选识别(近 3 个自然月同名同金额)一键采纳;「记一笔」自动入账并顺延;到期前 7 天/过期首页琥珀提醒卡
 - **OCR 多 provider**:claude / byteplus(默认 Seed-2.0-lite)/ mock;交易与基金识别共用 callVision
 - **P4 访问保护**:登录 + 注册(可 `ALLOW_REGISTER=0` 关闭)、HttpOnly 会话(库存 sha256,可吊销)、`proxy.ts` 中央守卫(未登录页面→/login、API→401,新路由默认受保护)、「我的」显示用户+退出登录;共享账本不按用户隔离(ADR 0012,新表 `users` `sessions`)
+- **分类/账户管理**:/categories(支出/收入分组、新增带图标与类型、行内改名、删除)、/accounts;删除受外键保护(使用中 409 提示);改名同步全部历史;TC-CM 4 例
 - **导出 CSV**:/api/export?type=transactions|funds(UTF-8 BOM 防 Excel 乱码、金额转元、CSV 转义 + 防公式注入);「我的·数据管理」两个直连下载入口;TC-EX 3 例
 - **P4 AI 财务问答**:/ask 页(输入 + 快捷问题);lib/ai 聚合汇总事实(不外发逐笔明细)→ claude/byteplus 同款 provider;OCR_MOCK 确定性回答;严禁编造数字的系统提示;TC-AI 3 例
 - **P4 PWA 加主屏**:app/manifest.ts(standalone、主题色、192/512 图标)、layout 注入 manifest/apple-web-app/theme-color;manifest 与图标加入 PUBLIC_PATHS(守卫放行无凭证请求);TC-PW 3 例
@@ -36,7 +37,7 @@
 > P3 / P4 完整演进规划见 [路线图.md](路线图.md)。
 
 - P4 剩余:离线壳(Service Worker)、通知推送、自动记账
-- 可选增强:基金快照行内编辑、流水搜索/筛选 UI、分类/账户管理页(「我的」仍为占位;导出 CSV 已落地)
+- 可选增强:基金快照行内编辑、流水搜索/筛选 UI(分类/账户管理与导出 CSV 均已落地)
 
 ## 观察项 👀
 
@@ -48,5 +49,5 @@
 
 ## 关键指标
 
-- 测试:68 E2E(+TC-EX 3;+TC-AI 3;+TC-PW 3;+TC-AX 4;TC-N 3 / TC-T 7 / TC-O 5 / TC-B 5 / TC-F 7 / TC-A 4 / TC-BG 5 / TC-RC 5 / TC-AU 6 / TC-NW 3 / TC-RP 5)+ 7 单测,最近一次全绿;报告见 [测试报告.md](测试报告.md)(`npm run test:doc` 生成)
+- 测试:72 E2E(+TC-CM 4;+TC-EX 3;+TC-AI 3;+TC-PW 3;+TC-AX 4;TC-N 3 / TC-T 7 / TC-O 5 / TC-B 5 / TC-F 7 / TC-A 4 / TC-BG 5 / TC-RC 5 / TC-AU 6 / TC-NW 3 / TC-RP 5)+ 7 单测,最近一次全绿;报告见 [测试报告.md](测试报告.md)(`npm run test:doc` 生成)
 - 数据表:11;E2E 用例组:11

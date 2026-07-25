@@ -21,8 +21,8 @@ const groups: { title: string; items: Item[] }[] = [
   {
     title: "数据管理",
     items: [
-      { label: "分类管理" },
-      { label: "账户管理" },
+      { label: "分类管理", hint: "增改删 · 使用中保护", href: "/categories" },
+      { label: "账户管理", hint: "增改删", href: "/accounts" },
       { label: "导出流水 CSV", hint: "全部账目 · Excel 可开", href: "/api/export?type=transactions" },
       { label: "导出基金 CSV", hint: "全部快照", href: "/api/export?type=funds" },
       { label: "OCR 原图保留期限", hint: "90天" },
