@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>记账本 · 单机版(无后端)</title>
 <style>
   :root {
@@ -112,9 +114,21 @@
 
 <script>
 "use strict";
+/* ============ 存储:部分安卓打开方式(如经文件管理器的 content:// 不透明来源)禁用 localStorage,
+   访问即抛 SecurityError——降级为内存存储保证页面可用,并在登录页/「我的」提示数据不会保留 ============ */
+let volatileStore = false;
+const store = (() => {
+  try { const k = "__probe__"; localStorage.setItem(k, "1"); localStorage.removeItem(k); return localStorage; }
+  catch {
+    volatileStore = true;
+    const m = new Map();
+    return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) };
+  }
+})();
+
 /* ============ i18n:中文为源语言,EN 词典按中文键翻译,缺词回退中文 ============ */
 const LANG_KEY = "ledger-demo-lang";
-let lang = localStorage.getItem(LANG_KEY) || "zh";
+let lang = store.getItem(LANG_KEY) || "zh";
 const EN = {
   "记账本":"Ledger","流水":"Home","记一笔":"Add","基金":"Funds","我的":"Me",
   "登录后继续记账":"Sign in to continue","创建你的演示账号":"Create your demo account",
@@ -180,9 +194,10 @@ const EN = {
   "本月花了多少":"Spent this month?","结余怎么样":"How's my balance?","哪类支出最多":"Top spending category?",
   "单机版在本地即时计算回答,不调用大模型;真实应用可由服务端接入 AI。":"Standalone answers are computed locally (no LLM call). The real app can use server-side AI.",
   "导出为 CSV(UTF-8 BOM),Excel 可直接打开。":"Exports CSV with UTF-8 BOM — opens cleanly in Excel.",
+  "当前打开方式无法保存数据,关闭页面即丢失。安卓请改用文档推荐的打开方式。":"This way of opening the file can't persist data — it's lost on close. On Android, use a recommended method from the docs.",
 };
 const t = (s) => (lang === "en" ? (EN[s] ?? s) : s);
-function setLang(l) { lang = l; localStorage.setItem(LANG_KEY, l); render(); }
+function setLang(l) { lang = l; store.setItem(LANG_KEY, l); render(); }
 
 /* ============ 数据与工具(金额一律整数「分」) ============ */
 const KEY = "ledger-demo-v2";
@@ -221,7 +236,7 @@ function dueStatus(nextDate, tday) {
 let S = load();
 function load() {
   try {
-    const s = JSON.parse(localStorage.getItem(KEY));
+    const s = JSON.parse(store.getItem(KEY));
     if (s && s.txs) { // 旧数据迁移:分类改为可管理状态
       if (!s.cats) { s.cats = DEFAULT_CATS.map((c) => ({ ...c })); s.nextCat = 9; }
       return s;
@@ -229,7 +244,7 @@ function load() {
   } catch {}
   return seed();
 }
-function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+function save() { store.setItem(KEY, JSON.stringify(S)); }
 function seed() {
   const m0 = monthOf(today()), m1 = shiftMonth(m0, -1), m2 = shiftMonth(m0, -2);
   let id = 1;
@@ -306,11 +321,14 @@ function render() {
 const langChip = () => `<span class="seg" style="font-size:12px">
   <button class="${lang === "zh" ? "on" : ""}" onclick="setLang('zh')">中</button>
   <button class="${lang === "en" ? "on" : ""}" onclick="setLang('en')">EN</button></span>`;
+const volatileWarn = () => volatileStore
+  ? `<div class="strip strip-amber" style="cursor:default">⚠️ <span>${t("当前打开方式无法保存数据,关闭页面即丢失。安卓请改用文档推荐的打开方式。")}</span></div>` : "";
 
 /* ============ 登录 / 注册 ============ */
 function authView(mode) {
   const isLogin = mode === "login";
   return `<div class="stack" style="justify-content:center;min-height:82vh;gap:16px">
+    ${volatileWarn()}
     <div class="center"><div style="font-size:40px">📒</div><h1>${t("记账本")}</h1>
       <p class="muted">${isLogin ? t("登录后继续记账") : t("创建你的演示账号")}</p></div>
     <div class="card pad stack" style="gap:10px">
@@ -963,6 +981,7 @@ function exportCsv(type) {
 function meView() {
   return `<div class="stack">
     ${hdr(t("我的"), null, `<span class="muted">👤 ${esc(S.user.name)}</span>`)}
+    ${volatileWarn()}
     <div class="row card" style="padding:10px 14px"><span style="flex:1">🌐 ${t("语言")}</span>${langChip()}</div>
     <div><p class="muted" style="padding:0 4px 6px;margin:0">${t("分析与预算")}</p><div class="card list">
       <div onclick="go('analysis')" style="cursor:pointer"><span style="flex:1">${t("消费分析")}</span><span class="muted">${t("环比 · 趋势 · 分类结构")} ›</span></div>
