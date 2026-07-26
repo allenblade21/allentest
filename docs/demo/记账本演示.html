@@ -1,4 +1,4 @@
-<title>记账本 · 交互演示版</title>
+<title>记账本 · 单机版(无后端)</title>
 <style>
   :root {
     --bg: #f6f7f5; --card: #ffffff; --ink: #212724; --muted: #79817c; --line: #e6e9e6;
@@ -161,19 +161,39 @@ const EN = {
   "早餐+咖啡":"Breakfast+coffee","火锅":"Hotpot","公交":"Bus","日料":"Japanese food","房租":"Rent","云存储年费":"Cloud storage (yearly)",
   "瑞幸咖啡":"Luckin Coffee","滴滴出行":"DiDi ride","山姆会员店":"Sam's Club","美团(金额不清晰)":"Meituan (amount unclear)",
   "检测到":"Found","项异常支出":"anomalies","分析":"Stats",
+  "单机版 · 数据仅存于此浏览器,无需任何服务器":"Standalone · data stays in this browser, no server needed",
+  "净资产总览":"Net Worth","现金 + 基金市值":"Cash + funds","月度报告":"Monthly Report","结余 · 环比 · Top 分类":"Balance · MoM · top categories",
+  "AI 问答(本地)":"Ask (local)","按本地账本即时计算":"Computed locally from your data",
+  "数据管理":"Data","分类管理":"Categories","新增 · 改名 · 删除(使用中保护)":"Add · rename · delete (in-use protected)",
+  "导出流水 CSV":"Export transactions CSV","导出基金 CSV":"Export funds CSV","已导出":"Exported","自动记账":"Auto-record","支出预测":"Spend forecast",
+  "净资产":"Net worth","现金结余":"Cash balance","历史收入 − 历史支出":"all income − all expense","基金市值":"Fund value",
+  "按最新快照合计":"latest snapshots","资产构成":"Composition","现金":"Cash",
+  "本月结余·报告":"Balance","支出环比":"Expense MoM","较上月":"vs last month","分类 Top":"Top categories","最大单笔":"Largest expenses",
+  "预算执行":"Budget status","全部在额度内 ✅":"All within limits ✅","类超支":"over budget","未设置预算":"No budgets set",
+  "异常支出":"Anomalies","本月合计":"month total","单笔":"single","明显偏高":"unusually high","基线":"baseline","/笔":"/txn","/月":"/mo",
+  "近 3 月基线:单笔超均值 3 倍或分类月合计超月均 2 倍即提醒(≥¥50)。":"3-month baseline: alerts when a single expense >3× the average or a category total >2× the monthly average (≥¥50).",
+  "新增分类":"Add category","名称(1-8 字)":"Name (1-8 chars)","图标(emoji)":"Icon (emoji)","分类名 1-8 字":"Name must be 1-8 chars",
+  "该分类使用中(流水/预算/周期支出引用),不能删除":"Category in use (transactions/budgets/recurring) — cannot delete",
+  "至少保留一个分类":"Keep at least one category","改名":"Rename","笔流水":"records","已新增":"Added",
+  "改名后历史流水同步显示新名称;删除受使用中保护。":"Renaming updates all history; deletion is blocked while in use.",
+  "问点什么,如:这个月花得多吗?":"Ask something, e.g. am I overspending?","问":"Ask","请输入问题":"Enter a question",
+  "本月花了多少":"Spent this month?","结余怎么样":"How's my balance?","哪类支出最多":"Top spending category?",
+  "单机版在本地即时计算回答,不调用大模型;真实应用可由服务端接入 AI。":"Standalone answers are computed locally (no LLM call). The real app can use server-side AI.",
+  "导出为 CSV(UTF-8 BOM),Excel 可直接打开。":"Exports CSV with UTF-8 BOM — opens cleanly in Excel.",
 };
 const t = (s) => (lang === "en" ? (EN[s] ?? s) : s);
 function setLang(l) { lang = l; localStorage.setItem(LANG_KEY, l); render(); }
 
 /* ============ 数据与工具(金额一律整数「分」) ============ */
 const KEY = "ledger-demo-v2";
-const CATS = [
+const DEFAULT_CATS = [
   { id: 1, name: "餐饮", icon: "🍚" }, { id: 2, name: "交通", icon: "🚇" },
   { id: 3, name: "购物", icon: "🛍️" }, { id: 4, name: "居住", icon: "🏠" },
   { id: 5, name: "娱乐", icon: "🎬" }, { id: 6, name: "医疗", icon: "💊" },
   { id: 7, name: "人情", icon: "🎁" }, { id: 8, name: "其他", icon: "📦" },
 ];
-const cat = (id) => CATS.find((c) => c.id === id) ?? CATS[7];
+const cats = () => S.cats;
+const cat = (id) => S.cats.find((c) => c.id === id) ?? { id: 0, name: "其他", icon: "📦" };
 const pad = (n) => String(n).padStart(2, "0");
 const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const today = () => iso(new Date());
@@ -200,7 +220,13 @@ function dueStatus(nextDate, tday) {
 
 let S = load();
 function load() {
-  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.txs) return s; } catch {}
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (s && s.txs) { // 旧数据迁移:分类改为可管理状态
+      if (!s.cats) { s.cats = DEFAULT_CATS.map((c) => ({ ...c })); s.nextCat = 9; }
+      return s;
+    }
+  } catch {}
   return seed();
 }
 function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
@@ -238,7 +264,8 @@ function seed() {
       { code: "005827", name: "易方达蓝筹精选", records: [[dayShift(m1, 15), 2012000], [dayShift(m0, 10), 2158000]] },
       { code: "110011", name: "易方达中小盘", records: [[dayShift(m1, 15), 1500000], [dayShift(m0, 10), 1463000]] },
     ],
-    nextId: id, nextRec: 4,
+    cats: DEFAULT_CATS.map((c) => ({ ...c })),
+    nextId: id, nextRec: 4, nextCat: 9,
   };
 }
 
@@ -248,7 +275,7 @@ let route = { name: "home", month: monthOf(today()) };
 let editId = null, recFormOpen = false, fundFormOpen = false;
 function go(name, extra) {
   route = { ...route, name, ...(extra || {}) };
-  editId = null; recFormOpen = false; fundFormOpen = false;
+  editId = null; recFormOpen = false; fundFormOpen = false; catForm = null; askA = null;
   render(); window.scrollTo(0, 0);
 }
 function toast(s) {
@@ -297,7 +324,7 @@ function authView(mode) {
       ? `${t("还没有账号?")}<a class="link" onclick="go('register')">${t("去注册")}</a>`
       : `${t("已有账号?")}<a class="link" onclick="go('login')">${t("去登录")}</a>`}</p>
     <p class="center">${langChip()}</p>
-    <p class="center muted" style="opacity:.75">${t("交互演示版 · 数据与账号仅存于此浏览器")}</p>
+    <p class="center muted" style="opacity:.75">${t("单机版 · 数据仅存于此浏览器,无需任何服务器")}</p>
   </div>`;
 }
 function authSubmit(mode) {
@@ -315,6 +342,25 @@ function authSubmit(mode) {
 }
 function logout() { S.user = null; save(); go("login"); }
 
+/* ============ 异常支出检测(与真实应用同规则:近 3 月基线,ADR 0014) ============ */
+function anomalies(m) {
+  const base = [-1, -2, -3].map((d) => shiftMonth(m, d));
+  const out = [];
+  cats().forEach((c) => {
+    const bTxs = S.txs.filter((x) => x.type === "expense" && x.catId === c.id && base.includes(monthOf(x.date)));
+    if (bTxs.length < 3) return; // 基线不足,抑制噪音
+    const cur = S.txs.filter((x) => x.type === "expense" && x.catId === c.id && monthOf(x.date) === m);
+    if (!cur.length) return;
+    const bSum = bTxs.reduce((a, x) => a + x.amountCents, 0);
+    const txAvg = bSum / bTxs.length, moAvg = bSum / 3;
+    cur.filter((x) => x.amountCents >= 5000 && x.amountCents > 3 * txAvg)
+      .forEach((x) => out.push({ kind: "tx", c, amount: x.amountCents, base: Math.round(txAvg), date: x.date, note: x.note }));
+    const curSum = cur.reduce((a, x) => a + x.amountCents, 0);
+    if (curSum >= 5000 && curSum > 2 * moAvg) out.push({ kind: "cat", c, amount: curSum, base: Math.round(moAvg) });
+  });
+  return out;
+}
+
 /* ============ 首页 ============ */
 function budgetCalc(month) {
   return Object.entries(S.budgets).map(([cid, limit]) => {
@@ -329,6 +375,7 @@ function homeView() {
   let exp = 0, inc = 0;
   rows.forEach((x) => (x.type === "expense" ? (exp += x.amountCents) : (inc += x.amountCents)));
   const overs = budgetCalc(m).filter((b) => b.spent > b.limit);
+  const anos = anomalies(m);
   const dues = S.recurring.filter((r) => dueStatus(r.nextDate, today()) !== "later").sort((a, b) => a.nextDate.localeCompare(b.nextDate));
   const days = [...new Set(rows.map((x) => x.date))];
   const [y, mo] = m.split("-");
@@ -357,6 +404,10 @@ function homeView() {
     ${over0 ? `<div class="strip strip-red" onclick="go('analysis')">⚠️
       <span>${tn(cat(over0.cid).name)} ${t("已超预算")} <b>${fmt(over0.spent - over0.limit)}</b>${
         overs.length > 1 ? ` · ${t("另有")} ${overs.length - 1} ${t("类")}` : ""}</span>
+      <span class="arrow">›</span></div>` : ""}
+    ${anos.length ? `<div class="strip strip-red" onclick="go('analysis')">🔎
+      <span>${tn(anos[0].c.name)} ${t(anos[0].kind === "tx" ? "单笔" : "本月合计")} <b>${fmt(anos[0].amount)}</b> ${t("明显偏高")}${
+        anos.length > 1 ? ` · ${t("另有")} ${anos.length - 1} ${t("项")}` : ""}</span>
       <span class="arrow">›</span></div>` : ""}
     ${days.length === 0 ? `<div class="card pad muted center">${t("本月还没有账目,点下方「＋」记一笔")}</div>` :
       days.map((d) => {
@@ -390,7 +441,7 @@ function editSheet() {
     <label class="muted">${t("金额(元)")}
       <input id="editAmt" inputmode="decimal" value="${(x.amountCents / 100).toFixed(2)}" style="margin-top:4px"></label>
     <label class="muted">${t("分类")}
-      <select id="editCat" style="margin-top:4px">${CATS.map((c) =>
+      <select id="editCat" style="margin-top:4px">${cats().map((c) =>
         `<option value="${c.id}" ${c.id === x.catId ? "selected" : ""}>${c.icon} ${tn(c.name)}</option>`).join("")}</select></label>
     <div class="row" style="gap:10px">
       <button class="btn btn-danger" style="flex:1" onclick="deleteTx()">🗑 ${t("删除")}</button>
@@ -414,7 +465,7 @@ function deleteTx() {
 /* ============ 记一笔 ============ */
 let rec = { type: "expense", amt: "", catId: 1 };
 function recordView() {
-  rec = { type: "expense", amt: "", catId: 1 };
+  rec = { type: "expense", amt: "", catId: cats()[0].id };
   return `<div class="stack">
     ${hdr(t("记一笔"), "home")}
     <div class="center"><div class="seg" style="display:inline-flex">
@@ -422,8 +473,8 @@ function recordView() {
       <button id="tI" onclick="recType('income')">${t("收入")}</button></div></div>
     <div class="card pad center"><span class="muted">${t("金额")}</span>
       <div class="num money" id="amt">¥0</div></div>
-    <div class="grid" id="cats">${CATS.map((c) =>
-      `<button class="cat ${c.id === 1 ? "on" : ""}" data-c="${c.id}" onclick="recCat(${c.id})">${c.icon}<br>${tn(c.name)}</button>`).join("")}</div>
+    <div class="grid" id="cats">${cats().map((c) =>
+      `<button class="cat ${c.id === rec.catId ? "on" : ""}" data-c="${c.id}" onclick="recCat(${c.id})">${c.icon}<br>${tn(c.name)}</button>`).join("")}</div>
     <input id="note" placeholder="${t("备注(可选)")}" aria-label="备注">
     <div class="keys">${[1,2,3,4,5,6,7,8,9].map((n) => `<button onclick="key('${n}')">${n}</button>`).join("")}
       <button onclick="key('.')">.</button><button onclick="key('0')">0</button><button onclick="key('b')" aria-label="退格">⌫</button></div>
@@ -604,7 +655,7 @@ function analysisView() {
   const cur = expOf(m0), prev = expOf(shiftMonth(m0, -1));
   const mom = prev ? ((cur - prev) / prev * 100).toFixed(1) : null;
   const max = Math.max(...months.map(expOf), 1);
-  const byCat = CATS.map((c) => ({ c, v: S.txs.filter((x) => x.type === "expense" && x.catId === c.id && monthOf(x.date) === m0)
+  const byCat = cats().map((c) => ({ c, v: S.txs.filter((x) => x.type === "expense" && x.catId === c.id && monthOf(x.date) === m0)
     .reduce((a, x) => a + x.amountCents, 0) })).filter((x) => x.v > 0).sort((a, b) => b.v - a.v);
   const catMax = Math.max(...byCat.map((x) => x.v), 1);
   const budgets = budgetCalc(m0);
@@ -614,6 +665,12 @@ function analysisView() {
       <div class="num money">${fmt(cur)}</div>
       ${mom !== null ? `<span class="muted">${t("环比上月")}(${fmt(prev)}):
         <b style="color:${+mom > 0 ? "var(--red-ink)" : "var(--green-ink)"}">${+mom > 0 ? "+" : ""}${mom}%</b></span>` : ""}</div>
+    ${(() => { const anos = anomalies(m0); return anos.length ? `<div class="card pad stack" style="gap:10px;border-color:var(--red-line)">
+      <p style="margin:0;color:var(--red-ink);font-size:13px"><b>🔎 ${t("异常支出")}</b></p>
+      ${anos.map((a) => `<div class="row" style="font-size:13px"><span style="flex:1">${a.c.icon} ${tn(a.c.name)}
+        <span class="muted" style="display:block">${a.kind === "tx" ? `${a.date.slice(5)} ${tn(a.note || a.c.name)} · ${t("单笔")}` : t("本月合计")} · ${t("基线")} ${fmt(a.base)}${t(a.kind === "tx" ? "/笔" : "/月")}</span></span>
+        <b class="num" style="color:var(--red-ink)">${fmt(a.amount)}</b></div>`).join("")}
+      <p class="muted" style="margin:0">${t("近 3 月基线:单笔超均值 3 倍或分类月合计超月均 2 倍即提醒(≥¥50)。")}</p></div>` : ""; })()}
     <div class="card pad"><p class="muted" style="margin:0 0 10px">${t("近 6 月支出趋势")}</p>
       <div class="row" style="align-items:flex-end;height:110px;gap:6px">${months.map((m) => {
         const v = expOf(m);
@@ -643,14 +700,14 @@ function budgetView() {
   return `<div class="stack">
     ${hdr(t("预算设置"), "me")}
     <p class="muted" style="margin:0">${t("按分类设常设月度限额;清空即取消。超过 80% 预警,超支后首页提醒。")}</p>
-    <div class="card list">${CATS.map((c) => `<div><span style="flex:1">${c.icon} ${tn(c.name)}</span>
+    <div class="card list">${cats().map((c) => `<div><span style="flex:1">${c.icon} ${tn(c.name)}</span>
       <input id="bg${c.id}" inputmode="decimal" placeholder="${t("不限")}" aria-label="${c.name}预算"
         value="${S.budgets[c.id] ? S.budgets[c.id] / 100 : ""}" style="width:110px;text-align:right">
       <span class="muted">${t("元/月")}</span></div>`).join("")}</div>
     <button class="btn" onclick="saveBudget()">${t("保存")}</button></div>`;
 }
 function saveBudget() {
-  CATS.forEach((c) => { const v = document.getElementById("bg" + c.id).value.trim();
+  cats().forEach((c) => { const v = document.getElementById("bg" + c.id).value.trim();
     const cents = Math.round(Number(v) * 100);
     if (v && cents > 0) S.budgets[c.id] = cents; else delete S.budgets[c.id]; });
   save(); toast(t("已保存")); go("analysis");
@@ -680,7 +737,7 @@ function recurringView() {
       <input id="rcName" placeholder="${t("名称,如 房租 / 视频会员")}" aria-label="周期支出名称">
       <div class="row"><input id="rcAmt" inputmode="decimal" placeholder="${t("金额(元)")}" aria-label="周期支出金额" style="flex:1">
         <select id="rcCycle" aria-label="周期" style="width:110px"><option value="monthly">${t("每月")}</option><option value="yearly">${t("每年")}</option></select></div>
-      <div class="row"><select id="rcCat" aria-label="分类" style="flex:1">${CATS.map((c) =>
+      <div class="row"><select id="rcCat" aria-label="分类" style="flex:1">${cats().map((c) =>
         `<option value="${c.id}">${c.icon} ${tn(c.name)}</option>`).join("")}</select>
         <input id="rcDate" type="date" value="${daysFromNow(30)}" aria-label="下次日期" style="width:150px"></div>
       <button class="btn" onclick="saveRecurring()">${t("保存")}</button></div>` : ""}
@@ -729,6 +786,179 @@ function delRecurring(id) {
   S.recurring = S.recurring.filter((x) => x.id !== id); save(); render();
 }
 
+/* ============ 净资产总览:现金(历史收支)+ 基金最新快照 ============ */
+function networthView() {
+  let inc = 0, exp = 0;
+  S.txs.forEach((x) => (x.type === "income" ? (inc += x.amountCents) : (exp += x.amountCents)));
+  const cash = inc - exp;
+  const fund = S.funds.reduce((a, f) => a + f.records[f.records.length - 1][1], 0);
+  const total = cash + fund, pos = Math.max(cash, 0) + fund;
+  return `<div class="stack">
+    ${hdr(t("净资产总览"), "me")}
+    <div class="card pad"><span class="muted">${t("净资产")}</span>
+      <div class="num money">${fmt(total)}</div></div>
+    <div class="card list">
+      <div><span style="flex:1">💵 ${t("现金结余")}<span class="muted" style="display:block">${t("历史收入 − 历史支出")}</span></span>
+        <b class="num">${fmt(cash)}</b></div>
+      <div><span style="flex:1">📈 ${t("基金市值")}<span class="muted" style="display:block">${t("按最新快照合计")}</span></span>
+        <b class="num">${fmt(fund)}</b></div>
+    </div>
+    ${pos > 0 ? `<div class="card pad stack" style="gap:8px"><p class="muted" style="margin:0">${t("资产构成")}</p>
+      <div class="bar" style="display:flex;height:10px">
+        <i style="width:${(Math.max(cash, 0) / pos * 100).toFixed(1)}%"></i>
+        <i style="width:${(fund / pos * 100).toFixed(1)}%;background:var(--amber-ink);border-radius:0 4px 4px 0"></i></div>
+      <div class="row muted"><span>■ ${t("现金")} ${(Math.max(cash, 0) / pos * 100).toFixed(0)}%</span>
+        <span style="margin-left:auto">${t("基金")} ${(fund / pos * 100).toFixed(0)}% ■</span></div></div>` : ""}
+  </div>`;
+}
+
+/* ============ 月度报告 ============ */
+function reportView() {
+  const m = route.rm || monthOf(today());
+  const rows = S.txs.filter((x) => monthOf(x.date) === m);
+  let exp = 0, inc = 0;
+  rows.forEach((x) => (x.type === "expense" ? (exp += x.amountCents) : (inc += x.amountCents)));
+  const prevExp = S.txs.filter((x) => x.type === "expense" && monthOf(x.date) === shiftMonth(m, -1)).reduce((a, x) => a + x.amountCents, 0);
+  const mom = prevExp ? ((exp - prevExp) / prevExp * 100).toFixed(1) : null;
+  const byCat = cats().map((c) => ({ c, v: rows.filter((x) => x.type === "expense" && x.catId === c.id).reduce((a, x) => a + x.amountCents, 0) }))
+    .filter((x) => x.v > 0).sort((a, b) => b.v - a.v).slice(0, 5);
+  const topTxs = rows.filter((x) => x.type === "expense").sort((a, b) => b.amountCents - a.amountCents).slice(0, 3);
+  const buds = budgetCalc(m), overs = buds.filter((b) => b.spent > b.limit);
+  const [y, mo] = m.split("-");
+  const monthTitle = lang === "en" ? `${y}-${mo}` : `${y}年${+mo}月`;
+  return `<div class="stack">
+    ${hdr(t("月度报告"), "me")}
+    <div class="card pad">
+      <div class="row" style="margin-bottom:10px">
+        <a class="back" style="font-size:20px" onclick="go('report',{rm:'${shiftMonth(m, -1)}'})">‹</a>
+        <b>${monthTitle}</b>
+        <a class="back" style="font-size:20px" onclick="go('report',{rm:'${shiftMonth(m, 1)}'})">›</a></div>
+      <span class="muted">${t("本月结余")}</span>
+      <div class="num money">${fmt(inc - exp, true)}</div>
+      <div class="row muted num" style="gap:14px;margin-top:4px">
+        <span>${t("支出")} <b style="color:var(--ink)">${fmt(exp)}</b></span>
+        <span>${t("收入")} <b style="color:var(--ink)">${fmt(inc)}</b></span>
+        ${mom !== null ? `<span>${t("支出环比")} <b style="color:${+mom > 0 ? "var(--red-ink)" : "var(--green-ink)"}">${+mom > 0 ? "+" : ""}${mom}%</b></span>` : ""}
+      </div></div>
+    ${exp === 0 ? `<div class="card pad muted center">${t("本月暂无支出")}</div>` : `
+    <div class="card pad stack" style="gap:10px"><p class="muted" style="margin:0">${t("分类 Top")}</p>
+      ${byCat.map((x) => `<div><div class="row" style="font-size:13px">
+        <span>${x.c.icon} ${tn(x.c.name)}</span><b class="num" style="margin-left:auto">${fmt(x.v)}
+        <span class="muted">${(x.v / exp * 100).toFixed(0)}%</span></b></div>
+        <div class="bar"><i style="width:${(x.v / byCat[0].v) * 100}%"></i></div></div>`).join("")}</div>
+    <div class="card pad stack" style="gap:8px"><p class="muted" style="margin:0">${t("最大单笔")}</p>
+      ${topTxs.map((x) => `<div class="row" style="font-size:13px"><span>${cat(x.catId).icon} ${tn(x.note || cat(x.catId).name)}
+        <span class="muted">${x.date.slice(5)}</span></span>
+        <b class="num" style="margin-left:auto">${fmt(x.amountCents)}</b></div>`).join("")}</div>`}
+    <div class="card pad"><p class="muted" style="margin:0 0 4px">${t("预算执行")}</p>
+      ${buds.length === 0 ? `<span class="muted">${t("未设置预算")}</span>`
+        : overs.length ? `<b style="color:var(--red-ink)">${overs.length} ${t("类超支")}</b>`
+        : `<b style="color:var(--green-ink)">${t("全部在额度内 ✅")}</b>`}</div>
+  </div>`;
+}
+
+/* ============ AI 问答(单机版:本地即时计算,不调用大模型) ============ */
+let askA = null;
+function askView() {
+  const qs = ["本月花了多少", "结余怎么样", "哪类支出最多"];
+  return `<div class="stack">
+    ${hdr(t("AI 问答(本地)"), "me")}
+    <div class="card pad stack" style="gap:10px">
+      <input id="askQ" placeholder="${t("问点什么,如:这个月花得多吗?")}" aria-label="问题"
+        onkeydown="if(event.key==='Enter')askGo()">
+      <div class="row" style="flex-wrap:wrap;gap:6px">${qs.map((q) =>
+        `<button class="btn btn-sm btn-ghost" onclick="askGo('${q}')">${t(q)}</button>`).join("")}</div>
+      <button class="btn" onclick="askGo()">${t("问")}</button></div>
+    ${askA ? `<div class="card pad" style="font-size:14px">${esc(askA)}</div>` : ""}
+    <p class="muted" style="margin:0">${t("单机版在本地即时计算回答,不调用大模型;真实应用可由服务端接入 AI。")}</p>
+  </div>`;
+}
+function askGo(preset) {
+  const q = preset || document.getElementById("askQ").value.trim();
+  if (!q) return toast(t("请输入问题"));
+  const m = monthOf(today());
+  let exp = 0, inc = 0;
+  S.txs.filter((x) => monthOf(x.date) === m).forEach((x) => (x.type === "expense" ? (exp += x.amountCents) : (inc += x.amountCents)));
+  const prev = S.txs.filter((x) => x.type === "expense" && monthOf(x.date) === shiftMonth(m, -1)).reduce((a, x) => a + x.amountCents, 0);
+  const top = cats().map((c) => ({ c, v: S.txs.filter((x) => x.type === "expense" && x.catId === c.id && monthOf(x.date) === m)
+    .reduce((a, x) => a + x.amountCents, 0) })).sort((a, b) => b.v - a.v)[0];
+  const en = lang === "en", topName = top && top.v > 0 ? t(top.c.name) : null;
+  if (/最多|哪类|top|most|category/i.test(q) && topName)
+    askA = en ? `Top category this month: ${topName}, ${fmt(top.v)} (${(top.v / exp * 100).toFixed(0)}% of expenses).`
+      : `本月支出最多的是「${topName}」,共 ${fmt(top.v)},占总支出 ${(top.v / exp * 100).toFixed(0)}%。`;
+  else if (/结余|剩|balance/i.test(q))
+    askA = en ? `This month: income ${fmt(inc)}, expense ${fmt(exp)}, balance ${fmt(inc - exp, true)}.`
+      : `本月收入 ${fmt(inc)},支出 ${fmt(exp)},结余 ${fmt(inc - exp, true)}。`;
+  else if (/环比|上月|多吗|last month|compare/i.test(q) && prev)
+    askA = en ? `Expense this month ${fmt(exp)} vs last month ${fmt(prev)} (${exp >= prev ? "+" : ""}${((exp - prev) / prev * 100).toFixed(1)}%).`
+      : `本月支出 ${fmt(exp)},上月 ${fmt(prev)},环比 ${exp >= prev ? "+" : ""}${((exp - prev) / prev * 100).toFixed(1)}%。`;
+  else
+    askA = en ? `This month you spent ${fmt(exp)}${topName ? `, mostly on ${topName} (${fmt(top.v)})` : ""}; income ${fmt(inc)}, balance ${fmt(inc - exp, true)}.`
+      : `本月共支出 ${fmt(exp)}${topName ? `,其中「${topName}」最多(${fmt(top.v)})` : ""};收入 ${fmt(inc)},结余 ${fmt(inc - exp, true)}。`;
+  render();
+}
+
+/* ============ 分类管理:新增 / 改名 / 删除(使用中保护) ============ */
+let catForm = null; // null | {id?: number}(有 id 为改名)
+function catsView() {
+  const usage = (id) => S.txs.filter((x) => x.catId === id).length;
+  const editing = catForm && catForm.id ? cat(catForm.id) : null;
+  return `<div class="stack">
+    ${hdr(t("分类管理"), "me")}
+    <p class="muted" style="margin:0">${t("改名后历史流水同步显示新名称;删除受使用中保护。")}</p>
+    ${catForm ? `<div class="card pad stack" style="gap:10px">
+      <div class="row"><input id="cmIcon" placeholder="${t("图标(emoji)")}" aria-label="分类图标" maxlength="4"
+          value="${editing ? editing.icon : ""}" style="width:90px;text-align:center">
+        <input id="cmName" placeholder="${t("名称(1-8 字)")}" aria-label="分类名称" maxlength="8"
+          value="${editing ? esc(editing.name) : ""}" style="flex:1"></div>
+      <div class="row"><button class="btn btn-ghost" style="flex:1" onclick="catForm=null;render()">${t("收起")}</button>
+        <button class="btn" style="flex:2" onclick="saveCat()">${t("保存")}</button></div></div>`
+    : `<button class="btn-add" onclick="catForm={};render()">＋ ${t("新增分类")}</button>`}
+    <div class="card list">${cats().map((c) => `<div>
+      <span style="font-size:20px">${c.icon}</span>
+      <span style="flex:1"><b style="font-size:14px">${tn(c.name)}</b>
+        <span class="muted" style="display:block">${usage(c.id)} ${t("笔流水")}</span></span>
+      <button class="btn btn-sm btn-ghost" onclick="catForm={id:${c.id}};render()" aria-label="改名${esc(c.name)}">✎</button>
+      <button class="btn btn-sm btn-ghost" onclick="delCat(${c.id})" aria-label="删除${esc(c.name)}">✕</button></div>`).join("")}</div>
+  </div>`;
+}
+function saveCat() {
+  const name = document.getElementById("cmName").value.trim();
+  const icon = document.getElementById("cmIcon").value.trim() || "🏷️";
+  if (!name || name.length > 8) return toast(t("分类名 1-8 字"));
+  if (catForm.id) { const c = cat(catForm.id); c.name = name; c.icon = icon; toast(t("已修改")); }
+  else { S.cats.push({ id: S.nextCat++, name, icon }); toast(t("已新增")); }
+  catForm = null; save(); render();
+}
+function delCat(id) {
+  if (S.cats.length <= 1) return toast(t("至少保留一个分类"));
+  const used = S.txs.some((x) => x.catId === id) || S.budgets[id] > 0 || S.recurring.some((r) => r.catId === id);
+  if (used) return toast(t("该分类使用中(流水/预算/周期支出引用),不能删除"));
+  S.cats = S.cats.filter((c) => c.id !== id); save(); render(); toast(t("已删除"));
+}
+
+/* ============ 导出 CSV(UTF-8 BOM + 转义 + 防公式注入,与真实应用一致) ============ */
+function csvCell(v) {
+  let s = String(v);
+  if (/^[=+\-@]/.test(s)) s = "'" + s;
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function exportCsv(type) {
+  const rows = type === "funds"
+    ? [["代码", "名称", "日期", "市值(元)"],
+       ...S.funds.flatMap((f) => f.records.map(([d, v]) => [f.code, f.name, d, (v / 100).toFixed(2)]))]
+    : [["日期", "类型", "分类", "金额(元)", "备注", "来源"],
+       ...S.txs.slice().sort((a, b) => a.date.localeCompare(b.date) || a.id - b.id)
+         .map((x) => [x.date, x.type === "income" ? "收入" : "支出", cat(x.catId).name,
+           (x.amountCents / 100).toFixed(2), x.note || "", x.source === "ocr" ? "OCR" : "手动"])];
+  const csv = "\uFEFF" + rows.map((r) => r.map(csvCell).join(",")).join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = (type === "funds" ? "基金" : "流水") + "-" + today() + ".csv";
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  toast(t("已导出"));
+}
+
 /* ============ 我的 ============ */
 function meView() {
   return `<div class="stack">
@@ -738,13 +968,19 @@ function meView() {
       <div onclick="go('analysis')" style="cursor:pointer"><span style="flex:1">${t("消费分析")}</span><span class="muted">${t("环比 · 趋势 · 分类结构")} ›</span></div>
       <div onclick="go('budget')" style="cursor:pointer"><span style="flex:1">${t("预算设置")}</span><span class="muted">${t("分类月度限额 · 超支提醒")} ›</span></div>
       <div onclick="go('recurring')" style="cursor:pointer"><span style="flex:1">${t("周期支出")}</span><span class="muted">${t("订阅/房租 · 到期提醒")} ›</span></div>
+      <div onclick="go('networth')" style="cursor:pointer"><span style="flex:1">${t("净资产总览")}</span><span class="muted">${t("现金 + 基金市值")} ›</span></div>
+      <div onclick="go('report')" style="cursor:pointer"><span style="flex:1">${t("月度报告")}</span><span class="muted">${t("结余 · 环比 · Top 分类")} ›</span></div>
+      <div onclick="go('ask')" style="cursor:pointer"><span style="flex:1">${t("AI 问答(本地)")}</span><span class="muted">${t("按本地账本即时计算")} ›</span></div>
     </div></div>
-    <div><p class="muted" style="padding:0 4px 6px;margin:0">${t("演示数据")}</p><div class="card list">
+    <div><p class="muted" style="padding:0 4px 6px;margin:0">${t("数据管理")}</p><div class="card list">
+      <div onclick="go('cats')" style="cursor:pointer"><span style="flex:1">${t("分类管理")}</span><span class="muted">${t("新增 · 改名 · 删除(使用中保护)")} ›</span></div>
+      <div onclick="exportCsv('txs')" style="cursor:pointer"><span style="flex:1">${t("导出流水 CSV")}</span><span class="muted">⤓</span></div>
+      <div onclick="exportCsv('funds')" style="cursor:pointer"><span style="flex:1">${t("导出基金 CSV")}</span><span class="muted">⤓</span></div>
       <div onclick="resetDemo()" style="cursor:pointer"><span style="flex:1">${t("重置演示数据")}</span><span class="muted">${t("恢复初始样例")} ›</span></div>
     </div></div>
     <div><p class="muted" style="padding:0 4px 6px;margin:0">${t("推荐功能(后续版本)")}</p><div class="card list">
-      <div class="muted"><span style="flex:1">${t("净资产 / 月度报告")}</span>${t("敬请期待")}</div>
-      <div class="muted"><span style="flex:1">${t("异常支出提醒")}</span>${t("敬请期待")}</div>
+      <div class="muted"><span style="flex:1">${t("自动记账")}</span>${t("敬请期待")}</div>
+      <div class="muted"><span style="flex:1">${t("支出预测")}</span>${t("敬请期待")}</div>
     </div></div>
     <button class="btn btn-danger" onclick="logout()">${t("退出登录")}</button>
   </div>`;
@@ -760,6 +996,7 @@ const VIEWS = {
   home: homeView, record: recordView, import: importView,
   funds: fundsView, fundImport: fundImportView, fundDetail: fundDetailView,
   analysis: analysisView, budget: budgetView, recurring: recurringView, me: meView,
+  networth: networthView, report: reportView, ask: askView, cats: catsView,
 };
 render();
 </script>

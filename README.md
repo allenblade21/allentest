@@ -132,7 +132,7 @@ docs/                  # 需求文档 / 技术选型 / 测试用例 / 界面线�
 - [部署指南](docs/部署.md) — macOS 家用服务器(常驻 + Tailscale + 备份/恢复)
 - [安卓端设置](docs/部署-安卓端.md) — 手机接入步骤(Tailscale + 加主屏)
 - [Termux 部署](docs/部署-Termux.md) — 闲置安卓机当服务器(proot-distro 路线,已查证可行性)
-- [交互演示版](docs/演示版.md) — 免部署沙盒试用入口与维护约定(源文件 docs/demo/)
+- [单机版(无后端)](docs/演示版.md) — 免部署、双击即用的单机版入口与维护约定(源文件 docs/demo/)
 - [界面线框图](docs/wireframes.html) — 6 屏低保真线框
 - [页面流程图](docs/页面流程图.svg) — 页面流转 user flow(可导入 Figma 编辑)
 - [页面架构](docs/页面架构.md) — 各页面区块拆分、共享组件与未来扩展位

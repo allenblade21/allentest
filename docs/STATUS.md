@@ -1,11 +1,11 @@
 # STATUS — 进度看板
 
 > 多 agent / 跨会话的实时同步点。**开工先读这里,收尾更新这里。**
-> 最后更新:2026-07-19
+> 最后更新:2026-07-26
 
 ## 当前焦点
 
-「分类/账户管理」已落地——「我的·数据管理」全部入口就绪,占位仅剩 OCR 保留期限说明。P4 剩余:离线壳、通知推送、自动记账(见路线图)。
+**单机版(无后端)已交付**:演示版升级为功能对齐的单机版(净资产/月报/异常检测/分类管理/CSV 导出/本地 AI 问答),同一 Artifact 链接。P4 剩余:离线壳、通知推送、自动记账(见路线图)。
 
 ## 已完成 ✅
 
@@ -23,6 +23,7 @@
 - **P4 AI 财务问答**:/ask 页(输入 + 快捷问题);lib/ai 聚合汇总事实(不外发逐笔明细)→ claude/byteplus 同款 provider;OCR_MOCK 确定性回答;严禁编造数字的系统提示;TC-AI 3 例
 - **P4 PWA 加主屏**:app/manifest.ts(standalone、主题色、192/512 图标)、layout 注入 manifest/apple-web-app/theme-color;manifest 与图标加入 PUBLIC_PATHS(守卫放行无凭证请求);TC-PW 3 例
 - **P4 部署套件(macOS)**:`npm run setup` 一键搭建;`scripts/macos-setup-server.sh`(launchd 常驻自启 + 每日 03:30 自动备份);`npm run backup`(SQLite 在线备份 + OCR 原图,保留 30 份);[docs/部署.md](部署.md) 指南;形态=MacBook 常开 + Tailscale 内网(ADR 0011)
+- **单机版(无后端)**:演示版升级为可日常使用的单机版(单 HTML + localStorage,双击可开)——补齐净资产总览、月度报告、异常支出检测(同 ADR 0014 规则)、分类管理(增/改名/删,使用中保护)、导出 CSV(BOM+防公式注入)、AI 问答(本地规则计算);旧 localStorage 数据自动迁移;冒烟链扩至全功能;见 [演示版.md](演示版.md)
 - **文档/记忆体系**:规范 + adr + memory + journal + STATUS + README + 页面流程图 SVG
 
 ## 进行中 🔧
@@ -32,7 +33,7 @@
 ## 待办 ⬜
 
 - 页面架构落地(续):PageHeader / Card / ProgressBar 等组件抽取(AlertStrip + 首页提醒源列表已完成)
-- 演示版同步净资产/月报视图(维护约定见 docs/演示版.md)
+- 单机版可选补齐:账户维度(真实应用有账户管理,单机版流水暂无账户字段)、基金走势图
 
 > P3 / P4 完整演进规划见 [路线图.md](路线图.md)。
 
