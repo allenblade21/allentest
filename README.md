@@ -78,6 +78,7 @@ cp .env.example .env.local   # 4. 环境变量:编辑填 OCR 配置,见下方「
 ## 测试
 
 端到端测试基于 Playwright(手机视口 + 独立测试库 + OCR mock,不触碰开发数据)。
+每次 push / PR 由 GitHub Actions 自动跑 lint + 构建 + 全量测试(`.github/workflows/ci.yml`),失败附报告产物可下载回放。
 
 ```bash
 npm test              # 构建 + 全量 E2E(52 例)
@@ -99,7 +100,8 @@ npx tsx tests/ocr-provider.mjs        # OCR provider 单测(7 例,mock fetch)
 | `npm run db:generate` | 由 schema 生成迁移 |
 | `npm run db:migrate` / `db:seed` | 执行迁移 / 写入默认数据 |
 | `npm run backup` | 备份数据库 + OCR 原图到 `backups/`(保留 30 份) |
-| `bash scripts/macos-setup-server.sh` | macOS 家用服务器一键配置(常驻自启 + 每日备份),见[部署指南](docs/部署.md) |
+| `bash scripts/macos-setup-server.sh` | macOS 家用服务器一键配置(常驻自启 + 每日备份 + 每 10 分钟自动部署),见[部署指南](docs/部署.md) |
+| `bash scripts/auto-deploy.sh` | 手动触发一次部署(拉取 main → 迁移 → 构建 → 重启,失败回滚) |
 | `npm run lint` | ESLint |
 
 ## 目录结构
@@ -125,6 +127,7 @@ docs/                  # 需求文档 / 技术选型 / 测试用例 / 界面线�
 ## 文档索引
 
 **规范**
+- [极简需求清单](docs/极简需求清单.md) — 一页版:每条需求一行 + 交付状态
 - [需求文档](docs/需求文档.md) — 功能需求、数据模型、页面结构
 - [技术选型](docs/技术选型.md) — 技术栈决策与取舍
 - [测试用例](docs/测试用例.md) — E2E 用例登记表

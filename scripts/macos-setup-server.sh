@@ -60,8 +60,28 @@ cat > "$BAK_PLIST" <<EOF
 </dict></plist>
 EOF
 
-# ---- 3) 加载(先卸载旧的,幂等) ----
-for plist in "$APP_PLIST" "$BAK_PLIST"; do
+# ---- 3) 每 10 分钟自动部署:main 有新提交即 拉取→迁移→构建→重启,失败回滚 ----
+DEPLOY_PLIST="$AGENTS_DIR/com.jizhangben.deploy.plist"
+cat > "$DEPLOY_PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.jizhangben.deploy</string>
+  <key>ProgramArguments</key><array>
+    <string>/bin/bash</string><string>${APP_DIR}/scripts/auto-deploy.sh</string>
+  </array>
+  <key>WorkingDirectory</key><string>${APP_DIR}</string>
+  <key>EnvironmentVariables</key><dict>
+    <key>PATH</key><string>${NODE_DIR}:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+  <key>StartInterval</key><integer>600</integer>
+  <key>StandardOutPath</key><string>${LOG_DIR}/deploy.log</string>
+  <key>StandardErrorPath</key><string>${LOG_DIR}/deploy.err.log</string>
+</dict></plist>
+EOF
+
+# ---- 4) 加载(先卸载旧的,幂等) ----
+for plist in "$APP_PLIST" "$BAK_PLIST" "$DEPLOY_PLIST"; do
   launchctl unload "$plist" 2>/dev/null || true
   launchctl load -w "$plist"
 done
@@ -70,6 +90,7 @@ echo
 echo "✅ 已配置完成:"
 echo "   · 应用常驻:com.jizhangben.app(端口 3000,开机自启,崩溃自动拉起)"
 echo "   · 每日备份:com.jizhangben.backup(03:30 → ${APP_DIR}/backups/,保留 30 份)"
+echo "   · 自动部署:com.jizhangben.deploy(每 10 分钟检查 main,新提交自动上线,失败回滚)"
 echo "   · 日志:${LOG_DIR}/"
 echo
 echo "还需手动做两件事:"

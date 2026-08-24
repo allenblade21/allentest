@@ -1,11 +1,11 @@
 # STATUS — 进度看板
 
 > 多 agent / 跨会话的实时同步点。**开工先读这里,收尾更新这里。**
-> 最后更新:2026-07-26
+> 最后更新:2026-08-24
 
 ## 当前焦点
 
-**单机版(无后端)已交付并完成安卓适配**:功能对齐真实应用(净资产/月报/异常检测/分类管理/CSV 导出/本地 AI 问答),同一 Artifact 链接;安卓三种打开方式(Artifact 链接 / 本地文件 / Termux 静态服务)+ 存储不可用时内存降级与提示。P4 剩余:离线壳、通知推送、自动记账(见路线图)。
+**CI/CD 管线落地**:GitHub Actions 每次 push/PR 跑 lint+构建+全量测试守门;MacBook 侧 launchd 每 10 分钟自动拉取 main 上线(失败回滚);新增一页版 [极简需求清单](极简需求清单.md)。P4 剩余:离线壳、通知推送、自动记账(见路线图)。
 
 ## 已完成 ✅
 
@@ -25,6 +25,7 @@
 - **P4 部署套件(macOS)**:`npm run setup` 一键搭建;`scripts/macos-setup-server.sh`(launchd 常驻自启 + 每日 03:30 自动备份);`npm run backup`(SQLite 在线备份 + OCR 原图,保留 30 份);[docs/部署.md](部署.md) 指南;形态=MacBook 常开 + Tailscale 内网(ADR 0011)
 - **单机版(无后端)**:演示版升级为可日常使用的单机版(单 HTML + localStorage,双击可开)——补齐净资产总览、月度报告、异常支出检测(同 ADR 0014 规则)、分类管理(增/改名/删,使用中保护)、导出 CSV(BOM+防公式注入)、AI 问答(本地规则计算);旧 localStorage 数据自动迁移;冒烟链扩至全功能;见 [演示版.md](演示版.md)
 - **单机版安卓适配**:补 viewport/charset meta(真机不再缩成桌面版);localStorage 不可用(content:// 不透明来源)时降级内存存储 + 琥珀提示条,页面保持完整可用;文档三方式指引(Artifact / file:// / Termux 静态服务,含选择表与实机待确认注)
+- **CI/CD 管线**:GitHub Actions(`.github/workflows/ci.yml`:push/PR → lint + 构建 + 72 E2E + 7 单测,失败上传报告产物);MacBook 自动部署(`scripts/auto-deploy.sh` + launchd `com.jizhangben.deploy` 每 10 分钟:拉取→迁移→构建→重启,构建失败回滚上一版);[极简需求清单.md](极简需求清单.md) 一页版需求对照
 - **文档/记忆体系**:规范 + adr + memory + journal + STATUS + README + 页面流程图 SVG
 
 ## 进行中 🔧
