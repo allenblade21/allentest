@@ -5,6 +5,7 @@
 ## [未发布]
 
 ### 新增
+- BytePlus 云发布管线(ADR 0015,可选形态):`.github/workflows/deploy-byteplus.yml`——CI 全绿后 SSH 进 ECS 执行部署(未配 secrets 时安静跳过,可手动触发);`scripts/byteplus-setup-server.sh` Ubuntu ECS 一键配置(NodeSource 装 Node 20、systemd 常驻自启 + 每日 03:30 备份 + 每 10 分钟轮询兜底部署、sudoers 免密白名单);`scripts/auto-deploy.sh` 泛化为 macOS/Linux 通用(重启按 uname 分支,拉取/迁移/构建/回滚共用);docs/部署-BytePlus.md 全流程指南(ECS 购买、安全组只开 22、Tailscale 内网访问、Deploy Key、GitHub secrets、隐私取舍,ECS 实机待确认);ADR 索引补全 0010–0015。
 - CI/CD 管线:GitHub Actions(`.github/workflows/ci.yml`)每次 push/PR 自动 lint + 构建 + 72 E2E + 7 单测,失败上传 Playwright 报告产物;MacBook 自动部署 `scripts/auto-deploy.sh`(拉取 main → npm ci → 迁移 → 构建 → 重启,构建失败回滚上一版并保持旧服务在线),由 `macos-setup-server.sh` 新增的 launchd 任务 `com.jizhangben.deploy` 每 10 分钟触发;部署.md「更新版本」改为全自动说明 + 排查条目。
 - 极简需求清单(docs/极简需求清单.md):从需求文档/路线图蒸馏的一页清单,每条需求一行 + ✅/⬜/✖ 状态,README 索引置顶。
 - 单机版安卓适配:补 `viewport`/`charset` meta(真机浏览器不再按桌面宽度渲染);localStorage 不可用时(部分安卓经文件管理器以 content:// 不透明来源打开会禁存储)自动降级为内存存储——页面保持完整可用并在登录页/「我的」显示琥珀提示条;冒烟新增「禁用 localStorage」模拟场景。docs/演示版.md 新增「在安卓手机上使用」:三种方式选择表(Artifact 链接 / 本地文件 file:// / Termux 三条命令静态服务,无需 proot/Node)+ 实机待确认注;部署-安卓端.md 顶部互链。

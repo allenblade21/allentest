@@ -134,6 +134,7 @@ docs/                  # 需求文档 / 技术选型 / 测试用例 / 界面线�
 - [测试报告](docs/测试报告.md) — 最近一次全量运行结果(`npm run test:doc` 自动生成)
 - [部署指南](docs/部署.md) — macOS 家用服务器(常驻 + Tailscale + 备份/恢复)
 - [安卓端设置](docs/部署-安卓端.md) — 手机接入步骤(Tailscale + 加主屏)
+- [BytePlus 云部署](docs/部署-BytePlus.md) — 云端可选形态:ECS + systemd,CI 绿后 SSH 自动发布(ADR 0015)
 - [Termux 部署](docs/部署-Termux.md) — 闲置安卓机当服务器(proot-distro 路线,已查证可行性)
 - [单机版(无后端)](docs/演示版.md) — 免部署、双击即用的单机版入口与维护约定(源文件 docs/demo/)
 - [界面线框图](docs/wireframes.html) — 6 屏低保真线框

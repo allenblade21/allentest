@@ -1,0 +1,52 @@
+name: Deploy BytePlus
+
+# CI 全绿后自动发布到 BytePlus ECS;也可在 Actions 页手动触发(workflow_dispatch)。
+# 未配置 secrets 时安静跳过——服务器端每 10 分钟的轮询兜底(jizhangben-deploy.timer)仍会自动上线。
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-byteplus
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BP_HOST: ${{ secrets.BP_HOST }}
+      BP_USER: ${{ secrets.BP_USER }}
+      BP_PORT: ${{ secrets.BP_PORT }}
+      BP_APP_DIR: ${{ secrets.BP_APP_DIR }}
+    steps:
+      - name: 检查发布配置
+        id: cfg
+        env:
+          BP_SSH_KEY: ${{ secrets.BP_SSH_KEY }}
+        run: |
+          if [ -z "$BP_HOST" ] || [ -z "$BP_SSH_KEY" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "未配置 BP_HOST / BP_SSH_KEY,跳过云端发布(服务器轮询兜底仍生效);配置方法见 docs/部署-BytePlus.md"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: SSH 发布(auto-deploy.sh:拉取 → 迁移 → 构建 → 重启,失败回滚)
+        if: steps.cfg.outputs.configured == 'true'
+        env:
+          BP_SSH_KEY: ${{ secrets.BP_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$BP_SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh -i ~/.ssh/id_deploy \
+            -p "${BP_PORT:-22}" \
+            -o StrictHostKeyChecking=accept-new \
+            -o ConnectTimeout=15 \
+            "${BP_USER:-root}@${BP_HOST}" \
+            "bash -lc 'cd ${BP_APP_DIR:-~/allentest} && bash scripts/auto-deploy.sh'"
